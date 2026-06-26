@@ -1,8 +1,8 @@
-from fastapi import FastAPI,Header
+from fastapi import FastAPI,Depends
 from database import engine,sessionLocal
 from models import Base,User
 from schemas import userCreate ,userLogin
-from auth import hash_password,verify_password,create_access_token,verify_token
+from auth import hash_password,verify_password,create_access_token,get_current_user
 
 
 app=FastAPI()
@@ -14,7 +14,7 @@ def home():
 def register(user:userCreate):
     db=sessionLocal()
     new_user=User(
-        usename=user.name,
+        username=user.name,
         email=user.email,
         password=hash_password(user.password)
     )
@@ -40,12 +40,14 @@ def login(user:userLogin):
     return{"status":1,"message":"Login Succesfully","access_token":access_token,"token_type":"bearer"}
 
 @app.get("/me")
-def get_me(authorization:str=Header(None)):
-    print("Header = ",authorization)
-    if authorization is None:
-        return{'status':0,"message":"Authorization failed"}
-    token=authorization.split(" ")[1]
-    email=verify_token(token)
-    if email is None:
-        return{'status':0,'message':'Invalid token'}
-    return{"status":1,"message":"Authorized in Successfully","email":email}
+def get_me(current_user:User=Depends(get_current_user)):
+    return{
+        "status":1,
+        "message":"Authorized Successfully",
+        "user":{
+            "id":current_user.id,
+            "username":current_user.username,
+            "email":current_user.email
+
+        }
+    }
