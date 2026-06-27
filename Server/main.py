@@ -1,7 +1,7 @@
 from fastapi import FastAPI,Depends
 from database import engine,sessionLocal
-from models import Base,User
-from schemas import userCreate ,userLogin
+from models import Base,User,Customers
+from schemas import userCreate ,userLogin,CustomerCreate,CustomerUpdate
 from auth import hash_password,verify_password,create_access_token,get_current_user
 
 
@@ -50,4 +50,97 @@ def get_me(current_user:User=Depends(get_current_user)):
             "email":current_user.email
 
         }
+    }
+@app.post("/customers")
+def create_customer(customer:CustomerCreate,current_user:User=Depends(get_current_user)):
+    db=sessionLocal()
+    new_customer=Customers(
+        customer_name=customer.customer_name,
+        customer_email=customer.customer_email,
+        address=customer.address,
+        phone=customer.phone,
+        notes=customer.notes,
+        user_id=current_user.id
+    )
+    db.add(new_customer)
+    db.commit()
+    db.refresh(new_customer)
+    return{
+        "status":1,
+        "message":"Customer added Successfully",
+        "customer":{
+            "id":new_customer.id,
+            "customer_name":new_customer.customer_name,
+            "customer_email":new_customer.customer_email,
+            "phone":new_customer.phone,
+        }
+    }
+
+@app.get("/customers")
+def get_customer(current_user:User=Depends(get_current_user)):
+    db=sessionLocal()
+    customers=db.query(Customers).filter(
+        Customers.user_id==current_user.id
+    ).all()
+    return{
+        "status":1,
+        "message":"Customers retrieved Successfully",
+        "count":len(customers),
+        "customers":[
+            {
+                "id":customer.id,
+            "customer_name":customer.customer_name,
+            "customer_email":customer.customer_email,
+            "phone":customer.phone,
+            "address":customer.address,
+            "notes":customer.notes,
+            }
+            for customer in customers
+        ]
+    }
+
+@app.put("/customers/{customer_id}")
+def update_customer(customer_id:int,updated_customer:CustomerUpdate,current_user:User=Depends(get_current_user)):
+    db=sessionLocal()
+    customer=db.query(Customers).filter(
+        Customers.id==customer_id,
+        Customers.user_id==current_user.id
+    ).first()
+    if customer is None:
+        return{"status":0,"message":"customer not found"}
+    customer.customer_name=updated_customer.customer_name
+    customer.customer_email=updated_customer.customer_email
+    customer.address=updated_customer.address
+    customer.phone=updated_customer.phone
+    customer.notes=updated_customer.notes
+    db.commit()
+    db.refresh(customer)
+    return{
+        "status":1,
+        "message":"Customer updated Successfully",
+        "customer":{
+             "id":customer.id,
+            "customer_name":customer.customer_name,
+            "customer_email":customer.customer_email,
+            "phone":customer.phone,
+            "address":customer.address,
+            "notes":customer.notes,
+        }
+    }
+        
+@app.delete("/customers/{customer_id}")
+def delete_customer(customer_id:int,current_user:User=Depends(get_current_user)):
+    db=sessionLocal()
+    customer=db.query(Customers).filter(
+        Customers.id==customer_id,
+        Customers.user_id==current_user.id
+    ).first()
+    if customer is None:
+        return{"status":0,"message":"customer not found"}
+    db.delete(customer)
+    db.commit()
+    return{
+        "status":1,
+        "message":"Customer deleted Successfully"
+
     }
