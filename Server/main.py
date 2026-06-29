@@ -1,7 +1,7 @@
 from fastapi import FastAPI,Depends
 from database import engine,sessionLocal
-from models import Base,User,Customers
-from schemas import userCreate ,userLogin,CustomerCreate,CustomerUpdate
+from models import Base,User,Customers,Orders
+from schemas import userCreate ,userLogin,CustomerCreate,CustomerUpdate,OrderCreate,OrderUpdateStatus,OrderUpdate
 from auth import hash_password,verify_password,create_access_token,get_current_user
 
 
@@ -144,3 +144,118 @@ def delete_customer(customer_id:int,current_user:User=Depends(get_current_user))
         "message":"Customer deleted Successfully"
 
     }
+
+@app.post("/orders")
+def create_order(order:OrderCreate,current_user:User=Depends(get_current_user)):
+    db=sessionLocal()
+    total_price=order.quantity*order.price
+    new_order=Orders(
+        product_name=order.product_name,
+        quantity=order.quantity,
+        price=order.price,
+        total_price=total_price,
+        customer_id=order.customer_id,
+        user_id=current_user.id
+    )
+    db.add(new_order)
+    db.commit()
+    db.refresh(new_order)
+    return{
+        "status":1,
+        "message":"Order added Successfully",
+        "order":{
+            "id":new_order.id,
+            "product_name":new_order.product_name,
+            "quantity":new_order.quantity,
+            "price":new_order.price,
+            "total_price":new_order.total_price,
+            "customer":{
+                    "id":new_order.customer_id,
+                  
+                }
+        }
+    }
+@app.get("/orders")
+def get_orders(current_user:User=Depends(get_current_user)):
+    db=sessionLocal()
+    orders=db.query(Orders).filter(
+        Orders.user_id==current_user.id
+    ).all()
+    return{
+        "status":1,
+        "message":"Orders retrieved Successfully",
+        "count":len(orders),
+        "orders":[
+            {
+                "id":order.id,
+                "product_name":order.product_name,
+                "quantity":order.quantity,
+                "price":order.price,
+                "total_price":order.total_price,
+                "customer":{
+                    "id":order.customer_id,
+            
+                }
+               
+            }
+            for order in orders
+        ]
+    }
+@app.get("/orders/{order_id}")
+def get_single_order(order_id:int,current_user:User=Depends(get_current_user)):
+              db=sessionLocal()
+              order=db.query(Orders).filter(
+                   Orders.id==order_id,
+                   Orders.user_id==current_user.id
+
+              ).first()
+              if order is None:
+                   return{"status":0,"message":"Order not found"}
+              return{
+                   "status":1,
+                   "message":"Order retrieved Successfully",
+                   "order":[
+                        {
+                         "id":order.id,
+                         "product_name":order.product_name,
+                         "quantity":order.quantity,
+                         "price":order.price,
+                         "total_price":order.total_price,
+                         "customer":{
+                         "id":order.customer_id,
+                              }
+              }
+                   ]
+              }
+# @app.put("/orders/{order_id}")
+# def update_order(order_id:int,order:OrderUpdate,current_user:User=Depends(get_current_user)):
+#      db=sessionLocal()
+#      order=db.query(Orders).filter(
+#           Orders.id==order_id,
+#           Orders.user_id==current_user.id
+#      )
+#      if order is None:
+#           return{"status":0,"message":"Order not found"}
+#      order.product_name=OrderUpdate.product_name
+#      order.quantity=OrderUpdate.quantity
+#      order.price=OrderUpdate.price
+     
+@app.put("/orders/{order_id}/status")
+def update_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=Depends(get_current_user)):
+     db=sessionLocal()
+     order=db.query(Orders).filter(
+          Orders.id==current_user.id,
+          Orders.user_id==current_user.id
+     ).first()
+     if not order :
+          return{"status":0,"message":"Order not found"}
+     order.status=data.status
+     db.commit()
+     db.refresh(order)
+     return{
+        "status":1,
+        "message":"Order status updated Successfully",
+        "status_now":order.status
+
+     }
+     
