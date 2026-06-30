@@ -244,7 +244,7 @@ def get_single_order(order_id:int,current_user:User=Depends(get_current_user)):
 def update_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=Depends(get_current_user)):
      db=sessionLocal()
      order=db.query(Orders).filter(
-          Orders.id==current_user.id,
+          Orders.id==order_id,
           Orders.user_id==current_user.id
      ).first()
      if not order :
@@ -259,3 +259,55 @@ def update_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=De
 
      }
      
+@app.get("/orders")
+def get_order(status:str=None,current_user:User=Depends(get_current_user)):
+     db=sessionLocal()
+     query=db.query(Orders).filter(
+          Orders.user_id==current_user.id
+     )
+     if status:
+          query.filter(Orders.status==status)
+          orders=query.all()
+          return{
+               "status":1,
+               "message":"Order retieved successfully",
+               "count":len(orders),
+               "orders":orders
+
+          }
+@app.get("/dashboard")
+def dashboard(current_user:User=Depends(get_current_user)):
+     db=sessionLocal()
+     total_customers=db.query(Customers).filter(
+          Customers.user_id==current_user.id
+     ).count()
+     total_orders=db.query(Orders).filter(
+          Orders.user_id==current_user.id
+     ).count()
+     total_pending_orders=db.query(Orders).filter(
+          Orders.user_id==current_user.id,
+          Orders.status=="pending"
+
+     ).count()
+     total_completed_orders=db.query(Orders).filter(
+          Orders.user_id==current_user.id,
+          Orders.status=="completed"
+     ).count()
+
+     orders=db.query(Orders).filter(
+          Orders.user_id==current_user.id
+     ).all()
+     total_revenue=0
+     for order in orders:
+          total_revenue+=order.total_price
+          return{
+               "status":1,
+               "message":"Dashboard retrieved successfully",
+               "dashboard":{
+                    "total_customers":total_customers,
+                    "total_orders":total_orders,
+                    "total_pending_orders":total_pending_orders,
+                    "total_completed_orders":total_completed_orders,
+                    "total_revenue":total_revenue
+               }
+          }
