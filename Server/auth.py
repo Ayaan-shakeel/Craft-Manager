@@ -4,7 +4,7 @@ from jose import jwt,JWTError
 from datetime import datetime,timedelta
 from fastapi import Depends,HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from models import User
+from model.user_model import User
 from database import sessionLocal
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/login")
 pwd_context=CryptContext(
