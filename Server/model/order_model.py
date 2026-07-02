@@ -1,4 +1,5 @@
 from sqlalchemy import Column,Integer,String,ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
 
 class Orders(Base):
@@ -12,3 +13,4 @@ class Orders(Base):
 
     user_id=Column(Integer,ForeignKey("users_table.id"))
     customer_id=Column(Integer,ForeignKey("customers_table.id"))
+    customers=relationship("Customers",back_populates="orders")

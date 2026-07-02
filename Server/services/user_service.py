@@ -2,6 +2,7 @@ from model.user_model import User
 from database import sessionLocal
 from auth import hash_password,verify_password,create_access_token
 from schema.user_schema import userCreate,userLogin
+from fastapi import HTTPException
 
 def register(user:userCreate):
     db=sessionLocal()
@@ -12,6 +13,7 @@ def register(user:userCreate):
     )
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
     return new_user
 
 def login(user:userLogin):
@@ -20,16 +22,17 @@ def login(user:userLogin):
         User.email==user.email
     ).first()
     if not db_user:
-        return{"status":0,"message":"User not found"}
+        raise HTTPException(status_code=401,detail=" Email not found")
     if not verify_password(user.password,db_user.password):
-        return{"status":0,"message":"Invalid password"}
-    
-    access_token=create_access_token(data={
+       raise HTTPException(status_code=403,detail=" ! Incorrect password")
+    db_user.access_token=create_access_token(data={
         "sub":db_user.email
     })
     
-    return access_token
+    
+    return db_user
 
-def get_me(current_user):
-    return get_user(current_user)
+
+    
+           
       

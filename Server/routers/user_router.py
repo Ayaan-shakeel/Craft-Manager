@@ -1,31 +1,33 @@
-from fastapi import APIRouter,Depends
-from services.user_service import register,login,get_me
+from fastapi import APIRouter,Depends,status
+from services import user_service
 from auth import get_current_user
 from model.user_model import User
 from schema.user_schema import userCreate,userLogin
-
-router=APIRouter()
-@router.get('/')
-def home():
-    return{"status":1,"message":"Hello World"}
-@router.post('/register')
-def get_register(user:userCreate):
-    new_user=register(user)
-    return{"status":1,"message":"user registered successfully","new_user":{
-        "name":new_user.username,
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"]
+)
+@router.post('/register',status_code=status.HTTP_201_CREATED)
+def register_user(user:userCreate):
+    new_user=user_service.register(user)
+    return{"message":"user registered successfully","new_user":{
+        "id":new_user.id,
+        "username":new_user.username,
         "email":new_user.email
+    }
+    }
+@router.post("/login",status_code=status.HTTP_200_OK)
+def login_user(user:userLogin):
+    db_user=user_service.login(user)
+    return{"message":"Login Succesfully","access_token":db_user.access_token,"token_type":"bearer","user":{
+        "id":db_user.id,
+        "name":db_user.username,
+        "email":db_user.email
     }}
-@router.post("/login")
-def get_login(user:userLogin):
-    access_token=login(user)
-    
-    return{"status":1,"message":"Login Succesfully","access_token":access_token,"token_type":"bearer"}
 
-@router.get("/me")
-def get_login_me(current_user:User=Depends(get_current_user)):
-    get_me=get_me(current_user)
+@router.get("/me",status_code=status.HTTP_200_OK)
+def get_me(current_user:User=Depends(get_current_user)):
     return{
-        "status":1,
         "message":"Authorized Successfully",
         "user":{
             "id":current_user.id,
