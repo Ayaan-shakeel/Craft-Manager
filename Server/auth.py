@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-from config import Secret_key,Algorithm,Access_Token_Expire_Minutes
+from config.config import Secret_key,Algorithm,Access_Token_Expire_Minutes
 from jose import jwt,JWTError
 from datetime import datetime,timedelta
 from fastapi import Depends,HTTPException

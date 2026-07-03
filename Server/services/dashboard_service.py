@@ -1,10 +1,10 @@
 from model.order_model import Orders
 from database import sessionLocal
-from model.customer_model import Customers
+from model.customer_model import Customer
 def dashboard(current_user):
      db=sessionLocal()
-     total_customers=db.query(Customers).filter(
-          Customers.user_id==current_user.id
+     total_customers=db.query(Customer).filter(
+          Customer.user_id==current_user.id
      ).count()
      total_orders=db.query(Orders).filter(
           Orders.user_id==current_user.id

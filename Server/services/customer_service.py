@@ -1,11 +1,11 @@
-from model.customer_model import Customers
+from model.customer_model import Customer
 from database import sessionLocal
 from fastapi import HTTPException
 
 
 def create_customer(data,current_user):
     db=sessionLocal()
-    customer=Customers(
+    customer=Customer(
         customer_name=data.customer_name,
         customer_email=data.customer_email,
         address=data.address,
@@ -21,16 +21,16 @@ def create_customer(data,current_user):
 
 def get_customer(current_user):
     db=sessionLocal()
-    customers=db.query(Customers).filter(
-        Customers.user_id==current_user.id
+    customers=db.query(Customer).filter(
+        Customer.user_id==current_user.id
     ).all()
     return customers
 
 def update_customer(customer_id:int,data,current_user):
     db=sessionLocal()
-    customer=db.query(Customers).filter(
-        Customers.id==customer_id,
-        Customers.user_id==current_user.id
+    customer=db.query(Customer).filter(
+        Customer.id==customer_id,
+        Customer.user_id==current_user.id
     ).first()
     if customer is None:
        raise HTTPException(status_code=404,detail="Customer not found")
@@ -45,9 +45,9 @@ def update_customer(customer_id:int,data,current_user):
 
 def delete_customer(customer_id:int,current_user):
     db=sessionLocal()
-    customer=db.query(Customers).filter(
-        Customers.id==customer_id,
-        Customers.user_id==current_user.id
+    customer=db.query(Customer).filter(
+        Customer.id==customer_id,
+        Customer.user_id==current_user.id
     ).first()
     if customer is None:
        raise HTTPException(status_code=404,detail="Customer not found")

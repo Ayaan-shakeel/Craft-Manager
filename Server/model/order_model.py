@@ -13,4 +13,4 @@ class Orders(Base):
 
     user_id=Column(Integer,ForeignKey("users_table.id"))
     customer_id=Column(Integer,ForeignKey("customers_table.id"))
-    customers=relationship("Customers",back_populates="orders")
+    customer=relationship("Customer",back_populates="orders")
