@@ -11,6 +11,9 @@ def register(user:userCreate):
         email=user.email,
         password=hash_password(user.password)
     )
+    new_user.access_token=create_access_token(data={
+        "sub":new_user.email
+    })
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

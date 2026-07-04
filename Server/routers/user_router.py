@@ -9,11 +9,11 @@ router = APIRouter(
 )
 @router.post('/register',status_code=status.HTTP_201_CREATED)
 def register_user(user:userCreate):
-    new_user=user_service.register(user)
-    return{"message":"user registered successfully","new_user":{
-        "id":new_user.id,
-        "username":new_user.username,
-        "email":new_user.email
+    user=user_service.register(user)
+    return{"message":"user registered successfully","access_token":user.access_token,"token_type":"bearer","user":{
+        "id":user.id,
+        "username":user.username,
+        "email":user.email
     }
     }
 @router.post("/login",status_code=status.HTTP_200_OK)
