@@ -3,13 +3,17 @@ from schema.customer_schema import CustomerCreate,CustomerUpdate
 from services.customer_service import create_customer,get_customer,update_customer,delete_customer
 from model.user_model import User
 from auth import get_current_user
+from sqlalchemy.orm import Session
+from database import get_db
 router = APIRouter(
     prefix="/api",
     tags=["Customers"]
 )
 @router.post("/customers",status_code=status.HTTP_201_CREATED)
-def create_new_customer(customer:CustomerCreate,current_user:User=Depends(get_current_user)):
-                    new_customer=create_customer(customer,current_user)
+def create_new_customer(customer:CustomerCreate,current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+                    new_customer=create_customer(db,customer,current_user)
                     return{
                         "status_code":201,
         "message":"Customer added Successfully",
@@ -21,8 +25,10 @@ def create_new_customer(customer:CustomerCreate,current_user:User=Depends(get_cu
         }
     }    
 @router.get("/customers",status_code=status.HTTP_200_OK)
-def get_all_customers(current_user:User=Depends(get_current_user)):
-        customers=(get_customer(current_user))
+def get_all_customers(current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+        customers=(get_customer(db,current_user))
         return{
         "message":"Customers retrieved Successfully",
         "count":len(customers),
@@ -39,8 +45,10 @@ def get_all_customers(current_user:User=Depends(get_current_user)):
         ]
         }
 @router.put("/customers/{customer_id}",status_code=status.HTTP_201_CREATED)
-def updated_customer(customer_id:int,updated_customer:CustomerUpdate,current_user:User=Depends(get_current_user)):
-  customer=update_customer(customer_id,updated_customer,current_user)
+def updated_customer(customer_id:int,updated_customer:CustomerUpdate,current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+  customer=update_customer(db,customer_id,updated_customer,current_user)
 
   return{
        "status_code":201,
@@ -55,8 +63,10 @@ def updated_customer(customer_id:int,updated_customer:CustomerUpdate,current_use
         }
     }
 @router.delete("/customers/{customer_id}",status_code=status.HTTP_200_OK)
-def deleteing_customer(customer_id:int,current_user:User=Depends(get_current_user)):
-    delete_customer(customer_id,current_user)
+def deleteing_customer(customer_id:int,current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+    delete_customer(db,customer_id,current_user)
     return{
         "message":"Customer deleted Successfully"
 

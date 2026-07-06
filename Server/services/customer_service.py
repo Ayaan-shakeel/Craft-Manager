@@ -1,10 +1,10 @@
 from model.customer_model import Customer
 from database import sessionLocal
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 
-def create_customer(data,current_user):
-    db=sessionLocal()
+def create_customer(db:Session,data,current_user):
     customer=Customer(
         customer_name=data.customer_name,
         customer_email=data.customer_email,
@@ -19,15 +19,13 @@ def create_customer(data,current_user):
     return customer
 
 
-def get_customer(current_user):
-    db=sessionLocal()
+def get_customer(db:Session,current_user):
     customers=db.query(Customer).filter(
         Customer.user_id==current_user.id
     ).all()
     return customers
 
-def update_customer(customer_id:int,data,current_user):
-    db=sessionLocal()
+def update_customer(db:Session,customer_id:int,data,current_user):
     customer=db.query(Customer).filter(
         Customer.id==customer_id,
         Customer.user_id==current_user.id
@@ -43,8 +41,7 @@ def update_customer(customer_id:int,data,current_user):
     db.refresh(customer)
     return customer
 
-def delete_customer(customer_id:int,current_user):
-    db=sessionLocal()
+def delete_customer(db:Session,customer_id:int,current_user):
     customer=db.query(Customer).filter(
         Customer.id==customer_id,
         Customer.user_id==current_user.id

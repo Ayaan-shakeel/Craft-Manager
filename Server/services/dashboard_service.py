@@ -1,8 +1,8 @@
 from model.order_model import Orders
 from database import sessionLocal
 from model.customer_model import Customer
-def dashboard(current_user):
-     db=sessionLocal()
+from sqlalchemy.orm import Session
+def dashboard(db:Session,current_user):
      total_customers=db.query(Customer).filter(
           Customer.user_id==current_user.id
      ).count()

@@ -1,8 +1,8 @@
 from model.order_model import Orders
 from database import sessionLocal
+from sqlalchemy.orm import Session
 
-def create_order(order,current_user):
-    db=sessionLocal()
+def create_order(db:Session,order,current_user):
     total_price=order.quantity*order.price
     new_order=Orders(
         product_name=order.product_name,
@@ -18,24 +18,22 @@ def create_order(order,current_user):
     return new_order
 
 
-def get_orders(current_user):
-    db=sessionLocal()
+def get_orders(db:Session,current_user):
     orders=db.query(Orders).filter(
         Orders.user_id==current_user.id
     ).all()
     return orders
 
 
-def get_single_order(order_id:int,current_user):
-              db=sessionLocal()
+def get_single_order(db:Session,order_id:int,current_user):
               order=db.query(Orders).filter(
                    Orders.id==order_id,
                    Orders.user_id==current_user.id
                    ).first() 
               return order
 
-def update_order_status(order_id:int,current_user):
-     db=sessionLocal()
+def update_order_status(db:Session,order_id:int,current_user):
+
      order=db.query(Orders).filter(
           Orders.id==order_id,
           Orders.user_id==current_user.id
@@ -45,8 +43,7 @@ def update_order_status(order_id:int,current_user):
      return order
             
 
-def get_order(current_user,status:str=None):
-     db=sessionLocal()
+def get_order(db:Session,current_user,status:str=None):
      query=db.query(Orders).filter(
           Orders.user_id==current_user.id
      )

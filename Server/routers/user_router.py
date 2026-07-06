@@ -3,13 +3,17 @@ from services import user_service
 from auth import get_current_user
 from model.user_model import User
 from schema.user_schema import userCreate,userLogin
+from sqlalchemy.orm import Session
+from database import get_db
 router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
 @router.post('/register',status_code=status.HTTP_201_CREATED)
-def register_user(user:userCreate):
-    user=user_service.register(user)
+def register_user(user:userCreate,
+                        db:Session=Depends(get_db)
+                        ):
+    user=user_service.register(db,user)
     return{"message":"user registered successfully","access_token":user.access_token,"token_type":"bearer","user":{
         "id":user.id,
         "username":user.username,
@@ -17,8 +21,10 @@ def register_user(user:userCreate):
     }
     }
 @router.post("/login",status_code=status.HTTP_200_OK)
-def login_user(user:userLogin):
-    db_user=user_service.login(user)
+def login_user(user:userLogin,
+                        db:Session=Depends(get_db)
+                        ):
+    db_user=user_service.login(db,user)
     return{"message":"Login Succesfully","access_token":db_user.access_token,"token_type":"bearer","user":{
         "id":db_user.id,
         "name":db_user.username,

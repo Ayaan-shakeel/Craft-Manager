@@ -5,8 +5,9 @@ from datetime import datetime,timedelta
 from fastapi import Depends,HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from model.user_model import User
-from database import sessionLocal
-oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/login")
+from sqlalchemy.orm import Session
+from database import get_db
+oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/users/login")
 pwd_context=CryptContext(
     schemes=["bcrypt"],
     deprecated="auto"
@@ -33,14 +34,15 @@ def verify_token(token:str):
      except JWTError:
           return None
      
-def get_current_user(token:str=Depends(oauth2_scheme)):
+def get_current_user(token:str=Depends(oauth2_scheme),
+                     db:Session=Depends(get_db)
+                     ):
      email=verify_token(token)
      if email is None:
           raise HTTPException(
                status_code=401,
                detail="Invalid token"
           )
-     db=sessionLocal()
      user=db.query(User).filter(
           User.email==email
      ).first()

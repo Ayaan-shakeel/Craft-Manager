@@ -3,9 +3,10 @@ from database import sessionLocal
 from auth import hash_password,verify_password,create_access_token
 from schema.user_schema import userCreate,userLogin
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
-def register(user:userCreate):
-    db=sessionLocal()
+def register(db:Session,user:userCreate):
+
     new_user=User(
         username=user.name,
         email=user.email,
@@ -19,8 +20,7 @@ def register(user:userCreate):
     db.refresh(new_user)
     return new_user
 
-def login(user:userLogin):
-    db=sessionLocal()
+def login(db:Session,user:userLogin):
     db_user=db.query(User).filter(
         User.email==user.email
     ).first()

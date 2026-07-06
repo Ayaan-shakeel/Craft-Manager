@@ -2,14 +2,18 @@ from fastapi import APIRouter,Depends,HTTPException,status
 from schema.order_schema import OrderCreate,OrderUpdateStatus
 from services.order_service import create_order,get_orders,get_single_order,update_order_status,get_order
 from model.user_model import User
+from sqlalchemy.orm import Session
+from database import get_db
 from auth import get_current_user
 router = APIRouter(
     prefix="/api",
     tags=["Orders"]
 )
 @router.post("/orders",status_code=status.HTTP_201_CREATED)
-def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_user)):
-    new_order=create_order(order,current_user)
+def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+    new_order=create_order(db,order,current_user)
     return{
         "message":"Order added Successfully",
         "order":{
@@ -27,8 +31,10 @@ def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_use
     }
 
 @router.get("/orders",status_code=status.HTTP_200_OK)
-def get_all_orders(current_user:User=Depends(get_current_user)):
-    orders=(get_orders(current_user))
+def get_all_orders(current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+    orders=(get_orders(db,current_user))
     return{
         "message":"Orders retrieved Successfully",
         "count":len(orders),
@@ -50,8 +56,10 @@ def get_all_orders(current_user:User=Depends(get_current_user)):
     }
 
 @router.get("/orders/{order_id}",status_code=status.HTTP_200_OK)
-def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user)):
-             order=get_single_order(order_id,current_user)
+def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+             order=get_single_order(db,order_id,current_user)
              if order is None:
                    raise HTTPException(status_code=404,detail="Order not found")
              return {
@@ -70,8 +78,10 @@ def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user))
                    ]
               }
 @router.put("/orders/{order_id}/status",status_code=status.HTTP_201_CREATED)
-def updated_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=Depends(get_current_user)):
-   order=update_order_status(order_id,current_user)
+def updated_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+   order=update_order_status(db,order_id,current_user)
    if order is None :
           raise HTTPException(status_code=404,detail="Order not found")
    order.status=data.status
@@ -82,8 +92,10 @@ def updated_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=D
      }
 
 @router.get("/orders",status_code=status.HTTP_200_OK)
-def get_filter_order(status:str=None,current_user:User=Depends(get_current_user)):
-     orders=get_order(current_user,status)
+def get_filter_order(status:str=None,current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+     orders=get_order(db,current_user,status)
 
      return{
                "message":"Order retieved successfully",
