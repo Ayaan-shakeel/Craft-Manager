@@ -44,7 +44,7 @@ def get_all_customers(current_user:User=Depends(get_current_user),
             for customer in customers
         ]
         }
-@router.put("/customers/{customer_id}",status_code=status.HTTP_201_CREATED)
+@router.put("/customers/{customer_id}",status_code=status.HTTP_200_OK)
 def updated_customer(customer_id:int,updated_customer:CustomerUpdate,current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
                         ):
