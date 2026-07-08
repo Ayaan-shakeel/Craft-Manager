@@ -22,6 +22,8 @@ def create_new_customer(customer:CustomerCreate,current_user:User=Depends(get_cu
             "customer_name":new_customer.customer_name,
             "customer_email":new_customer.customer_email,
             "phone":new_customer.phone,
+            "address":new_customer.address,
+            "notes":new_customer.notes,
         }
     }    
 @router.get("/customers",status_code=status.HTTP_200_OK)
