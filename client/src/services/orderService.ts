@@ -17,7 +17,7 @@ export const getOrders=async()=>{
  })=>{
     try{
         const response=await api.post("/api/orders",data);
- return response.data.order
+           return response.data
     }catch(error){
         console.error("Error while creating order",error)
         

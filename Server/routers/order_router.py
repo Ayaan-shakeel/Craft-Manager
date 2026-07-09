@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException,status
 from schema.order_schema import OrderCreate,OrderUpdateStatus
-from services.order_service import create_order,get_orders,get_single_order,update_order_status,get_order
+from services.order_service import create_order,get_orders,get_single_order,CancelOrder,update_order_status,get_order
 from model.user_model import User
 from sqlalchemy.orm import Session
 from database import get_db
@@ -24,7 +24,7 @@ def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_use
             "total_price":new_order.total_price,
             "customer":{
                     "id":new_order.customer_id,
-                    "customer_name":new_order.customers.customer_name
+                    "customer_name":new_order.customer.customer_name
                   
                 }
         }
@@ -47,6 +47,9 @@ def get_all_orders(current_user:User=Depends(get_current_user),
                 "total_price":order.total_price,
                 "customer":{
                     "id":order.customer_id,
+                    "customer_name":order.customer.customer_name if
+                    order.customer 
+                    else "Unknown Customer"
             
                 }
                
@@ -103,3 +106,12 @@ def get_filter_order(status:str=None,current_user:User=Depends(get_current_user)
                "orders":orders
 
           }
+@router.delete("/orders/{order_id}",status_code=status.HTTP_200_OK)
+def delete_order(order_id:int,current_user:User=Depends(get_current_user),
+                 db:Session=Depends(get_db)
+                      ):
+      order=CancelOrder(db,order_id,current_user)
+      return{
+            "message":"Order deleted successfully",
+            "order":order
+      }

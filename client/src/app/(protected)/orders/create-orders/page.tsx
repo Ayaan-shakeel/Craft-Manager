@@ -12,7 +12,6 @@ export default function CreateOrders() {
     price:0,
     customer_id:null
   })
-  const [orders,setOrders]=useState(0)
    useEffect(() => {
       const fetchCustomers = async () => {
         try {
@@ -31,13 +30,15 @@ export default function CreateOrders() {
     }, [])
   const create_order=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
+    if(formData.customer_id===null){
+      alert("Please select an customer first")
+      return
+    }
     try{
       const order=await createOrder(formData)
       if(order){
-        // setOrders(order)
         alert("ORder created successfully")
-        console.log(order)
-        
+        console.log(order)   
       }
     }catch(error){
       alert(error)
@@ -49,7 +50,7 @@ export default function CreateOrders() {
       <h1>
         Create Orders Page
         </h1>
-<OrdersForm customers={customers} createOrder={create_order}/>
+<OrdersForm customers={customers} createOrder={create_order} formData={formData} setFormData={setFormData}/>
     </div>
   )
 }

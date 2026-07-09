@@ -1,6 +1,7 @@
 from model.order_model import Orders
-from database import sessionLocal
-from sqlalchemy.orm import Session
+from database import sessionLocal 
+from sqlalchemy.orm import Session 
+from fastapi import HTTPException
 
 def create_order(db:Session,order,current_user):
     total_price=order.quantity*order.price
@@ -51,3 +52,15 @@ def get_order(db:Session,current_user,status:str=None):
           query.filter(Orders.status==status)
           orders=query.all()
           return orders
+     
+def CancelOrder(db:Session,order_id:int,current_user):
+      order=db.query(Orders).filter(
+            Orders.id==order_id,
+            Orders.user_id==current_user.id
+      ).first()
+      if order is None:
+            raise HTTPException(status_code=404,detail="order not found")
+      order.status="cancelled"
+      db.delete(order)
+      db.commit()
+      return order

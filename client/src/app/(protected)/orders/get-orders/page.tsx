@@ -31,6 +31,9 @@ export default function GetOrders() {
             <div>
                 {order.quantity}
                 </div>
+            <div>
+                {order.customer.customer_name}
+                </div>
         </div>
        ))} 
     </div>
