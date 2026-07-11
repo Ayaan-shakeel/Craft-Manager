@@ -28,7 +28,7 @@ export default function CreateOrders() {
       }
       fetchCustomers()
     }, [])
-  const create_order=async(e:React.FormEvent<HTMLFormElement>)=>{
+  const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
     if(formData.customer_id===null){
       alert("Please select an customer first")
@@ -50,7 +50,7 @@ export default function CreateOrders() {
       <h1>
         Create Orders Page
         </h1>
-<OrdersForm customers={customers} createOrder={create_order} formData={formData} setFormData={setFormData}/>
+<OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData}/>
     </div>
   )
 }

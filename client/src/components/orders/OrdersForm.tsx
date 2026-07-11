@@ -3,16 +3,17 @@ import {Customer} from "@/types/customer"
 import {OrderData} from "@/types/order"
 interface OrderFormProps{
     customers:Customer[];
-    createOrder:(e:React.FormEvent<HTMLFormElement>)=>void;
+    handleSubmit:(e:React.FormEvent<HTMLFormElement>)=>void;
     formData:OrderData;
 setFormData:React.Dispatch<React.SetStateAction<OrderData>>;
+editing?:boolean;
     
 } 
-export default function OrdersForm({customers,createOrder,formData,setFormData}:OrderFormProps) {
+export default function OrdersForm({customers,handleSubmit,formData,setFormData,editing}:OrderFormProps) {
   return (
     <div>
         <div>
-            <form onSubmit={createOrder}>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label>Product Name</label>
                     <input

@@ -1,6 +1,6 @@
 'use client'
 import React,{useState ,useEffect} from 'react'
-import {getOrders} from "@/services/orderService"
+import {getOrders,updateOrder} from "@/services/orderService"
 export default function GetOrders() {
      const [orders,setOrders]=useState([])
       useEffect(()=>{
@@ -18,6 +18,15 @@ export default function GetOrders() {
         }
         fetchOrders()
       },[])
+      const update_order=async(id:string | number)=>{
+        try{
+          const order=await updateOrder(id,formData)
+          if(order){
+            alert("Order updated Successfully")
+          }
+
+        }catch(error){}
+      }
   return (
     <div>
        {orders.map((order,index)=>(
@@ -34,6 +43,9 @@ export default function GetOrders() {
             <div>
                 {order.customer.customer_name}
                 </div>
+                <div>
+
+                  </div>
         </div>
        ))} 
     </div>
