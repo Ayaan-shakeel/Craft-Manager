@@ -1,8 +1,10 @@
 'use client'
 import React,{useState ,useEffect} from 'react'
 import {getOrders,updateOrder} from "@/services/orderService"
+import { Order} from "@/types/order"
+import  Link  from 'next/link'
 export default function GetOrders() {
-     const [orders,setOrders]=useState([])
+     const [orders,setOrders]=useState<Order[]>([])
       useEffect(()=>{
         const fetchOrders=async()=>{
           try{
@@ -18,15 +20,15 @@ export default function GetOrders() {
         }
         fetchOrders()
       },[])
-      const update_order=async(id:string | number)=>{
-        try{
-          const order=await updateOrder(id,formData)
-          if(order){
-            alert("Order updated Successfully")
-          }
+      // const update_order=async(id:string | number)=>{
+      //   try{
+      //     const order=await updateOrder(id,formData)
+      //     if(order){
+      //       alert("Order updated Successfully")
+      //     }
 
-        }catch(error){}
-      }
+      //   }catch(error){}
+      // }
   return (
     <div>
        {orders.map((order,index)=>(
@@ -43,8 +45,11 @@ export default function GetOrders() {
             <div>
                 {order.customer.customer_name}
                 </div>
-                <div>
-
+                <div> 
+                  <Link
+                  href={`/orders/edit/${order.id}`}>
+                    Edit
+                  </Link>
                   </div>
         </div>
        ))} 

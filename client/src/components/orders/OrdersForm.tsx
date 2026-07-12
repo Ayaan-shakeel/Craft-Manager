@@ -13,6 +13,7 @@ export default function OrdersForm({customers,handleSubmit,formData,setFormData,
   return (
     <div>
         <div>
+            <h2>{editing ? "Update Order" : "Create Order"}</h2>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Product Name</label>
@@ -21,6 +22,7 @@ export default function OrdersForm({customers,handleSubmit,formData,setFormData,
                       placeholder="Product Name"
                       value={formData.product_name}
                       onChange={(e)=>setFormData({...formData,product_name:e.target.value})}
+                      required
                       />
 
                 </div>
@@ -30,7 +32,8 @@ export default function OrdersForm({customers,handleSubmit,formData,setFormData,
                     type="number"
                     placeholder="Quantity"
                     value={formData.quantity}
-                    onChange={(e)=>setFormData({...formData,quantity:parseInt(e.target.value,10)| 0})}
+                    onChange={(e)=>setFormData({...formData,quantity:e.target.value ===  "" ? 0 :  Number(e.target.value)})}
+                    required
                     />
                 </div>
                 <div>
@@ -39,15 +42,16 @@ export default function OrdersForm({customers,handleSubmit,formData,setFormData,
                     type="number"
                     placeholder="price"
                     value={formData.price}
-                    onChange={(e)=>setFormData({...formData,price:Number(e.target.value)| 0})}
+                    onChange={(e)=>setFormData({...formData,price:e.target.value === "" ? 0 : Number(e.target.value)})}
+                    required
                     />
                 </div>
                 <div>
                     <label>Customer</label>
                     <select name="" id="" value={formData.customer_id ?? ""} onChange={(e)=>setFormData({...formData,customer_id:e.target.value ? Number(e.target.value): null})}>
-                        <option >Select Customer</option>
+                        <option value="">Select Customer</option>
                         {customers.map((customer,index)=>{
-                            return <option key={index} 
+                            return <option key={customer.id} 
                             value={customer.id}>
                            {customer.customer_name}
                           </option>
@@ -55,7 +59,7 @@ export default function OrdersForm({customers,handleSubmit,formData,setFormData,
                        
                     </select>
                 </div>
-                <button type="submit">Create Order</button>
+                <button type="submit">{editing ? "Update Order" : "Create Order"}</button>
             </form>
         </div>
     </div>

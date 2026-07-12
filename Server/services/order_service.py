@@ -64,3 +64,18 @@ def CancelOrder(db:Session,order_id:int,current_user):
       db.delete(order)
       db.commit()
       return order
+
+def UpdateOrder(db:Session,order_id:int,data,current_user):
+      order=db.query(Orders).filter(
+            Orders.id==order_id,
+            Orders.user_id==current_user.id
+      ).first()
+      if order is None:
+            raise HTTPException(status_code=404,detail="Order not found")
+      order.product_name=data.product_name
+      order.quantity=data.quantity
+      order.price=data.price
+      order.status=data.status
+      db.commit()
+      db.refresh(order)
+      return order

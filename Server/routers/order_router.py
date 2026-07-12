@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException,status
-from schema.order_schema import OrderCreate,OrderUpdateStatus
-from services.order_service import create_order,get_orders,get_single_order,CancelOrder,update_order_status,get_order
+from schema.order_schema import OrderCreate,OrderUpdateStatus,OrderUpdate
+from services.order_service import create_order,get_orders,get_single_order,CancelOrder,UpdateOrder,update_order_status,get_order
 from model.user_model import User
 from sqlalchemy.orm import Session
 from database import get_db
@@ -66,20 +66,17 @@ def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user),
              if order is None:
                    raise HTTPException(status_code=404,detail="Order not found")
              return {
-                   "message":"Order retrieved Successfully",
-                   "order":[
-                        {
-                         "id":order.id,
-                         "product_name":order.product_name,
-                         "quantity":order.quantity,
-                         "price":order.price,
-                         "total_price":order.total_price,
-                         "customer":{
-                         "id":order.customer_id,
-                              }
-              }
-                   ]
-              }
+    "message":"Order retrieved Successfully",
+    "order":{
+        "id":order.id,
+        "product_name":order.product_name,
+        "quantity":order.quantity,
+        "price":order.price,
+        "total_price":order.total_price,
+        "customer_id":order.customer_id,
+        "status":order.status
+    }
+}
 @router.put("/orders/{order_id}/status",status_code=status.HTTP_201_CREATED)
 def updated_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
@@ -114,4 +111,22 @@ def delete_order(order_id:int,current_user:User=Depends(get_current_user),
       return{
             "message":"Order deleted successfully",
             "order":order
+      }
+
+@router.put("/orders/{order_id}",status_code=status.HTTP_201_CREATED)
+def update_order(order_id:int,data:OrderUpdate,current_user:User=Depends(get_current_user),
+                 db:Session=Depends(get_db)
+                 ):
+      order=UpdateOrder(db,order_id,data,current_user)
+      return{
+       "message":"Order updated Successfully",
+       "order":{
+             "id":order.id,
+             "product_name":order.product_name,
+             "quantity":order.quantity,
+             "price":order.price,
+             "customer_id":order.customer_id
+
+       }
+
       }

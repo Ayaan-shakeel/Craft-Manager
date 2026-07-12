@@ -8,8 +8,7 @@ import OrdersForm from '@/components/orders/OrdersForm'
 export default function Edit() {
   const params=useParams()
   const router=useRouter()
-  const id=params.id;
-    const [order,setOrder]=useState([])
+  const id=params.id as string;
     const [customers, setCustomers] = useState<Customer[]>([])
       const [formData,setFormData]=useState({
         product_name:"",
@@ -38,16 +37,17 @@ export default function Edit() {
         const fetchOrder=async()=>{
           try{
   
-            const order=await getOrderById(id)
-            if(order){
+            const response=await getOrderById(id)
+            if(response){
               setFormData({
 
-                product_name: order.product_name,
-                quantity: order.quantity,
-                price: order.price,
-                customer_id: order.customer_id,
-                status: order.status
+                product_name: response.product_name,
+                quantity: response.quantity,
+                price: response.price,
+                customer_id: response.customer?.id ?? 0,
+                status: response.status ?? "pending"
               }) 
+              console.log(response)
         }
         }catch(error){
           console.error("Error fetching Orders:",error)
@@ -70,7 +70,7 @@ export default function Edit() {
       }
   return (
     <div>
-      <OrdersForm customers={customers} formData={formData} setFormData={setFormData} updateOrder={handleSubmit}/>
+      <OrdersForm customers={customers} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit}/>
     </div>
   )
 }
