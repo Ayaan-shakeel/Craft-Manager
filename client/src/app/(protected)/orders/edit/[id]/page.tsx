@@ -61,7 +61,7 @@ export default function Edit() {
           const order=await updateOrder(id,formData)
           if(order){
             alert("Order updated Successfully")
-            router.push("/get-orders")
+            router.push("/orders/get-orders")
           }
         }catch(error){
           console.error("Error updating Order",error)

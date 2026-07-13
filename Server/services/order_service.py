@@ -33,12 +33,15 @@ def get_single_order(db:Session,order_id:int,current_user):
                    ).first() 
               return order
 
-def update_order_status(db:Session,order_id:int,current_user):
+def update_order_status(db:Session,order_id:int,status:str,current_user):
 
      order=db.query(Orders).filter(
           Orders.id==order_id,
           Orders.user_id==current_user.id
      ).first()
+     if order is None:
+           return None
+     order.status=status
      db.commit()
      db.refresh(order)
      return order

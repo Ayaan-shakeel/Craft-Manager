@@ -45,6 +45,7 @@ def get_all_orders(current_user:User=Depends(get_current_user),
                 "quantity":order.quantity,
                 "price":order.price,
                 "total_price":order.total_price,
+                "status":order.status,
                 "customer":{
                     "id":order.customer_id,
                     "customer_name":order.customer.customer_name if
@@ -74,17 +75,19 @@ def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user),
         "price":order.price,
         "total_price":order.total_price,
         "customer_id":order.customer_id,
-        "status":order.status
+        "status":order.status,
+         "customer_name":order.customer.customer_name if
+                    order.customer 
+                    else "Unknown Customer"
     }
 }
 @router.put("/orders/{order_id}/status",status_code=status.HTTP_201_CREATED)
 def updated_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
                         ):
-   order=update_order_status(db,order_id,current_user)
+   order=update_order_status(db,order_id,data.status,current_user)
    if order is None :
           raise HTTPException(status_code=404,detail="Order not found")
-   order.status=data.status
    return{
         "message":"Order status updated Successfully",
         "status_now":order.status

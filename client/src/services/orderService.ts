@@ -49,3 +49,20 @@ export const getOrderById=async(id:string | number)=>{
         throw error
     }
  }
+
+ export const updateOrderStatus=async(id:string | number,status:string)=>{
+    try{
+        const response=await api.put(`/api/orders/${id}/status`,{status,})
+        return response.data
+    }catch(error){
+        console.error("Error while updating order status",error)
+    }
+ }
+ export const deleteOrder=async(id:string | number)=>{
+    try{
+        const response=await api.delete(`/api/orders/${id}`)
+        return response.data
+    }catch(error){
+        console.error("Error while deleting order",error)
+    }
+ }
