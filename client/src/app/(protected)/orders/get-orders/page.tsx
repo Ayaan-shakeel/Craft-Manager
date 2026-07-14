@@ -1,10 +1,13 @@
 'use client'
 import React,{useState ,useEffect} from 'react'
 import {getOrders,updateOrderStatus,deleteOrder} from "@/services/orderService"
+import OrderTable from "@/components/orders/OrderTable"
 import { Order} from "@/types/order"
-import  Link  from 'next/link'
 export default function GetOrders() {
      const [orders,setOrders]=useState<Order[]>([])
+      orders.forEach((order)=>{
+          console.log(order.id,order)
+      })
       useEffect(()=>{
         const fetchOrders=async()=>{
           try{
@@ -49,54 +52,25 @@ export default function GetOrders() {
         }
       }
   return (
-    <div>
-       {orders.map((order,index)=>(
-        <div key={index}>
-            <div>
-            {order.product_name}
-            </div>
-            <div>
-                {order.price}
-                </div>
-            <div>
-                {order.quantity}
-                </div>
-            <div>
-                {order.customer.customer_name}
-                </div>
-                <div>
-                  {order.status}
-                </div>
-                <div> 
-                  <Link
-                  href={`/orders/edit/${order.id}`}>
-                    Edit
-                  </Link>
-                  </div>
-                <div> 
-                  <Link
-                  href={`/orders/view/${order.id}`}>
-                    View
-                  </Link>
-                  </div>
-                  <div>
-                    <select value={order.status} onChange={(e)=>{
-                      console.log(e.target.value)
-                      updateStatus(order.id,e.target.value)}}>
-                      <option value="">Select Status</option>
-                      <option value="pending">Pending</option>
-                      <option value="processing">Processing</option>
-                      <option value="completed">Completed</option>
-                      <option value="cancelled">Cancelled</option>
-
-                      </select>
-                  
-                    </div>
-                    <div>
-                      <button onClick={()=>delete_Order(order.id)}>Delete</button>
-                      </div>
-        </div>
-       ))} 
+   <section className="min-h-screen bg-slate-50 py-6 sm:py-8 lg:py-10">
+  <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto mb-6 max-w-2xl text-center sm:mb-8 lg:mb-10">
+      <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl lg:text-4xl">
+        Manage your orders
+      </h1>
+      <p className="mt-2 text-sm leading-6 text-slate-500 sm:mt-3 sm:text-base lg:text-lg">
+        Update status, and review customer order details.
+      </p>
     </div>
+
+    <div className="w-full">
+      <OrderTable
+        Orders={orders}
+        deleteOrder={delete_Order}
+        updateStatus={updateStatus}
+      />
+    </div>
+  </div>
+</section>
   )
 }

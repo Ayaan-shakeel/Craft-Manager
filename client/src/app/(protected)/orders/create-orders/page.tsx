@@ -4,13 +4,14 @@ import { getCustomers } from '@/services/customerService'
 import React ,{useEffect,useState} from 'react'
 import { Customer } from '@/types/customer' 
 import {createOrder} from "@/services/orderService"
+import {OrderData} from "@/types/order"
 export default function CreateOrders() {
   const [customers, setCustomers] = useState<Customer[]>([])
-  const [formData,setFormData]=useState({
+  const [formData,setFormData]=useState<OrderData>({
     product_name:"",
     quantity:0,
     price:0,
-    customer_id:null
+    customer_id:0
   })
    useEffect(() => {
       const fetchCustomers = async () => {

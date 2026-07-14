@@ -5,12 +5,14 @@ import {useParams,useRouter} from "next/navigation"
 import { Customer } from '@/types/customer' 
 import {getCustomers} from "@/services/customerService"
 import OrdersForm from '@/components/orders/OrdersForm'
+import {OrderData} from "@/types/order"
 export default function Edit() {
   const params=useParams()
   const router=useRouter()
   const id=params.id as string;
     const [customers, setCustomers] = useState<Customer[]>([])
-      const [formData,setFormData]=useState({
+    const [editing,setEditing]=useState(false)
+      const [formData,setFormData]=useState<OrderData>({
         product_name:"",
         quantity:0,
         price:0,
@@ -58,9 +60,10 @@ export default function Edit() {
       const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault()
         try{
-          const order=await updateOrder(id,formData)
+          const order=await updateOrder(id,{...formData,status: formData.status ?? "pending"})
           if(order){
             alert("Order updated Successfully")
+            setEditing(false)
             router.push("/orders/get-orders")
           }
         }catch(error){
@@ -70,7 +73,7 @@ export default function Edit() {
       }
   return (
     <div>
-      <OrdersForm customers={customers} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit}/>
+      <OrdersForm customers={customers} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} editing={true}/>
     </div>
   )
 }

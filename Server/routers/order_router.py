@@ -22,11 +22,8 @@ def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_use
             "quantity":new_order.quantity,
             "price":new_order.price,
             "total_price":new_order.total_price,
-            "customer":{
-                    "id":new_order.customer_id,
-                    "customer_name":new_order.customer.customer_name
-                  
-                }
+            "customer_id":new_order.customer_id,
+            "customer_name":new_order.customer.customer_name
         }
     }
 
@@ -46,13 +43,12 @@ def get_all_orders(current_user:User=Depends(get_current_user),
                 "price":order.price,
                 "total_price":order.total_price,
                 "status":order.status,
-                "customer":{
-                    "id":order.customer_id,
-                    "customer_name":order.customer.customer_name if
-                    order.customer 
-                    else "Unknown Customer"
+                "customer_id":order.customer_id,
+                "customer_name":order.customer.customer_name if
+                order.customer 
+                else "Unknown Customer"
             
-                }
+                
                
             }
             for order in orders
@@ -76,7 +72,7 @@ def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user),
         "total_price":order.total_price,
         "customer_id":order.customer_id,
         "status":order.status,
-         "customer_name":order.customer.customer_name if
+        "customer_name":order.customer.customer_name if
                     order.customer 
                     else "Unknown Customer"
     }
@@ -94,18 +90,18 @@ def updated_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=D
 
      }
 
-@router.get("/orders",status_code=status.HTTP_200_OK)
-def get_filter_order(status:str=None,current_user:User=Depends(get_current_user),
-                        db:Session=Depends(get_db)
-                        ):
-     orders=get_order(db,current_user,status)
+# @router.get("/orders",status_code=status.HTTP_200_OK)
+# def get_filter_order(status:str=None,current_user:User=Depends(get_current_user),
+#                         db:Session=Depends(get_db)
+#                         ):
+#      orders=get_order(db,current_user,status)
 
-     return{
-               "message":"Order retieved successfully",
-               "count":len(orders),
-               "orders":orders
+#      return{
+#                "message":"Order retieved successfully",
+#                "count":len(orders),
+#                "orders":orders
 
-          }
+#           }
 @router.delete("/orders/{order_id}",status_code=status.HTTP_200_OK)
 def delete_order(order_id:int,current_user:User=Depends(get_current_user),
                  db:Session=Depends(get_db)

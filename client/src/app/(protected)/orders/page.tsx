@@ -8,7 +8,8 @@ export default function OrdersPage() {
       <h1>
       Orders Page
       </h1>
-   <button onClick={()=>router.push("/create-orders")}>Add orders</button>
+   <button onClick={()=>router.push("/orders/create-orders")}>Add orders</button>
+   <button onClick={()=>router.push("/orders/get-orders")}>View orders</button>
     </div>
 
   )

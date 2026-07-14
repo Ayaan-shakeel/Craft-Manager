@@ -36,7 +36,7 @@ export default function DashboardPage() {
    
   return (
 
-<div className="min-h-screen bg-gradient-to-br from-sky-100 via-white to-slate-100 px-3 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-8">
+<div className="min-h-screen bg-linear-to-br from-sky-100 via-white to-slate-100 px-3 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-8">
   <div className="mx-auto w-full max-w-7xl">
     
     <div className="mb-6 rounded-3xl border border-slate-200/80 bg-white/80 px-5 py-6 shadow-sm backdrop-blur-sm sm:px-6 lg:px-8">
