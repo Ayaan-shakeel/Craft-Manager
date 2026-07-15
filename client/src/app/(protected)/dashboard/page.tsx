@@ -110,7 +110,7 @@ export default function DashboardPage() {
           <div>
             <p className="text-sm font-medium text-slate-500">Total Revenue</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
-              ₹ {dashboard.total_revenue}
+              ₹ {dashboard.total_revenue.toLocaleString("en-IN")}
             </h2>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">

@@ -1,6 +1,7 @@
-from sqlalchemy import Column,Integer,String,ForeignKey
+from sqlalchemy import Column,Integer,String,ForeignKey,DateTime
 from sqlalchemy.orm import relationship
 from database import Base
+from datetime import datetime
 
 class Orders(Base):
     __tablename__="orders_table"
@@ -10,6 +11,8 @@ class Orders(Base):
     quantity=Column(Integer)
     total_price=Column(Integer)
     status=Column(String,default="pending")
+    created_at=Column(DateTime,default=datetime.utcnow)
+    update_at=Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
 
     user_id=Column(Integer,ForeignKey("users_table.id"))
     customer_id=Column(Integer,ForeignKey("customers_table.id"))
