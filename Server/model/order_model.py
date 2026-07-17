@@ -12,7 +12,7 @@ class Orders(Base):
     total_price=Column(Integer)
     status=Column(String,default="pending")
     created_at=Column(DateTime,default=datetime.utcnow)
-    update_at=Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
+    updated_at=Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
 
     user_id=Column(Integer,ForeignKey("users_table.id"))
     customer_id=Column(Integer,ForeignKey("customers_table.id"))
