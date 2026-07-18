@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import {getDashboardData} from "@/services/dashboardService";
-import DashboardCard from '@/components/DashboardCard'
+import DashboardCard from '@/components/dashboard/DashboardCard'
 import {
 Users,
 ShoppingBag,

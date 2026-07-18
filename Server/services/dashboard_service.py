@@ -31,6 +31,7 @@ def dashboard(db:Session,current_user):
           Orders.user_id==current_user.id,
           Orders.status=="shipped"
      ).count()
+     
      total_revenue=(db.query(func.sum(Orders.total_price)).filter(
                Orders.user_id==current_user.id,
                Orders.status!="cancelled"
@@ -70,9 +71,10 @@ def dashboard(db:Session,current_user):
                }
                for row in monthly_revenue
           ]
-     monthly_orders=month=extract("month",Orders.created_at)
-     (db.query(extract("month",Orders.created_at).label("orders"),
-     func.count(Orders.id).label("count")).filter(
+     month=extract("month",Orders.created_at)
+     monthly_orders=(
+          db.query(month.label("month"),
+     func.count(Orders.id).label("orders")).filter(
           Orders.user_id==current_user.id
 
      )
@@ -87,16 +89,5 @@ def dashboard(db:Session,current_user):
           }
           for row in monthly_orders
      ]
-     return {
-
-     "total_customers":total_customers,
-     "total_orders":total_orders,
-     "total_pending_orders":total_pending_orders,
-     "total_completed_orders":total_completed_orders,
-     "total_cancelled_orders":total_cancelled_orders,
-     "total_processing_orders":total_processing_orders,
-     "total_shipped_orders":total_shipped_orders,
-     "total_revenue":total_revenue,
-     "monthly_revenue":monthly_revenue,
-     "monthly_orders":monthly_orders
-          }
+     return total_customers,total_orders,total_pending_orders,total_completed_orders,total_cancelled_orders,total_processing_orders, total_shipped_orders,total_revenue,monthly_revenue,monthly_orders
+          
