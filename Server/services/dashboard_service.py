@@ -89,5 +89,17 @@ def dashboard(db:Session,current_user):
           }
           for row in monthly_orders
      ]
-     return total_customers,total_orders,total_pending_orders,total_completed_orders,total_cancelled_orders,total_processing_orders, total_shipped_orders,total_revenue,monthly_revenue,monthly_orders
+     return{
+
+     "total_customers":total_customers,
+     "total_orders":total_orders,
+     "total_pending_orders":total_pending_orders,
+     "total_completed_orders":total_completed_orders,
+     "total_cancelled_orders":total_cancelled_orders,
+     "total_processing_orders":total_processing_orders,
+      "total_shipped_orders": total_shipped_orders,
+      "total_revenue":total_revenue,
+      "monthly_revenue":monthly_revenue,
+      "monthly_orders":monthly_orders
+     }
           

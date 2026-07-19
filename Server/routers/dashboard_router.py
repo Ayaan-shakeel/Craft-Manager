@@ -12,19 +12,8 @@ router = APIRouter(
 def get_dashboard(current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
                         ):
-    total_customers,total_orders,total_pending_orders,total_completed_orders,total_revenue,total_processing_orders,total_shipped_orders,total_cancelled_orders,monthly_revenue,monthly_orders=dashboard(db,current_user)
+ 
     return{
                "message":"Dashboard retrieved successfully",
-               "dashboard":{
-                    "total_customers":total_customers,
-                    "total_orders":total_orders,
-                    "total_pending_orders":total_pending_orders,
-                    "total_completed_orders":total_completed_orders,
-                    "total_revenue":total_revenue,
-                    "total_processing_orders":total_processing_orders,
-                    "total_shipped_orders":total_shipped_orders,
-                    "total_cancelled_orders":total_cancelled_orders,
-                    "monthly_revenue":monthly_revenue,
-                    "monthly_orders":monthly_orders,
-               }
+               "dashboard":dashboard(db,current_user)
     }

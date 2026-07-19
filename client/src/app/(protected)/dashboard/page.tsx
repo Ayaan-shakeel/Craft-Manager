@@ -9,13 +9,17 @@ CheckCircle2,
 Clock3,
 IndianRupee,
 } from "lucide-react";
+import RevenueChart from '@/components/dashboard/RevenueChart'
+import OrdersChart from '@/components/dashboard/OrdersChart'
 export default function DashboardPage() {
   const [dashboard,setDashboard]=useState({
     total_customers:0,
     total_orders:0,
     total_revenue:0,
     total_pending_orders:0,
-    total_completed_orders:0
+    total_completed_orders:0,
+    monthly_revenue:[],
+    monthly_orders:[]
   })
   useEffect(()=>{
       const fetchData=async()=>{
@@ -118,8 +122,12 @@ export default function DashboardPage() {
           </div>
         </div>
       </DashboardCard>
+
     </div>
+    <RevenueChart data={dashboard.monthly_revenue}/>
+    <OrdersChart data={dashboard.monthly_orders}/>
   </div>
+
 </div>
   )
 }
