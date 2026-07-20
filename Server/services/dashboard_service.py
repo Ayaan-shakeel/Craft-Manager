@@ -85,7 +85,7 @@ def dashboard(db:Session,current_user):
      monthly_orders=[
           {
                "month":months[int(row.month)],
-               "orders":row.count
+               "orders":row.orders
           }
           for row in monthly_orders
      ]

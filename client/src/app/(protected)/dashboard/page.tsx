@@ -8,6 +8,9 @@ ShoppingBag,
 CheckCircle2,
 Clock3,
 IndianRupee,
+XCircle,
+Truck,
+LoaderCircle
 } from "lucide-react";
 import RevenueChart from '@/components/dashboard/RevenueChart'
 import OrdersChart from '@/components/dashboard/OrdersChart'
@@ -18,6 +21,9 @@ export default function DashboardPage() {
     total_revenue:0,
     total_pending_orders:0,
     total_completed_orders:0,
+    total_cancelled_orders:0,
+    total_processing_orders:0,
+    total_shipped_orders:0,
     monthly_revenue:[],
     monthly_orders:[]
   })
@@ -112,6 +118,45 @@ export default function DashboardPage() {
       <DashboardCard>
         <div className="flex items-start justify-between gap-4">
           <div>
+            <p className="text-sm font-medium text-slate-500">Cancelled Orders</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+              {dashboard.total_cancelled_orders}
+            </h2>
+          </div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+            <XCircle size={22} />
+          </div>
+        </div>
+      </DashboardCard>
+      <DashboardCard>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-slate-500">Processing Orders</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+              {dashboard.total_processing_orders}
+            </h2>
+          </div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+            <LoaderCircle size={22} />
+          </div>
+        </div>
+      </DashboardCard>
+      <DashboardCard>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-slate-500">Shipped Orders</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+              {dashboard.total_shipped_orders}
+            </h2>
+          </div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+            <Truck size={22} />
+          </div>
+        </div>
+      </DashboardCard>
+      <DashboardCard>
+        <div className="flex items-start justify-between gap-4">
+          <div>
             <p className="text-sm font-medium text-slate-500">Total Revenue</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
               ₹ {dashboard.total_revenue.toLocaleString("en-IN")}
@@ -124,8 +169,13 @@ export default function DashboardPage() {
       </DashboardCard>
 
     </div>
-    <RevenueChart data={dashboard.monthly_revenue}/>
-    <OrdersChart data={dashboard.monthly_orders}/>
+   <div className="grid md:grid-cols-2 gap-6 mt-8">
+   <RevenueChart data={dashboard.monthly_revenue} />
+
+   <OrdersChart
+      data={dashboard.monthly_orders}
+   />
+</div>
   </div>
 
 </div>
