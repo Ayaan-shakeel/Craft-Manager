@@ -14,6 +14,7 @@ LoaderCircle
 } from "lucide-react";
 import RevenueChart from '@/components/dashboard/RevenueChart'
 import OrdersChart from '@/components/dashboard/OrdersChart'
+import RecentOrders from '@/components/dashboard/RecentOrders'
 export default function DashboardPage() {
   const [dashboard,setDashboard]=useState({
     total_customers:0,
@@ -25,7 +26,8 @@ export default function DashboardPage() {
     total_processing_orders:0,
     total_shipped_orders:0,
     monthly_revenue:[],
-    monthly_orders:[]
+    monthly_orders:[],
+    recent_orders:[],
   })
   useEffect(()=>{
       const fetchData=async()=>{
@@ -175,6 +177,7 @@ export default function DashboardPage() {
    <OrdersChart
       data={dashboard.monthly_orders}
    />
+   <RecentOrders data={dashboard.recent_orders}/>
 </div>
   </div>
 

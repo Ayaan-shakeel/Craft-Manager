@@ -38,6 +38,7 @@ def dashboard(db:Session,current_user):
           )
           .scalar() or 0
           )
+         
      monthly_revenue=(db.query(extract("month",Orders.created_at).label("month"),
                                     func.sum(Orders.total_price).label("revenue")
                                     ).filter(
@@ -89,6 +90,25 @@ def dashboard(db:Session,current_user):
           }
           for row in monthly_orders
      ]
+     recent_orders=(db.query(Orders).filter(
+     Orders.user_id==current_user.id)
+     .order_by(Orders.created_at.desc())
+     .limit(5)
+     .all()
+     )
+     
+     recent_orders_data=[
+          {
+               "id":order.id,
+               "product_name":order.product_name,
+               "customer_name":order.customer.customer_name if order.customer else "Unknow Customer",
+               "status":order.status,
+               "total_price":order.total_price,
+               "created_at":order.created_at
+          }
+          for order in recent_orders
+     ]     
+     
      return{
 
      "total_customers":total_customers,
@@ -100,6 +120,7 @@ def dashboard(db:Session,current_user):
       "total_shipped_orders": total_shipped_orders,
       "total_revenue":total_revenue,
       "monthly_revenue":monthly_revenue,
-      "monthly_orders":monthly_orders
+      "monthly_orders":monthly_orders,
+      "recent_orders":recent_orders_data
      }
           
