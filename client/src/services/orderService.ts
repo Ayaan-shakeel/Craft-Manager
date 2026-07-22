@@ -1,7 +1,17 @@
 import api from "@/lib/api";
-export const getOrders=async()=>{
+export const getOrders=async(
+    search:string,
+    status:string,
+    sort:string,
+)=>{
     try{
-        const response=await api.get("/api/orders")
+        const response=await api.get("/api/orders",{
+            params:{
+                search,
+                status,
+                sort
+            }
+        })
         return response.data
     }catch(error){
         console.error("Error fetching orders:",error)

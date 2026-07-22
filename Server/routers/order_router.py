@@ -5,6 +5,7 @@ from model.user_model import User
 from sqlalchemy.orm import Session
 from database import get_db
 from auth import get_current_user
+from typing import Optional
 router = APIRouter(
     prefix="/api",
     tags=["Orders"]
@@ -28,10 +29,14 @@ def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_use
     }
 
 @router.get("/orders",status_code=status.HTTP_200_OK)
-def get_all_orders(current_user:User=Depends(get_current_user),
+def get_all_orders(
+      search:Optional[str]=None,
+      status:Optional[str]=None,
+      sort:Optional[str]=None,
+      current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
                         ):
-    orders=(get_orders(db,current_user))
+    orders=(get_orders(db,current_user,search,status,sort))
     return{
         "message":"Orders retrieved Successfully",
         "count":len(orders),

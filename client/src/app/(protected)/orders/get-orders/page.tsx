@@ -3,8 +3,12 @@ import React,{useState ,useEffect} from 'react'
 import {getOrders,updateOrderStatus,deleteOrder} from "@/services/orderService"
 import OrderTable from "@/components/orders/OrderTable"
 import { Order} from "@/types/order"
+import OrdersFilter from '@/components/orders/OrdersFilter'
 export default function GetOrders() {
      const [orders,setOrders]=useState<Order[]>([])
+     const [search,setSearch]=useState("")
+     const [status,setStatus]=useState("all")
+     const [sort,setSort]=useState("newest")
       orders.forEach((order)=>{
           console.log(order.id,order)
       })
@@ -12,7 +16,7 @@ export default function GetOrders() {
         const fetchOrders=async()=>{
           try{
   
-            const order=await getOrders()
+            const order=await getOrders(search,status,sort)
             if(order){
               setOrders(order.orders)
               console.log("Orders data:",order.orders)
@@ -22,7 +26,7 @@ export default function GetOrders() {
         }
         }
         fetchOrders()
-      },[])
+      },[search,status,sort])
       const updateStatus=async(id:string | number,status:string)=>{
         console.log(id)
         console.log(status)
@@ -62,6 +66,14 @@ export default function GetOrders() {
         Update status, and review customer order details.
       </p>
     </div>
+    <OrdersFilter
+     search={search} 
+     setSearch={setSearch}
+     status={status}
+     setStatus={setStatus}
+     sort={sort}
+     setSort={setSort}/>
+
 
     <div className="w-full">
       <OrderTable

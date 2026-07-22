@@ -1,7 +1,10 @@
 from model.order_model import Orders
 from database import sessionLocal 
-from sqlalchemy.orm import Session 
+from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from model.customer_model import Customer
 from fastapi import HTTPException
+
 
 def create_order(db:Session,order,current_user):
     total_price=order.quantity*order.price
@@ -19,10 +22,26 @@ def create_order(db:Session,order,current_user):
     return new_order
 
 
-def get_orders(db:Session,current_user):
+def get_orders(db:Session,current_user,search=None,status=None,sort=None):
     orders=db.query(Orders).filter(
         Orders.user_id==current_user.id
-    ).all()
+    )
+    if search:
+          orders=orders.join(Orders.customer).filter(or_(
+               Orders.product_name.ilike(f"%{search}%"),
+               Customer.customer_name.ilike(f"%{search}%")
+               ))
+    if status and status !="all":
+          orders=orders.filter(Orders.status==status)
+    if sort=="newest":
+          orders=orders.order_by(Orders.created_at.desc())
+    elif sort=="oldest":
+          orders=orders.order_by(Orders.created_at.asc())
+    elif sort=="price_highest":
+          orders=orders.order_by(Orders.total_price.desc())
+    elif sort=="price_lowest":
+          orders=orders.order_by(Orders.total_price.asc())
+    orders=orders.all()
     return orders
 
 
