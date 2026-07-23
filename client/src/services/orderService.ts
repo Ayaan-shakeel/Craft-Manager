@@ -3,13 +3,15 @@ export const getOrders=async(
     search:string,
     status:string,
     sort:string,
+    page:number,
 )=>{
     try{
         const response=await api.get("/api/orders",{
             params:{
                 search,
                 status,
-                sort
+                sort,
+                page
             }
         })
         return response.data

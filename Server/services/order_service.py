@@ -22,7 +22,7 @@ def create_order(db:Session,order,current_user):
     return new_order
 
 
-def get_orders(db:Session,current_user,search=None,status=None,sort=None):
+def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,limit=10):
     orders=db.query(Orders).filter(
         Orders.user_id==current_user.id
     )
@@ -33,6 +33,7 @@ def get_orders(db:Session,current_user,search=None,status=None,sort=None):
                ))
     if status and status !="all":
           orders=orders.filter(Orders.status==status)
+    total_count=orders.count()
     if sort=="newest":
           orders=orders.order_by(Orders.created_at.desc())
     elif sort=="oldest":
@@ -41,8 +42,15 @@ def get_orders(db:Session,current_user,search=None,status=None,sort=None):
           orders=orders.order_by(Orders.total_price.desc())
     elif sort=="price_lowest":
           orders=orders.order_by(Orders.total_price.asc())
-    orders=orders.all()
-    return orders
+
+    offset=(page-1)*limit
+    orders=(orders
+           .offset(offset)
+           .limit(limit)
+           .all()
+           )
+    return orders,total_count
+  
 
 
 def get_single_order(db:Session,order_id:int,current_user):

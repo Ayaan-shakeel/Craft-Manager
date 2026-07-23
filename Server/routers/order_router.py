@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends,HTTPException,status
+from fastapi import APIRouter,Depends,HTTPException,status,Query
 from schema.order_schema import OrderCreate,OrderUpdateStatus,OrderUpdate
 from services.order_service import create_order,get_orders,get_single_order,CancelOrder,UpdateOrder,update_order_status,get_order
 from model.user_model import User
@@ -33,13 +33,17 @@ def get_all_orders(
       search:Optional[str]=None,
       status:Optional[str]=None,
       sort:Optional[str]=None,
+      page:int=Query(1,ge=1),
+      limit:int=Query(10,ge=1,le=100),
       current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
                         ):
-    orders=(get_orders(db,current_user,search,status,sort))
+    orders,total_count=(get_orders(db,current_user,search,status,sort,page,limit))
     return{
         "message":"Orders retrieved Successfully",
-        "count":len(orders),
+        "count":total_count,
+        "page":page,
+        "limit":limit,
         "orders":[
             {
                 "id":order.id,

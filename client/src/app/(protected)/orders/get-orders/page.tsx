@@ -4,11 +4,14 @@ import {getOrders,updateOrderStatus,deleteOrder} from "@/services/orderService"
 import OrderTable from "@/components/orders/OrderTable"
 import { Order} from "@/types/order"
 import OrdersFilter from '@/components/orders/OrdersFilter'
+import OrdersPagination from '@/components/orders/OrdersPagination'
 export default function GetOrders() {
      const [orders,setOrders]=useState<Order[]>([])
      const [search,setSearch]=useState("")
      const [status,setStatus]=useState("all")
      const [sort,setSort]=useState("newest")
+     const [page,setPage]=useState(1)
+     const [totalPages,setTotalPages]=useState(1)
       orders.forEach((order)=>{
           console.log(order.id,order)
       })
@@ -16,9 +19,10 @@ export default function GetOrders() {
         const fetchOrders=async()=>{
           try{
   
-            const order=await getOrders(search,status,sort)
+            const order=await getOrders(search,status,sort,page)
             if(order){
               setOrders(order.orders)
+              setTotalPages(Math.ceil(order.count/order.limit))
               console.log("Orders data:",order.orders)
           }
         }catch(error){
@@ -26,7 +30,8 @@ export default function GetOrders() {
         }
         }
         fetchOrders()
-      },[search,status,sort])
+      },[search,status,sort,page])
+      
       const updateStatus=async(id:string | number,status:string)=>{
         console.log(id)
         console.log(status)
@@ -72,7 +77,8 @@ export default function GetOrders() {
      status={status}
      setStatus={setStatus}
      sort={sort}
-     setSort={setSort}/>
+     setSort={setSort}
+     setPage={setPage}/>
 
 
     <div className="w-full">
@@ -81,6 +87,9 @@ export default function GetOrders() {
         deleteOrder={delete_Order}
         updateStatus={updateStatus}
       />
+    </div>
+    <div>
+      <OrdersPagination page={page} setPage={setPage} totalPages={totalPages} />
     </div>
   </div>
 </section>
