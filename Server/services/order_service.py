@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from model.customer_model import Customer
 from fastapi import HTTPException
+from io import StringIO
+import csv
 
 
 def create_order(db:Session,order,current_user):
@@ -51,7 +53,34 @@ def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,
            )
     return orders,total_count
   
-
+def export_orders_csv(db:Session,current_user):
+      orders=(db.query(Orders).filter(
+            Orders.user_id==current_user.id
+      ).all()
+      )
+      csv_file=StringIO()
+      writer=csv.writer(csv_file)
+      writer.writerow([
+            "Product",
+            "Customer",
+            "Status",
+            "Quantity",
+            "Price",
+            "Total Price",
+            "Created At"
+      ])
+      for order in orders:
+            writer.writerow([
+                  order.product_name,
+                  order.customer.customer_name if order.customer else "Unknown Customer",
+                  order.status,
+                  order.quantity,
+                  order.price,
+                  order.total_price,
+                  order.created_at.strftime("%d-%B-%Y"),
+            ])
+      csv_file.seek(0)
+      return csv_file
 
 def get_single_order(db:Session,order_id:int,current_user):
               order=db.query(Orders).filter(

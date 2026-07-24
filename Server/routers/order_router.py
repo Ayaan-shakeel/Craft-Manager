@@ -1,11 +1,12 @@
 from fastapi import APIRouter,Depends,HTTPException,status,Query
 from schema.order_schema import OrderCreate,OrderUpdateStatus,OrderUpdate
-from services.order_service import create_order,get_orders,get_single_order,CancelOrder,UpdateOrder,update_order_status,get_order
+from services.order_service import create_order,get_orders,export_orders_csv,get_single_order,CancelOrder,UpdateOrder,update_order_status,get_order
 from model.user_model import User
 from sqlalchemy.orm import Session
 from database import get_db
 from auth import get_current_user
 from typing import Optional
+from fastapi.responses import StreamingResponse
 router = APIRouter(
     prefix="/api",
     tags=["Orders"]
@@ -63,6 +64,18 @@ def get_all_orders(
             for order in orders
         ]
     }
+@router.get("/orders/export",status_code=status.HTTP_200_OK)
+def export_orders(current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+            csv_file=export_orders_csv(db,current_user)
+            return StreamingResponse(
+                csv_file,
+                media_type="text/csv",
+                headers={
+                    "Content-Disposition":"attachement; filename=orders.csv"
+                }
+            )
 
 @router.get("/orders/{order_id}",status_code=status.HTTP_200_OK)
 def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user),

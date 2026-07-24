@@ -78,3 +78,13 @@ export const getOrderById=async(id:string | number)=>{
         console.error("Error while deleting order",error)
     }
  }
+ export const exportOrders=async()=>{
+    try{
+        const response=await api.get('/api/orders/export',{
+            responseType:"blob",
+        });
+        return response.data;
+    }catch(error){
+        console.error("Error while deleting Order",error)
+    }
+ }
