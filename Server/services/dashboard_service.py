@@ -108,7 +108,28 @@ def dashboard(db:Session,current_user):
           }
           for order in recent_orders
      ]     
-     
+     order_status_chart = [
+    {
+        "name": "Pending",
+        "value": total_pending_orders,
+    },
+    {
+        "name": "Processing",
+        "value": total_processing_orders,
+    },
+    {
+        "name": "Shipped",
+        "value": total_shipped_orders,
+    },
+    {
+        "name": "Completed",
+        "value": total_completed_orders,
+    },
+    {
+        "name": "Cancelled",
+        "value": total_cancelled_orders,
+    },
+]
      return{
 
      "total_customers":total_customers,
@@ -121,6 +142,7 @@ def dashboard(db:Session,current_user):
       "total_revenue":total_revenue,
       "monthly_revenue":monthly_revenue,
       "monthly_orders":monthly_orders,
-      "recent_orders":recent_orders_data
+      "recent_orders":recent_orders_data,
+      "order_status_chart":order_status_chart,
      }
           

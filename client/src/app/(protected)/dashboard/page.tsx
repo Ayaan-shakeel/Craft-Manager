@@ -15,6 +15,7 @@ LoaderCircle
 import RevenueChart from '@/components/dashboard/RevenueChart'
 import OrdersChart from '@/components/dashboard/OrdersChart'
 import RecentOrders from '@/components/dashboard/RecentOrders'
+import OrderStatusChart from '@/components/dashboard/OrderStatusChart'
 export default function DashboardPage() {
   const [dashboard,setDashboard]=useState({
     total_customers:0,
@@ -28,6 +29,7 @@ export default function DashboardPage() {
     monthly_revenue:[],
     monthly_orders:[],
     recent_orders:[],
+    order_status_chart:[],
   })
   useEffect(()=>{
       const fetchData=async()=>{
@@ -172,6 +174,7 @@ export default function DashboardPage() {
 
     </div>
    <div className="grid md:grid-cols-2 gap-6 mt-8">
+    <OrderStatusChart data={dashboard.order_status_chart}/>
    <RevenueChart data={dashboard.monthly_revenue} />
 
    <OrdersChart
