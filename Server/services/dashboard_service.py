@@ -130,6 +130,28 @@ def dashboard(db:Session,current_user):
         "value": total_cancelled_orders,
     },
 ]
+     alerts=[]
+     if total_pending_orders>0:
+          alerts.append({
+               "type":"warning",
+               "message":f"You have {total_pending_orders} pending orders",
+     })
+     if total_processing_orders>0:
+          alerts.append({
+               "type":"info",
+               "message":f"{total_processing_orders}  orders are processing",
+     })
+     if total_cancelled_orders>0:
+          alerts.append({
+               "type":"warning",
+               "message":f" {total_cancelled_orders} orders are cancelled",
+     })
+     if total_revenue>1000000:
+               alerts.append({
+                     "type":"success",
+                      "message":f"Congratulations! Revenue Crossed {total_revenue}",
+                     })
+
      return{
 
      "total_customers":total_customers,
@@ -144,5 +166,6 @@ def dashboard(db:Session,current_user):
       "monthly_orders":monthly_orders,
       "recent_orders":recent_orders_data,
       "order_status_chart":order_status_chart,
+      "alerts":alerts,
      }
           

@@ -16,6 +16,7 @@ import RevenueChart from '@/components/dashboard/RevenueChart'
 import OrdersChart from '@/components/dashboard/OrdersChart'
 import RecentOrders from '@/components/dashboard/RecentOrders'
 import OrderStatusChart from '@/components/dashboard/OrderStatusChart'
+import DashboardAlerts from '@/components/dashboard/DashboardAlerts';
 export default function DashboardPage() {
   const [dashboard,setDashboard]=useState({
     total_customers:0,
@@ -30,6 +31,7 @@ export default function DashboardPage() {
     monthly_orders:[],
     recent_orders:[],
     order_status_chart:[],
+    alerts:[],
   })
   useEffect(()=>{
       const fetchData=async()=>{
@@ -60,7 +62,9 @@ export default function DashboardPage() {
       <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
         Here is a quick overview of your customers, orders, and revenue.
       </p>
+
     </div>
+    <DashboardAlerts alerts={dashboard.alerts}/>
 
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       <DashboardCard>
