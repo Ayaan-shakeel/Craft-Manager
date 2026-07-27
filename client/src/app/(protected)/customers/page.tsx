@@ -8,6 +8,7 @@ import { createCustomer } from "@/services/customerService"
 import CustomerForm from '@/components/customers/CustomerForm'
 import {Customer} from "@/types/customer"
 import CustomerTable from '@/components/customers/CustomerTable'
+import {toast ,ToastContainer} from "react-toastify"
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -30,6 +31,7 @@ export default function CustomersPage() {
 
         }
       } catch (error) {
+        toast.error("Failed to fetch Customers")
         console.error("Error fetching customers:", error)
       }
     }
@@ -42,7 +44,7 @@ export default function CustomersPage() {
     if(editingCustomer){
       const customer=await updateCustomer(editingCustomer.id,formData)
       if(customer){
-        alert("customer updated successfully")
+        toast.success("customer updated successfully")
         setCustomers(prev=>prev.map((c)=>c.id===customer.id?customer:c))
         setEditingCustomer(null)
         setFormData(emptyFormData)
@@ -53,14 +55,14 @@ export default function CustomersPage() {
 
         const customer = await createCustomer(formData)
       if (customer) {
-        alert("customer created successfully")
+        toast.success("customer created successfully")
         setFormData(emptyFormData)
         setCustomers((prevCustomers)=>[...prevCustomers,customer])
       }
     }
     } catch(error) {
-      console.error("Error while creating it")
-      alert(error)
+      console.error("Error while creating it",error)
+      toast.error("Failed while creating Customers")
   }
 }
   
@@ -69,12 +71,12 @@ export default function CustomersPage() {
       const customer=await deleteCustomer(id)
       if(customer){
         console.log(id)
-        alert("Customer deleted successfully")
+        toast.success("Customer deleted successfully")
         setCustomers((prevCustomers)=>prevCustomers.filter((c:Customer)=>c.id !== id))
       }
     }catch(error){
       console.error("Error while deleting Customer",error)
-      alert(error)
+      toast.error("Failed to delete Customer")
     }
   }
   const edit_customer=(customer:Customer)=>{
@@ -102,6 +104,7 @@ export default function CustomersPage() {
   }
   return (
     <div>
+      <ToastContainer/>
       <CustomerForm
       formData={formData}
       setFormData={setFormData}
@@ -111,6 +114,7 @@ export default function CustomersPage() {
       />
       
      <CustomerTable customers={customers} deleteCustomer={delete_customer} editCustomer={edit_customer} />
+    <ToastContainer/>
     </div>
   )
 }

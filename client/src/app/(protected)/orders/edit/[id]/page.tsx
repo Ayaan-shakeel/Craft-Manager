@@ -6,6 +6,7 @@ import { Customer } from '@/types/customer'
 import {getCustomers} from "@/services/customerService"
 import OrdersForm from '@/components/orders/OrdersForm'
 import {OrderData} from "@/types/order"
+import {toast ,ToastContainer} from "react-toastify"
 export default function Edit() {
   const params=useParams()
   const router=useRouter()
@@ -30,6 +31,7 @@ export default function Edit() {
       
               }
             } catch (error) {
+              toast.error("Failed to get Customers")
               console.error("Error fetching customers:", error)
             }
           }
@@ -52,6 +54,7 @@ export default function Edit() {
               console.log(response)
         }
         }catch(error){
+          toast.error("Error fetching Orders")
           console.error("Error fetching Orders:",error)
         }
         }
@@ -62,18 +65,20 @@ export default function Edit() {
         try{
           const order=await updateOrder(id,{...formData,status: formData.status ?? "pending"})
           if(order){
-            alert("Order updated Successfully")
             setEditing(false)
+            toast.success("Order updated Successfully")
             router.push("/orders/get-orders")
           }
         }catch(error){
           console.error("Error updating Order",error)
-          alert(error)
+          toast.error("Failed to update order")
         }
       }
   return (
     <div>
+      <ToastContainer/>
       <OrdersForm customers={customers} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} editing={true}/>
+      <ToastContainer/>
     </div>
   )
 }

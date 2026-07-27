@@ -14,6 +14,7 @@ import {
   ShoppingBag,
   UserRound,
 } from "lucide-react";
+import {toast ,ToastContainer} from "react-toastify"
 
 export default function ViewOrder() {
   const [order, setOrder] = useState<Order | null>(null);
@@ -29,6 +30,7 @@ export default function ViewOrder() {
           console.log(response);
         }
       } catch (error) {
+        toast.error("Failed while getting Orders")
         console.error("Error fetching order", error);
       }
     };
@@ -74,6 +76,7 @@ export default function ViewOrder() {
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-6 sm:px-6 lg:px-8">
+      <ToastContainer/>
       <div className="mx-auto w-full max-w-6xl">
         <div className="mb-6">
           <Link
@@ -196,6 +199,7 @@ export default function ViewOrder() {
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </section>
   );
 }

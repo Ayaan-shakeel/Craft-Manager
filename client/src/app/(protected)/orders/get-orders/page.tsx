@@ -5,6 +5,9 @@ import OrderTable from "@/components/orders/OrderTable"
 import { Order } from "@/types/order"
 import OrdersFilter from '@/components/orders/OrdersFilter'
 import OrdersPagination from '@/components/orders/OrdersPagination'
+import OrderSkeleton from '@/components/orders/OrderSkeleton'
+import OrdersStats from '@/components/orders/OrdersStats'
+import {toast ,ToastContainer} from "react-toastify"
 export default function GetOrders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [search, setSearch] = useState("")
@@ -12,6 +15,14 @@ export default function GetOrders() {
   const [sort, setSort] = useState("newest")
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [stats,setStats]=useState({
+    total_orders:0,
+    pending:0,
+    completed:0,
+    shipped:0,
+    revenue:0
+  })
+   const [loading,setLoading]=useState(true)
   orders.forEach((order) => {
     console.log(order.id, order)
   })
@@ -23,10 +34,14 @@ export default function GetOrders() {
         if (order) {
           setOrders(order.orders)
           setTotalPages(Math.ceil(order.count / order.limit))
+          setLoading(false)
+          setStats(order.stats)
           console.log("Orders data:", order.orders)
         }
       } catch (error) {
+        setLoading(false)
         console.error("Error fetching Orders:", error)
+        toast.error("Error fetching Orders:")
       }
     }
     fetchOrders()
@@ -41,12 +56,13 @@ export default function GetOrders() {
       if (response) {
         console.log(response)
         setOrders(prev => prev.map(order => order.id === id ? { ...order, status } : order))
-        alert("Status Updated")
+        toast.success("Status Updated")
 
       }
 
     } catch (error) {
-      alert(error)
+      toast.error("Updating status failed")
+      console.error("Error while updating order status",error)
     }
   }
   const delete_Order = async (id: string | number) => {
@@ -54,9 +70,10 @@ export default function GetOrders() {
       const response = await deleteOrder(id)
       if (response) {
         setOrders(prev => prev.filter(order => order.id !== id))
-        alert("Order deleted successfully")
+        toast.success("Order deleted successfully")
       }
     } catch (error) {
+      toast.error("Error deleting order")
       alert(error)
     }
   }
@@ -72,13 +89,16 @@ export default function GetOrders() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url)
-    } catch (error) {
-      alert(error)
+    } catch(error){
+      toast.error("Exporting Orders Failed")
+      console.error("Error while exporting orders",error)
 
     }
   }
   return (
     <section className="min-h-screen bg-slate-50 py-6 sm:py-8 lg:py-10">
+      <ToastContainer/>
+
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto mb-6 max-w-2xl text-center sm:mb-8 lg:mb-10">
           <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl lg:text-4xl">
@@ -88,6 +108,7 @@ export default function GetOrders() {
             Update status, and review customer order details.
           </p>
         </div>
+        {/* <OrdersStats stats={stats}/> */}
         <OrdersFilter
           search={search}
           setSearch={setSearch}
@@ -103,16 +124,23 @@ export default function GetOrders() {
   Export CSV
 </button>
         <div className="w-full">
-          <OrderTable
-            Orders={orders}
-            deleteOrder={delete_Order}
-            updateStatus={updateStatus}
-          />
+          {
+            loading?(
+            <OrderSkeleton/>):(
+
+              <OrderTable
+              Orders={orders}
+              deleteOrder={delete_Order}
+              updateStatus={updateStatus}
+              />
+            )
+        }
         </div>
         <div>
           <OrdersPagination page={page} setPage={setPage} totalPages={totalPages} />
         </div>
       </div>
+      <ToastContainer/>
     </section>
   )
 }

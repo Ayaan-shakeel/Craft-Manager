@@ -5,6 +5,7 @@ import { useState } from "react"
 import { LoginUser } from '@/services/authService'
 import {useRouter} from 'next/navigation'
 import Link from 'next/link'
+import {toast ,ToastContainer} from "react-toastify"
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email:"",
@@ -22,17 +23,19 @@ export default function LoginPage() {
       localStorage.setItem('token',response.access_token);
       localStorage.setItem('user',JSON.stringify(response.user))
       console.log('Login successful:', response);
-      alert('Login successful')
+      toast.success('Login successful')
       setFormData({email:"",password:""})
       router.push('/dashboard')
     }
   } catch(error){
+    toast.error("Login Failed")
     console.log(error)
-    alert("wrong credentials")
+    // toast.error("wrong credentials")
   }
   }
   return (
     <div className='flex justify-center items-center min-h-screen bg-linear-to-r from-blue-400 to-gray-200 '>
+      <ToastContainer/>
       <div className='bg-white p-8 rounded-lg shadow-lg w-full max-w-md transition-all-duration-300 hover:shadow-xl hover:scale-105 '>
         <h1 className="text-3xl font-bold text-center mb-6">Login</h1>
         <form onSubmit={handleLogin}>
@@ -78,6 +81,7 @@ export default function LoginPage() {
         </form>
 
       </div>
+      <ToastContainer/>
       
     </div>
   )

@@ -17,6 +17,7 @@ import OrdersChart from '@/components/dashboard/OrdersChart'
 import RecentOrders from '@/components/dashboard/RecentOrders'
 import OrderStatusChart from '@/components/dashboard/OrderStatusChart'
 import DashboardAlerts from '@/components/dashboard/DashboardAlerts';
+import {toast ,ToastContainer} from "react-toastify";
 export default function DashboardPage() {
   const [dashboard,setDashboard]=useState({
     total_customers:0,
@@ -37,13 +38,12 @@ export default function DashboardPage() {
       const fetchData=async()=>{
         try{
           const response=await getDashboardData();
-          console.log("mala")
           if(response.dashboard){
-            console.log("Billi ne mara panja")
             console.log("Dashboard data:",response.dashboard)
           setDashboard(response.dashboard) 
           }
         }catch(error){
+          toast.error("Error Fetching Dashboard Data ")
           console.error("Error fetching dashboard data:",error)
         }
       }
@@ -51,8 +51,8 @@ export default function DashboardPage() {
     },[])
    
   return (
-
 <div className="min-h-screen bg-linear-to-br from-sky-100 via-white to-slate-100 px-3 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-8">
+<ToastContainer/>
   <div className="mx-auto w-full max-w-7xl">
     
     <div className="mb-6 rounded-3xl border border-slate-200/80 bg-white/80 px-5 py-6 shadow-sm backdrop-blur-sm sm:px-6 lg:px-8">
@@ -188,6 +188,7 @@ export default function DashboardPage() {
 </div>
   </div>
 
-</div>
+   <ToastContainer/>
+   </div>
   )
 }

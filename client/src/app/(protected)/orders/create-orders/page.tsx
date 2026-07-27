@@ -5,6 +5,7 @@ import React ,{useEffect,useState} from 'react'
 import { Customer } from '@/types/customer' 
 import {createOrder} from "@/services/orderService"
 import {OrderData} from "@/types/order"
+import {toast ,ToastContainer} from "react-toastify"
 export default function CreateOrders() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [formData,setFormData]=useState<OrderData>({
@@ -25,6 +26,7 @@ export default function CreateOrders() {
           }
         } catch (error) {
           console.error("Error fetching customers:", error)
+          toast.error("Failed to fetch Customers")
         }
       }
       fetchCustomers()
@@ -32,26 +34,28 @@ export default function CreateOrders() {
   const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
     if(formData.customer_id===null){
-      alert("Please select an customer first")
+      toast.success("Please select an customer first")
       return
     }
     try{
       const order=await createOrder(formData)
       if(order){
-        alert("ORder created successfully")
+        toast.success("ORder created successfully")
         console.log(order)   
       }
     }catch(error){
-      alert(error)
+      toast.error("Failed to create order")
       console.error(error)
     }
   }
   return (
     <div>
+      <ToastContainer/>
       <h1>
         Create Orders Page
         </h1>
 <OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData}/>
+    <ToastContainer/>
     </div>
   )
 }

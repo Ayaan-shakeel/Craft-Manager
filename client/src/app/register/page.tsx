@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { RegisterUser } from '@/services/authService'
 import {useRouter} from 'next/navigation'
 import Link from 'next/link'
+import {toast ,ToastContainer} from "react-toastify"
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
         name:"",
@@ -22,18 +23,19 @@ export default function RegisterPage() {
                 localStorage.setItem('token',response.access_token);
                 localStorage.setItem('user',JSON.stringify(response.new_user))
                 console.log('Registration successful:',response)
-                alert("Sign up Successfully ")
+                toast.success("Sign up Successfully ")
                 setFormData({name:"",email:"",password:""})
                 router.push("/dashboard")
 
             }
         }catch(err){
-            alert("wrong Credentials")
+            toast.error("Sign Up Failed")
             console.log("Wrong Credentials",err)
         }
     }
   return (
     <div className="flex justify-center items-center bg-linear-to-r from-blue-400 to-gray-200 min-h-screen">
+        <ToastContainer/>
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md transition-all-duration-300 hover:shadow-xl hover:scale-105 ">
             <h1 className="text-center font-bold text-3xl mb-5">Sign Up</h1>
             <form onSubmit={handleRegister}>
@@ -91,6 +93,7 @@ export default function RegisterPage() {
                          </p>
             </form>
         </div>
+        <ToastContainer/>
     </div>
   )
 }
