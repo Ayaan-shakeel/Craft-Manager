@@ -31,7 +31,7 @@ export default function Edit() {
       
               }
             } catch (error) {
-              toast.error("Failed to get Customers")
+              toast.error("Failed")
               console.error("Error fetching customers:", error)
             }
           }
@@ -54,7 +54,7 @@ export default function Edit() {
               console.log(response)
         }
         }catch(error){
-          toast.error("Error fetching Orders")
+          toast.error("Failed to get Orders")
           console.error("Error fetching Orders:",error)
         }
         }
@@ -65,13 +65,13 @@ export default function Edit() {
         try{
           const order=await updateOrder(id,{...formData,status: formData.status ?? "pending"})
           if(order){
-            setEditing(false)
             toast.success("Order updated Successfully")
+            setEditing(false)
             router.push("/orders/get-orders")
           }
         }catch(error){
           console.error("Error updating Order",error)
-          toast.error("Failed to update order")
+          toast.error("Failed to Update order")
         }
       }
   return (

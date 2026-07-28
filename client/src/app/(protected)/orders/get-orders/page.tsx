@@ -8,6 +8,7 @@ import OrdersPagination from '@/components/orders/OrdersPagination'
 import OrderSkeleton from '@/components/orders/OrderSkeleton'
 import OrdersStats from '@/components/orders/OrdersStats'
 import {toast ,ToastContainer} from "react-toastify"
+import DeleteModal from "@/components/ui/DeleteModal"
 export default function GetOrders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [search, setSearch] = useState("")
@@ -22,6 +23,8 @@ export default function GetOrders() {
     shipped:0,
     revenue:0
   })
+  const [deleteModalOpen,setDeleteModalOpen]=useState(false)
+const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
    const [loading,setLoading]=useState(true)
   orders.forEach((order) => {
     console.log(order.id, order)
@@ -66,17 +69,31 @@ export default function GetOrders() {
     }
   }
   const delete_Order = async (id: string | number) => {
-    try {
-      const response = await deleteOrder(id)
-      if (response) {
-        setOrders(prev => prev.filter(order => order.id !== id))
-        toast.success("Order deleted successfully")
-      }
-    } catch (error) {
-      toast.error("Error deleting order")
-      alert(error)
-    }
+  setSelectedOrder(Number(id))
+  setDeleteModalOpen(true)
   }
+  const confirmDelete = async () => {
+    if (selectedOrder === null) return;
+
+    try {
+        const response = await deleteOrder(selectedOrder);
+
+        if (response) {
+            setOrders(prev =>
+                prev.filter(order => order.id !== selectedOrder)
+            );
+
+            toast.success("Order deleted successfully");
+        }
+
+    } catch (error) {
+        toast.error("Failed to delete order");
+        console.error(error);
+    }
+
+    setDeleteModalOpen(false);
+    setSelectedOrder(null);
+}
   const handleExport = async () => {
     try {
       const blob = await exportOrders();
@@ -141,6 +158,16 @@ export default function GetOrders() {
         </div>
       </div>
       <ToastContainer/>
+      <DeleteModal
+  isOpen={deleteModalOpen}
+  title="Delete Order"
+  message="Are you sure you want to delete this order? This action cannot be undone."
+  onClose={() => {
+    setDeleteModalOpen(false)
+    setSelectedOrder(null)
+  }}
+  onConfirm={confirmDelete}
+/>
     </section>
   )
 }

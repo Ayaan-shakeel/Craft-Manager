@@ -51,8 +51,9 @@ def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,
            .limit(limit)
            .all()
            )
-    return orders,total_count
-  
+          
+    return orders, total_count,
+          
 def export_orders_csv(db:Session,current_user):
       orders=(db.query(Orders).filter(
             Orders.user_id==current_user.id
