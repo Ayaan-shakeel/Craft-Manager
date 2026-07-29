@@ -4,6 +4,8 @@ from routers.customer_router import router as customer_router
 from routers.dashboard_router import router as dashboard_router
 from routers.order_router import router as order_router
 from routers.user_router import router as user_router
+from routers.inventory_router import router as inventory_router
+
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(
     title="Craft Order Manager API",
@@ -23,6 +25,7 @@ app.include_router(user_router)
 app.include_router(customer_router)
 app.include_router(dashboard_router)
 app.include_router(order_router)
+app.include_router(inventory_router)
 @app.get('/')
 def home():
     return{"status":1,"message":"Hello World"}
