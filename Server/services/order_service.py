@@ -6,15 +6,26 @@ from model.customer_model import Customer
 from fastapi import HTTPException
 from io import StringIO
 import csv
+from model.inventory_model import Inventory
 
 
 def create_order(db:Session,order,current_user):
-    total_price=order.quantity*order.price
+    inventory=db.query(Inventory).filter(
+           Inventory.id==order.inventory_id,
+           Inventory.user_id==current_user.id
+    ).first()
+    if inventory is None:
+      raise HTTPException(status_code=404,detail="Inventory item not found")
+    if inventory.quantity<order.quantity:
+      raise HTTPException(status_code=400,detail=f" Only {inventory.quantity} items are avilable")
+    else:
+          inventory.quantity-=order.quantity
     new_order=Orders(
-        product_name=order.product_name,
+        inventory_id=inventory.id,
+        product_name=inventory.product_name,
         quantity=order.quantity,
-        price=order.price,
-        total_price=total_price,
+        price=inventory.selling_price,
+        total_price=inventory.selling_price*order.quantity,
         customer_id=order.customer_id,
         user_id=current_user.id
     )

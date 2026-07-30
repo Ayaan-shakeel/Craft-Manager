@@ -16,4 +16,6 @@ class Orders(Base):
 
     user_id=Column(Integer,ForeignKey("users_table.id"))
     customer_id=Column(Integer,ForeignKey("customers_table.id"))
+    inventory_id=Column(Integer,ForeignKey("inventory_table.id"))
     customer=relationship("Customer",back_populates="orders")
+    inventory=relationship("Inventory",back_populates="orders")
