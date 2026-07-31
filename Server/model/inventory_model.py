@@ -16,4 +16,4 @@ class Inventory(Base):
     created_At=Column(DateTime, default=datetime.utcnow)
     updated_At=Column(DateTime, default=datetime.utcnow,onupdate=datetime.utcnow)
     user_id=Column(Integer,ForeignKey("users_table.id"))
-    orders=relationship("Orders",back_populates("inventory"))
+    orders=relationship("Orders",back_populates=("inventory"))
