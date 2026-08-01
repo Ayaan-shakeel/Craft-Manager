@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException,status
 from sqlalchemy.orm import Session
-from services.inventory_service import create_inventory,get_inventory
+from services.inventory_service import create_inventory,get_inventory,get_single_inventory
 from schema.inventory_schema import InventoryCreate
 from model.user_model import User
 from auth import get_current_user
@@ -31,7 +31,7 @@ def get_all_inventory(current_user:User=Depends(get_current_user),
                     db:Session=Depends(get_db)):
                     inventory=(get_inventory(db,current_user))
                     return{
-                        "message":"Inventory Fetched Successfully",
+                        "message":"Inventory F-etched Successfully",
                         "count":len(inventory),
                         "inventory":[{
                             "id":inventory.id,
@@ -46,4 +46,18 @@ def get_all_inventory(current_user:User=Depends(get_current_user),
                         ]
 
                     }
-    
+@router.get("/inventory/{inventory_id}",status_code=status.HTTP_200_OK) 
+def get_single_inventory_by_id(inventory_id:int,current_user:User=Depends(get_current_user),
+                               db:Session=Depends(get_db)):
+        inventory=get_single_inventory(db,inventory_id,current_user)
+        return  { "message":"Inventory Fetched Successfully",
+                                "inventory":{
+                                    "id":inventory.id,
+                                    "product_name":inventory.product_name,
+                                    "quantity":inventory.quantity,
+                                    "cost_price":inventory.cost_price,
+                                    "selling_price":inventory.selling_price,
+                                    "category":inventory.category,
+                                    "sku":inventory.sku
+                                }
+                                }

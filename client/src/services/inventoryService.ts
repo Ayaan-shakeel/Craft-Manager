@@ -17,10 +17,20 @@ export const createInventory=async(data:{
     category:string
 })=>{ 
     try{
-        const response=await api.post("/api/inventory")
+        const response=await api.post("/api/inventory",data)
         return response.data
     }catch(error){
         console.error("Error while creating create Inventory")
+        throw error
+    }
+}
+
+export const getSingleInventory=async(id:number)=>{
+    try{
+        const response=await api.get(`/api/inventory/${id}`)
+        return response.data
+    }catch(error){
+        console.error("Error while fetching single inventory",error)
         throw error
     }
 }

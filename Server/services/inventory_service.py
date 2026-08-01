@@ -22,3 +22,15 @@ def get_inventory(db:Session,current_user):
         Inventory.user_id==current_user.id   
     ).all()
     return inventory
+
+def get_single_inventory(db:Session,inventory_id:int,current_user):
+    inventory=db.query(Inventory).filter(
+        Inventory.id==inventory_id,
+        Inventory.user_id==current_user.id
+    ).first()
+    if inventory is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Inventory not found"
+        )
+    return inventory
