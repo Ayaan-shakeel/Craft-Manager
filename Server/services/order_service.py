@@ -18,8 +18,7 @@ def create_order(db:Session,order,current_user):
       raise HTTPException(status_code=404,detail="Inventory item not found")
     if inventory.quantity<order.quantity:
       raise HTTPException(status_code=400,detail=f" Only {inventory.quantity} items are avilable")
-    else:
-          inventory.quantity-=order.quantity
+    inventory.quantity-=order.quantity
     new_order=Orders(
         inventory_id=inventory.id,
         product_name=inventory.product_name,
@@ -131,8 +130,21 @@ def CancelOrder(db:Session,order_id:int,current_user):
       ).first()
       if order is None:
             raise HTTPException(status_code=404,detail="order not found")
+      
+      if order.status == "cancelled":
+        raise HTTPException(
+            status_code=400,
+            detail="Order already cancelled"
+        )
+
+      inventory=db.query(Inventory).filter(
+            Inventory.id==order.inventory_id,
+            Inventory.user_id==current_user.id
+      ).first()
+      if inventory:
+         inventory.quantity+=order.quantity
       order.status="cancelled"
-      db.delete(order)
+      # db.delete(order)
       db.commit()
       return order
 
