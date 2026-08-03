@@ -29,20 +29,21 @@ def create_new_inventory(inventory:InventoryCreate,current_user:User=Depends(get
 @router.get("/inventory",status_code=status.HTTP_200_OK)
 def get_all_inventory(current_user:User=Depends(get_current_user),
                     db:Session=Depends(get_db)):
-                    inventory=(get_inventory(db,current_user))
+                    data=get_inventory(db,current_user)
                     return{
                         "message":"Inventory F-etched Successfully",
-                        "count":len(inventory),
+                        "count":len(data["inventory"]),
+                        "stats":data["stats"],
                         "inventory":[{
-                            "id":inventory.id,
-                            "product_name":inventory.product_name,
-                            "quantity":inventory.quantity,
-                            "cost_price":inventory.cost_price,
-                            "selling_price":inventory.selling_price,
-                            "category":inventory.category,
-                            "sku":inventory.sku
+                            "id":item.id,
+                            "product_name":item.product_name,
+                            "quantity":item.quantity,
+                            "cost_price":item.cost_price,
+                            "selling_price":item.selling_price,
+                            "category":item.category,
+                            "sku":item.sku
                         }
-                        for inventory in inventory
+                        for item in data["inventory"]
                         ]
 
                     }

@@ -21,7 +21,22 @@ def get_inventory(db:Session,current_user):
     inventory=db.query(Inventory).filter(
         Inventory.user_id==current_user.id   
     ).all()
-    return inventory
+    total_products = len(inventory)
+
+    total_stock = sum(item.quantity for item in inventory)
+
+    total_cost = sum(item.quantity * item.cost_price for item in inventory)
+
+    total_value = sum(item.quantity * item.selling_price for item in inventory)
+    return {
+    "inventory": inventory,
+    "stats": {
+        "total_products": total_products,
+        "total_stock": total_stock,
+        "total_cost": total_cost,
+        "total_value": total_value
+    }
+}
 
 def get_single_inventory(db:Session,inventory_id:int,current_user):
     inventory=db.query(Inventory).filter(
