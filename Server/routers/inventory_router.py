@@ -34,17 +34,7 @@ def get_all_inventory(current_user:User=Depends(get_current_user),
                         "message":"Inventory F-etched Successfully",
                         "count":len(data["inventory"]),
                         "stats":data["stats"],
-                        "inventory":[{
-                            "id":item.id,
-                            "product_name":item.product_name,
-                            "quantity":item.quantity,
-                            "cost_price":item.cost_price,
-                            "selling_price":item.selling_price,
-                            "category":item.category,
-                            "sku":item.sku
-                        }
-                        for item in data["inventory"]
-                        ]
+                        "inventory":data["inventory"]
 
                     }
 @router.get("/inventory/{inventory_id}",status_code=status.HTTP_200_OK) 

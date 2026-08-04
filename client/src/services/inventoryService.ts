@@ -14,7 +14,8 @@ export const createInventory=async(data:{
     cost_price:number
     selling_price:number
     sku:string
-    category:string
+    category:string,
+    stock_status:string
 })=>{ 
     try{
         const response=await api.post("/api/inventory",data)

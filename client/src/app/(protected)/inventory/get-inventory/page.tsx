@@ -41,6 +41,7 @@ export default function GetInventory() {
                         {response.selling_price}
                         {response.category}
                         {response.sku}
+                        {response.stock_status}
                         </div>
 
 

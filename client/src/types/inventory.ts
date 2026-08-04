@@ -5,5 +5,6 @@ export interface Inventory{
     cost_price:number,
     selling_price:number,
     category:string,
-    sku:string
+    sku:string,
+    stock_status:string
 }
