@@ -40,15 +40,9 @@ def get_all_inventory(current_user:User=Depends(get_current_user),
 @router.get("/inventory/{inventory_id}",status_code=status.HTTP_200_OK) 
 def get_single_inventory_by_id(inventory_id:int,current_user:User=Depends(get_current_user),
                                db:Session=Depends(get_db)):
-        inventory=get_single_inventory(db,inventory_id,current_user)
+        data=get_single_inventory(db,inventory_id,current_user)
         return  { "message":"Inventory Fetched Successfully",
-                                "inventory":{
-                                    "id":inventory.id,
-                                    "product_name":inventory.product_name,
-                                    "quantity":inventory.quantity,
-                                    "cost_price":inventory.cost_price,
-                                    "selling_price":inventory.selling_price,
-                                    "category":inventory.category,
-                                    "sku":inventory.sku
-                                }
+                                "inventory":data["inventory"],
+                                "analytics":data["analytics"],
+                                "recent_orders":data["recent_orders"]
                                 }

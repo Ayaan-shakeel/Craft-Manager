@@ -1,6 +1,8 @@
 from model.inventory_model import Inventory
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from model.order_model import Orders
+from sqlalchemy import func
 
 def create_inventory(db:Session,inventory,current_user):
     new_inventory=Inventory(
@@ -84,4 +86,77 @@ def get_single_inventory(db:Session,inventory_id:int,current_user):
             status_code=404,
             detail="Inventory not found"
         )
-    return inventory
+    units_sold=(
+        db.query(func.sum(Orders.quantity)
+                ).filter(
+                   Orders.inventory_id==inventory.id,
+                   Orders.user_id==current_user.id
+                   ).scalar()
+          ) or 0
+    orders_count=(
+        db.query(func.count(Orders.id)
+                 ).filter(
+                      Orders.inventory_id==inventory.id,
+                      Orders.user_id==current_user.id
+                 ).scalar()
+    ) or 0
+    revenue=(
+        db.query(func.sum(Orders.total_price)
+                 ).filter(
+                      Orders.inventory_id==inventory.id,
+                      Orders.user_id==current_user.id
+                 ).scalar()
+    ) or 0
+    total_sales=(units_sold * inventory.selling_price) or 0
+    estimated_cost=(units_sold * inventory.cost_price) or 0
+    estimated_profit=(revenue-estimated_cost) or 0
+    profit_margin=0
+    if revenue > 0:
+        profit_margin=round(
+            (estimated_profit/revenue) * 100,
+             2
+        )
+        current_stock=(inventory.quantity) or 0
+        inventory_value=(inventory.cost_price * inventory.quantity) or 0
+    recent_orders=(
+        db.query(Orders)
+        .filter(
+             Orders.inventory_id==inventory.id,
+             Orders.user_id==current_user.id
+        ).order_by(Orders.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    return {
+  "inventory":{
+          "id":inventory.id,
+          "product_name":inventory.product_name,
+          "quantity":inventory.quantity,
+          "cost_price":inventory.cost_price,
+          "selling_price":inventory.selling_price,
+          "category":inventory.category,
+          "sku":inventory.sku
+     },
+        "analytics":{
+            "units_sold":units_sold,
+            "orders_count":orders_count,
+            "revenue":revenue,
+            "total_sales":total_sales,
+            "estimated_cost":estimated_cost,
+            "estimated_profit":estimated_profit,
+            "profit_margin":profit_margin,
+            "current_stock":current_stock,
+            "inventory_value":inventory_value
+        },
+        "recent_orders":[{
+            "order_id":order.id,
+            "customer_name":order.customer.customer_name if order.customer else "Unknown Customer",
+            "order_quantity":order.quantity,
+            "total_price":order.total_price,
+            "order_status":order.status,
+            "order.created_at":order.created_at
+        }
+        for order in recent_orders
+        ]
+    }
