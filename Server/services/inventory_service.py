@@ -107,17 +107,17 @@ def get_single_inventory(db:Session,inventory_id:int,current_user):
                       Orders.user_id==current_user.id
                  ).scalar()
     ) or 0
-    total_sales=(units_sold * inventory.selling_price) or 0
-    estimated_cost=(units_sold * inventory.cost_price) or 0
-    estimated_profit=(revenue-estimated_cost) or 0
+    total_sales=units_sold * inventory.selling_price 
+    estimated_cost=units_sold * inventory.cost_price 
+    estimated_profit=revenue-estimated_cost 
+    current_stock=inventory.quantity
+    inventory_value=inventory.cost_price * inventory.quantity
     profit_margin=0
     if revenue > 0:
         profit_margin=round(
             (estimated_profit/revenue) * 100,
              2
         )
-        current_stock=(inventory.quantity) or 0
-        inventory_value=(inventory.cost_price * inventory.quantity) or 0
     recent_orders=(
         db.query(Orders)
         .filter(
