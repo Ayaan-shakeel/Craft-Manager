@@ -1,12 +1,10 @@
-"use client";
+'use client';
 import { useEffect, useState } from "react";
 import { createInventory } from "@/services/inventoryService";
 import { Inventory } from "@/types/inventory";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import React from 'react'
-import { parseAnimateLayoutArgs } from "framer-motion";
-
 export default function page() {
     const router=useRouter()
     const [inventory,setInventory]=useState<Inventory>({
@@ -19,7 +17,8 @@ export default function page() {
         category:"",
         stock_status:""
     })
-    const handleSubmit=async()=>{
+    const handleSubmit=async(e:React.FormEvent)=>{
+        e.preventDefault()
         try{
             const response=await createInventory(inventory)
             if(response){
@@ -49,33 +48,33 @@ export default function page() {
             <div>
                 <label htmlFor="quantity">Quantity</label>
                 <input
-                    type="text"
+                    type="number"
                     name="quantity"
                     id="quantity"
                     value={inventory.quantity}
-                    onChange={(e)=>setInventory({...inventory,quantity:parseInt(e.target.value)})}
+                    onChange={(e)=>setInventory({...inventory,quantity:Number(e.target.value)})}
                     required
                     />
             </div>
             <div>
                 <label htmlFor="cost_price">Cost Price</label>
                 <input
-                    type="text"
+                    type="number"
                     name="cost_price"
                     id="cost_price"
                     value={inventory.cost_price}
-                    onChange={(e)=>setInventory({...inventory,cost_price:parseInt(e.target.value)})}
+                    onChange={(e)=>setInventory({...inventory,cost_price:Number(e.target.value)})}
                     required
                     />
             </div>
             <div>
                 <label htmlFor="selling_price">Selling Price</label>
                 <input
-                    type="text"
+                    type="number"
                     name="selling_price"
                     id="selling_price"
                     value={inventory.selling_price}
-                    onChange={(e)=>setInventory({...inventory,selling_price:parseInt(e.target.value)})}
+                    onChange={(e)=>setInventory({...inventory,selling_price:Number(e.target.value)})}
                     required
                     />
             </div>

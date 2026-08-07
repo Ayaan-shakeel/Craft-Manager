@@ -160,3 +160,24 @@ def get_single_inventory(db:Session,inventory_id:int,current_user):
         for order in recent_orders
         ]
     }
+
+def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
+    inventory=db.query(Inventory).filter(
+        Inventory.id==inventory_id,
+        Inventory.user_id==current_user.id
+    ).first()
+    if inventory is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Inventory not found"
+        )
+    inventory.product_name=inventory_data.product_name
+    inventory.quantity=inventory_data.quantity
+    inventory.cost_price=inventory_data.cost_price
+    inventory.selling_price=inventory_data.selling_price
+    inventory.sku=inventory_data.sku
+    inventory.category=inventory_data.category    
+    inventory.stock_status=inventory_data.stock_status  
+    db.commit()
+    db.refresh(inventory)
+    return inventory

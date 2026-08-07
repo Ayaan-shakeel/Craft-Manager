@@ -46,3 +46,19 @@ def get_single_inventory_by_id(inventory_id:int,current_user:User=Depends(get_cu
                                 "analytics":data["analytics"],
                                 "recent_orders":data["recent_orders"]
                                 }
+@router.put("/inventory/{inventory_id}",status_code=status.HTTP_201_CREATED)
+def update_inventory(inventory_id:int,inventory:InventoryCreate,current_user:User=Depends(get_current_user),
+                      db:Session=Depends(get_db)):
+                      updated_inventory=update_inventory(db,inventory_id,inventory,current_user)
+                      return{
+                        "message":"Inventory updated Successfully",
+                        "inventory":{
+                            "id":updated_inventory.id,
+                            "product_name":updated_inventory.product_name,
+                            "quantity":updated_inventory.quantity,
+                            "cost_price":updated_inventory.cost_price,
+                            "selling_price":updated_inventory.selling_price,
+                            "category":updated_inventory.category,
+                            "sku":updated_inventory.sku
+                        }
+                      }
