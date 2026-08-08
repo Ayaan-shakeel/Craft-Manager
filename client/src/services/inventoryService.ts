@@ -26,10 +26,10 @@ export const createInventory=async(data:{
     }
 }
 
-export const getSingleInventory=async(id:number)=>{
+export const getSingleInventory=async(id:string | number)=>{
     try{
         const response=await api.get(`/api/inventory/${id}`)
-        return response.data
+        return response.data.inventory
     }catch(error){
         console.error("Error while fetching single inventory",error)
         throw error
