@@ -5,7 +5,7 @@ import { Inventory } from "@/types/inventory";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import React from 'react'
-export default function page() {
+export default function CreateInventory() {
     const router=useRouter()
     const [inventory,setInventory]=useState<Inventory>({
         id:0,
@@ -23,7 +23,7 @@ export default function page() {
             const response=await createInventory(inventory)
             if(response){
                 toast.success("Inventory Added Successfully")
-                router.push("/inventory")
+                router.push("/inventory/get-inventory")
             }
         }catch(error){
             toast.error("Error Adding Inventory")
@@ -100,7 +100,7 @@ export default function page() {
                     required
                     />
             </div>
-            <div>
+            {/* <div>
                 <label htmlFor="stock_status">Stock Status</label>
                 <input
                     type="text"
@@ -110,7 +110,7 @@ export default function page() {
                     onChange={(e)=>setInventory({...inventory,stock_status:e.target.value})}
                     required
                     />
-            </div>
+            </div> */}
             <button type="submit" 
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >Submmit</button>

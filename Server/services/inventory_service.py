@@ -177,7 +177,7 @@ def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
     inventory.selling_price=inventory_data.selling_price
     inventory.sku=inventory_data.sku
     inventory.category=inventory_data.category    
-    inventory.stock_status=inventory_data.stock_status  
+    # inventory.stock_status=inventory_data.stock_status  
     db.commit()
     db.refresh(inventory)
     return inventory

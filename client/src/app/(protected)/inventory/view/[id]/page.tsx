@@ -3,7 +3,7 @@ import React from 'react'
 import { useState,useEffect } from 'react'
 import { getSingleInventory } from '@/services/inventoryService'
 import { useParams } from 'next/navigation'
-import {Inventory} from "@/types/inventory"
+import {Inventory, InventoryAnalytics} from "@/types/inventory"
 import { div } from 'framer-motion/client';
 export default function ViewSingleInventory() {
     const [inventory, setInventory] = useState<Inventory | null>({
@@ -17,7 +17,18 @@ export default function ViewSingleInventory() {
         stock_status:""
     });
     const [response, setResponse] = useState<Inventory | null>(null);
-    const [analytics, setAnalytics] = useState<null>(null);
+    const [analytics, setAnalytics] = useState<InventoryAnalytics | null>({
+        current_stock:0,
+        estimated_cost:0,
+        estimated_profit:0,
+        inventory_value:0,
+        orders_count:0,
+        profit_margin:0,
+        revenue:0,
+        total_sales:0,
+        units_sold:0,
+
+    });
     const params=useParams()
     const id=params.id as string
     // const [singleInventory,setSingleInventory]=useState("")
@@ -74,7 +85,39 @@ export default function ViewSingleInventory() {
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-slate-200"></div>
-                    <h1 className="text-2xl font-bold text-slate-800">{analytics.current_stock}</h1>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.current_stock}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.estimated_cost}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.estimated_profit}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.inventory_value}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.orders_count}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.profit_margin}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.revenue}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.total_sales}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+                    <h1 className="text-2xl font-bold text-slate-800">{analytics?.units_sold}</h1>
                 </div>
             </div>
             </div>

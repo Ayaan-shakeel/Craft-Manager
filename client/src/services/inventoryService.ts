@@ -35,3 +35,22 @@ export const getSingleInventory=async(id:string | number)=>{
         throw error
     }
 }
+export const updateInventory=async(id:string | number,
+    data:{
+    product_name:string
+    quantity:number
+    cost_price:number
+    selling_price:number
+    sku:string
+    category:string,
+    }
+)=>{
+    try{
+        const response=await api.put("/api/inventory",data)
+        return response.data
+    }catch(error){
+        console.error("Error while updating order ",error)
+        throw error
+    }
+    
+}

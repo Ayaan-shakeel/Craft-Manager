@@ -35,13 +35,28 @@ export default function GetInventory() {
             {
                 inventory.map((response,index)=>(
                     <div key={index}>
+                        <div>
                         {response.product_name}
+                        </div>
+                        <div>
                         {response.quantity}
+                        </div>
+                        <div>
                         {response.cost_price}
+                        </div>
+                        <div>
                         {response.selling_price}
+                        </div>
+                        <div>
                         {response.category}
+                        </div>
+                        <div>
                         {response.sku}
+                        </div>
+                        <div>
+
                         {response.stock_status}
+                        </div>
                         </div>
 
 
