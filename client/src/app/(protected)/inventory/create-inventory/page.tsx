@@ -5,6 +5,7 @@ import { Inventory } from "@/types/inventory";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import React from 'react'
+import InventoryForm from "@/components/inventory/InventoryForm";
 export default function CreateInventory() {
     const router=useRouter()
     const [inventory,setInventory]=useState<Inventory>({
@@ -32,89 +33,8 @@ export default function CreateInventory() {
     }
   return (
     <div>
-        <h1>Create Inventory</h1>
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="product_name">Product Name</label>
-                <input
-                    type="text"
-                    name="product_name"
-                    id="product_name"
-                    value={inventory.product_name}
-                    onChange={(e)=>setInventory({...inventory,product_name:e.target.value})}
-                    required
-                    />
-            </div>
-            <div>
-                <label htmlFor="quantity">Quantity</label>
-                <input
-                    type="number"
-                    name="quantity"
-                    id="quantity"
-                    value={inventory.quantity}
-                    onChange={(e)=>setInventory({...inventory,quantity:Number(e.target.value)})}
-                    required
-                    />
-            </div>
-            <div>
-                <label htmlFor="cost_price">Cost Price</label>
-                <input
-                    type="number"
-                    name="cost_price"
-                    id="cost_price"
-                    value={inventory.cost_price}
-                    onChange={(e)=>setInventory({...inventory,cost_price:Number(e.target.value)})}
-                    required
-                    />
-            </div>
-            <div>
-                <label htmlFor="selling_price">Selling Price</label>
-                <input
-                    type="number"
-                    name="selling_price"
-                    id="selling_price"
-                    value={inventory.selling_price}
-                    onChange={(e)=>setInventory({...inventory,selling_price:Number(e.target.value)})}
-                    required
-                    />
-            </div>
-            <div>
-                <label htmlFor="sku">SKU</label>
-                <input
-                    type="text"
-                    name="sku"
-                    id="sku"
-                    value={inventory.sku}
-                    onChange={(e)=>setInventory({...inventory,sku:e.target.value})}
-                    required
-                    />
-            </div>
-            <div>
-                <label htmlFor="category">Category</label>
-                <input
-                    type="text"
-                    name="category"
-                    id="category"
-                    value={inventory.category}
-                    onChange={(e)=>setInventory({...inventory,category:e.target.value})}
-                    required
-                    />
-            </div>
-            {/* <div>
-                <label htmlFor="stock_status">Stock Status</label>
-                <input
-                    type="text"
-                    name="stock_status"
-                    id="stock_status"
-                    value={inventory.stock_status}
-                    onChange={(e)=>setInventory({...inventory,stock_status:e.target.value})}
-                    required
-                    />
-            </div> */}
-            <button type="submit" 
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >Submmit</button>
-        </form>
+         <InventoryForm inventory={inventory} setInventory={setInventory} handleSubmit={handleSubmit}/>
     </div>
   )
-}
+}          
+    

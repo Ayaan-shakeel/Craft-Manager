@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { getInventory } from '@/services/inventoryService'
 import { Inventory } from '@/types/inventory'
+import InventoryTable from '@/components/inventory/InventoryTable'
 
 export default function GetInventory() {
     const [inventory, setInventory] = useState<Inventory[]>([])
@@ -32,44 +33,8 @@ export default function GetInventory() {
     <div>
         <h1>Inventory</h1>
         <div>
-            {
-                inventory.map((response,index)=>(
-                    <div key={index}>
-                        <div>
-                        {response.product_name}
-                        </div>
-                        <div>
-                        {response.quantity}
-                        </div>
-                        <div>
-                        {response.cost_price}
-                        </div>
-                        <div>
-                        {response.selling_price}
-                        </div>
-                        <div>
-                        {response.category}
-                        </div>
-                        <div>
-                        {response.sku}
-                        </div>
-                        <div>
-
-                        {response.stock_status}
-                        </div>
-                        </div>
-
-
-                ))
-                           
-            }
-                        <div>
-                            {stats.total_products}
-                            {stats.total_stock}
-                            {stats.total_cost}
-                            {stats.total_value}
-                            </div>
-        </div>
+            <InventoryTable inventory={inventory} stats={stats} />
+             </div>
     </div>
   )
 }
