@@ -1,4 +1,5 @@
 from model.order_model import Orders
+from model.orders_items_model import OrderItem
 from database import sessionLocal
 from model.customer_model import Customer
 from sqlalchemy.orm import Session

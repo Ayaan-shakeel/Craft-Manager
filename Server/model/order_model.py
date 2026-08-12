@@ -1,4 +1,4 @@
-from sqlalchemy import Column,Integer,String,ForeignKey,DateTime
+from sqlalchemy import Column, Integer, Numeric, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
@@ -10,6 +10,17 @@ class Orders(Base):
     price=Column(Integer)
     quantity=Column(Integer)
     total_price=Column(Integer)
+    sub_total=Column(Numeric(12,2),default=0)
+    discount=Column(Numeric(12,2),default=0)
+    tax=Column(Numeric(12,2),default=0)
+    total_amount=Column(Numeric(12,2),default=0)
+    shipping_charges=Column(Numeric(12,2),default=0)
+    shipping_address=Column(String)
+    other_charges=Column(Numeric(12,2),default=0)
+    payment_method=Column(String)
+    payment_status=Column(String)
+    payment_id=Column(String)
+    delivery_date=Column(DateTime)
     status=Column(String,default="pending")
     created_at=Column(DateTime,default=datetime.utcnow)
     updated_at=Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
@@ -19,3 +30,4 @@ class Orders(Base):
     inventory_id=Column(Integer,ForeignKey("inventory_table.id"))
     customer=relationship("Customer",back_populates="orders")
     inventory=relationship("Inventory",back_populates="orders")
+    order_items = relationship("OrderItem",back_populates="order",cascade="all, delete-orphan")

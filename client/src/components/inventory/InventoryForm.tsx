@@ -67,11 +67,11 @@ export default function InventoryForm({
                   type="number"
                   name="quantity"
                   id="quantity"
-                  value={inventory.quantity}
+                  value={inventory.quantity === 0 ? "" : inventory.quantity}
                   onChange={(e) =>
                     setInventory({
                       ...inventory,
-                      quantity: Number(e.target.value),
+                      quantity: e.target.value === "" ? 0 : Number(e.target.value),
                     })
                   }
                   placeholder="Enter quantity"
@@ -112,11 +112,11 @@ export default function InventoryForm({
                   type="number"
                   name="cost_price"
                   id="cost_price"
-                  value={inventory.cost_price}
+                  value={inventory.cost_price === 0 ? "" : inventory.cost_price}
                   onChange={(e) =>
                     setInventory({
                       ...inventory,
-                      cost_price: Number(e.target.value),
+                      cost_price: e.target.value === "" ? 0 : Number(e.target.value),
                     })
                   }
                   placeholder="Enter cost price"
@@ -136,11 +136,11 @@ export default function InventoryForm({
                   type="number"
                   name="selling_price"
                   id="selling_price"
-                  value={inventory.selling_price}
+                  value={inventory.selling_price === 0 ? "" : inventory.selling_price}
                   onChange={(e) =>
                     setInventory({
                       ...inventory,
-                      selling_price: Number(e.target.value),
+                      selling_price: e.target.value === "" ? 0 : Number(e.target.value),
                     })
                   }
                   placeholder="Enter selling price"
