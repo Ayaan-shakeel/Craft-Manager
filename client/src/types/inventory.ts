@@ -19,3 +19,11 @@ export interface InventoryAnalytics{
         total_sales:number,
         units_sold:number,
 }
+export interface InventoryUpdateData{
+    product_name:string,
+    quantity:number,
+    cost_price:number,
+    selling_price:number,
+    category:string,
+    sku:string,
+}

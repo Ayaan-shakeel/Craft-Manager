@@ -1,17 +1,19 @@
 import React from "react";
 import { PackagePlus } from "lucide-react";
-import { Inventory } from "@/types/inventory";
+import { InventoryUpdateData } from "@/types/inventory";
 
 interface InventoryFormProps {
-  inventory: Inventory;
-  setInventory: React.Dispatch<React.SetStateAction<Inventory>>;
+  inventory: InventoryUpdateData;
+  setInventory: React.Dispatch<React.SetStateAction<InventoryUpdateData>>;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  editing?:boolean;
 }
 
 export default function InventoryForm({
   inventory,
   setInventory,
   handleSubmit,
+  editing,
 }: InventoryFormProps) {
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-8 sm:px-6 lg:px-8">
@@ -186,7 +188,7 @@ export default function InventoryForm({
                 type="submit"
                 className="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.99]"
               >
-                Submit
+                {editing ? "update Inventory" : "Create Inventory"}
               </button>
             </div>
           </form>
