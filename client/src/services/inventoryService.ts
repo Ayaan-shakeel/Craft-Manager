@@ -15,7 +15,7 @@ export const createInventory=async(data:{
     selling_price:number
     sku:string
     category:string,
-    stock_status:string
+    // stock_status:string
 })=>{ 
     try{
         const response=await api.post("/api/inventory",data)
@@ -46,7 +46,7 @@ export const updateInventory=async(id:string | number,
     }
 )=>{
     try{
-        const response=await api.put("/api/inventory",data)
+        const response=await api.put(`/api/inventory/${id}`,data)
         return response.data
     }catch(error){
         console.error("Error while updating order ",error)

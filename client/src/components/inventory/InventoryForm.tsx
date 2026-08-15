@@ -1,6 +1,6 @@
 import React from "react";
 import { PackagePlus } from "lucide-react";
-import { InventoryUpdateData } from "@/types/inventory";
+import { InventoryUpdateData, Inventory } from "@/types/inventory";
 
 interface InventoryFormProps {
   inventory: InventoryUpdateData;

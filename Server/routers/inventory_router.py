@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException,status
 from sqlalchemy.orm import Session
-from services.inventory_service import create_inventory,get_inventory,get_single_inventory
+from services.inventory_service import create_inventory,get_inventory,get_single_inventory,update_inventory
 from schema.inventory_schema import InventoryCreate
 from model.user_model import User
 from auth import get_current_user
@@ -47,7 +47,7 @@ def get_single_inventory_by_id(inventory_id:int,current_user:User=Depends(get_cu
                                 "recent_orders":data["recent_orders"]
                                 }
 @router.put("/inventory/{inventory_id}",status_code=status.HTTP_201_CREATED)
-def update_inventory(inventory_id:int,inventory:InventoryCreate,current_user:User=Depends(get_current_user),
+def updated_inventory(inventory_id:int,inventory:InventoryCreate,current_user:User=Depends(get_current_user),
                       db:Session=Depends(get_db)):
                       updated_inventory=update_inventory(db,inventory_id,inventory,current_user)
                       return{

@@ -18,15 +18,24 @@ def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_use
     new_order=create_order(db,order,current_user)
     return{
         "message":"Order added Successfully",
-        "order":{
-            "id":new_order.id,
-            "product_name":new_order.product_name,
-            "quantity":new_order.quantity,
-            "price":new_order.price,
-            "total_price":new_order.total_price,
-            "customer_id":new_order.customer_id,
-            "customer_name":new_order.customer.customer_name
-        }
+         "orders":
+                    {
+                        "id":new_order.id,
+                        "customer_id":new_order.customer_id,
+                        "customer_name":(new_order.customer.customer_name if
+                        new_order.customer 
+                        else "Unknown Customer"),
+                        "item_count":len(new_order.order_items),
+                        "tax":new_order.tax,
+                        "discount":new_order.discount,
+                        "sub_total":new_order.sub_total,
+                        "total_amount":new_order.total_amount,
+                        "status":new_order.status,
+                        "created_At":new_order.created_at.strftime("%d-%B-%Y")
+                    
+                        
+                       
+                    }
     }
 
 @router.get("/orders",status_code=status.HTTP_200_OK)
@@ -48,15 +57,17 @@ def get_all_orders(
         "orders":[
             {
                 "id":order.id,
-                "product_name":order.product_name,
-                "quantity":order.quantity,
-                "price":order.price,
-                "total_price":order.total_price,
-                "status":order.status,
                 "customer_id":order.customer_id,
-                "customer_name":order.customer.customer_name if
+                "customer_name":(order.customer.customer_name if
                 order.customer 
-                else "Unknown Customer"
+                else "Unknown Customer"),
+                "item_count":len(order.order_items),
+                "tax":order.tax,
+                "discount":order.discount,
+                "sub_total":order.sub_total,
+                "total_amount":order.total_amount,
+                "status":order.status,
+                "created_At":order.created_at.strftime("%d-%B-%Y")
             
                 
                
@@ -85,20 +96,40 @@ def get_a_single_order(order_id:int,current_user:User=Depends(get_current_user),
              if order is None:
                    raise HTTPException(status_code=404,detail="Order not found")
              return {
-    "message":"Order retrieved Successfully",
-    "order":{
-        "id":order.id,
-        "product_name":order.product_name,
-        "quantity":order.quantity,
-        "price":order.price,
-        "total_price":order.total_price,
-        "customer_id":order.customer_id,
-        "status":order.status,
-        "customer_name":order.customer.customer_name if
-                    order.customer 
-                    else "Unknown Customer"
+     "message": "Order retrieved Successfully",
+        "order": {
+            "id": order.id,
+            "customer_id": order.customer_id,
+            "customer_name": (
+                order.customer.customer_name
+                if order.customer
+                else "Unknown Customer"
+            ),
+            "items_count": len(order.order_items),
+
+            "sub_total": order.sub_total,
+            "discount": order.discount,
+            "tax": order.tax,
+            "shipping_charges": order.shipping_charges,
+            "other_charges": order.other_charges,
+            "total_amount": order.total_amount,
+
+            "status": order.status,
+            "created_at": order.created_at,
+
+            "items": [
+                {
+                    "id": item.id,
+                    "inventory_id": item.inventory_id,
+                    "product_name": item.product_name,
+                    "quantity": item.quantity,
+                    "unit_price": item.unit_price,
+                    "total_price": item.total_price
+                }
+                for item in order.order_items
+            ]
+        }
     }
-}
 @router.put("/orders/{order_id}/status",status_code=status.HTTP_201_CREATED)
 def updated_order_status(order_id:int,data:OrderUpdateStatus,current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
