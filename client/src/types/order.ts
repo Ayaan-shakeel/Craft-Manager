@@ -1,17 +1,35 @@
-export interface Order{
+export interface OrderItem{
     id:number,
+    inventory_id:number,
     product_name:string,
     quantity:number,
-    price:number,
+    unit_price:number,
     total_price:number,
-    customer_name:string,
-    status:string,
-    customer_id:number
+    avilable_stock:number,
 }
-export interface OrderData{
+export interface OrderItemData{
+    inventory_id:number,
     product_name:string,
     quantity:number,
-    price:number,
+    unit_price:number,
+    total_price:number
+}
+ export interface Order{
+    id:number,
     customer_id:number,
-    status?:string
+    customer_name:string,
+    item_count:number,
+    sub_total:number,
+    discount:number,
+    tax:number,
+    shipping_charges:number,
+    other_charges:number,
+    total_amount:number,
+    status:string,
+    created_at:string,
+    items?:OrderItem[]
+ }
+export interface OrderData{
+   customer_id:number,
+   items:OrderItemData[],
 }

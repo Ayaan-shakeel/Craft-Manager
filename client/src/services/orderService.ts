@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { OrderData } from "@/types/order";
 export const getOrders=async(
     search:string,
     status:string,
@@ -20,13 +21,7 @@ export const getOrders=async(
         throw error
     }
  }
- export const createOrder=async(data:{
-    product_name:string,
-    quantity:number,
-    price:number,
-    customer_id:number
-
- })=>{
+ export const createOrder=async(data: OrderData)=>{
     try{
         const response=await api.post("/api/orders",data);
            return response.data
@@ -35,6 +30,7 @@ export const getOrders=async(
         
     }
 }
+
  export const updateOrder=async(id:string | number,data:{
     product_name:string,
     quantity:number,

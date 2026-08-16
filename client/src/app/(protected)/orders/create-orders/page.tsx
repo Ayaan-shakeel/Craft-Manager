@@ -6,14 +6,14 @@ import { Customer } from '@/types/customer'
 import {createOrder} from "@/services/orderService"
 import {OrderData} from "@/types/order"
 import {toast ,ToastContainer} from "react-toastify"
+import { Inventory } from '@/types/inventory'
 export default function CreateOrders() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [formData,setFormData]=useState<OrderData>({
-    product_name:"",
-    quantity:0,
-    price:0,
-    customer_id:0
+    customer_id:0,
+    items:[]
   })
+  const [inventory,setInventory] = useState<Inventory[]>([])
    useEffect(() => {
       const fetchCustomers = async () => {
         try {
