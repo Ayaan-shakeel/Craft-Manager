@@ -4,7 +4,7 @@ import { getCustomers } from '@/services/customerService'
 import React ,{useEffect,useState} from 'react'
 import { Customer } from '@/types/customer' 
 import {createOrder} from "@/services/orderService"
-import {OrderData} from "@/types/order"
+import {OrderData , OrderItemData} from "@/types/order"
 import {toast ,ToastContainer} from "react-toastify"
 import { Inventory } from '@/types/inventory'
 export default function CreateOrders() {
@@ -14,6 +14,7 @@ export default function CreateOrders() {
     items:[]
   })
   const [inventory,setInventory] = useState<Inventory[]>([])
+  const [items, setItems] = useState<OrderItemData[]>([])
    useEffect(() => {
       const fetchCustomers = async () => {
         try {
@@ -31,16 +32,35 @@ export default function CreateOrders() {
       }
       fetchCustomers()
     }, [])
+    useEffect(()=>{
+      const savedItems = sessionStorage.getItem("orderItems");
+      if(savedItems) {
+        setItems(JSON.parse(savedItems));
+      }
+    },[])
   const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
     if(formData.customer_id===null){
       toast.success("Please select an customer first")
       return
     }
+    if(items.length===0){
+      toast.success("Please select products to add to your order")
+      return
+    }
     try{
-      const order=await createOrder(formData)
+      const order=await createOrder({
+        customer_id:formData.customer_id,
+        items:items.map((item)=>({
+          inventory_id: item.inventory_id,
+          quantity: item.quantity,
+        })),
+      })
+      
       if(order){
         toast.success("ORder created successfully")
+        sessionStorage.removeItem("orderItems")
+        // router.push("/orders/get-orders")
         console.log(order)   
       }
     }catch(error){
@@ -48,13 +68,16 @@ export default function CreateOrders() {
       console.error(error)
     }
   }
+  const subTotal=()=>{
+    return items.reduce((total,item)=>total+(item.quantity*item.unit_price),0)
+  }
   return (
     <div>
       <ToastContainer/>
       <h1>
         Create Orders Page
         </h1>
-<OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData}/>
+<OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} items={items} subTotal={subTotal}/>
     <ToastContainer/>
     </div>
   )

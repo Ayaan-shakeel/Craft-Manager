@@ -1,7 +1,9 @@
 import React from "react";
 import { Package, Hash, IndianRupee, UserCircle2 } from "lucide-react";
 import { Customer } from "@/types/customer";
-import { OrderData } from "@/types/order";
+import { OrderData,OrderItemData } from "@/types/order";
+import { useRouter} from "next/navigation";
+
 
 interface OrderFormProps {
   customers: Customer[];
@@ -9,6 +11,8 @@ interface OrderFormProps {
   formData: OrderData;
   setFormData: React.Dispatch<React.SetStateAction<OrderData>>;
   editing?: boolean;
+  items:OrderItemData[];
+  subTotal?:()=>number;
 }
 
 export default function OrdersForm({
@@ -17,7 +21,10 @@ export default function OrdersForm({
   formData,
   setFormData,
   editing,
+  items,
+  subTotal
 }: OrderFormProps) {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-white to-slate-100 px-3 py-4 sm:px-6 sm:py-8">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-6xl items-center justify-center">
@@ -42,7 +49,7 @@ export default function OrdersForm({
           <div className="bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               
-              <div>
+              {/* <div>
                 <label
                   htmlFor="product_name"
                   className="mb-1.5 block text-sm font-semibold text-slate-700"
@@ -66,9 +73,15 @@ export default function OrdersForm({
                     className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              </div> */}
+<button
+  type="button"
+  onClick={() => router.push("/inventory/get-inventory?select=true")}
+  className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+>
+  + Add Products
+</button>
+              {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label
                     htmlFor="quantity"
@@ -128,7 +141,7 @@ export default function OrdersForm({
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div>
                 <label
@@ -164,7 +177,47 @@ export default function OrdersForm({
                   </select>
                 </div>
               </div>
+<div className="space-y-3">
+  <h2 className="text-lg font-semibold">
+    Selected Products
+  </h2>
 
+  {items.length === 0 ? (
+    <p className="text-gray-500">
+      No products selected yet.
+    </p>
+  ) : (
+    items.map((item) => (
+      <div
+        key={item.inventory_id}
+        className="flex items-center justify-between rounded-xl border p-4"
+      >
+        <div>
+          <h3 className="font-semibold">
+            {item.product_name}
+          </h3>
+
+          <p className="text-sm text-gray-500">
+            ₹{item.unit_price} × {item.quantity}
+          </p>
+        </div>
+
+        <p className="font-semibold">
+          ₹{item.total_price}
+        </p>
+      </div>
+    ))
+  )}
+</div>
+<div className="flex justify-between border-t pt-4">
+  <span className="font-semibold">
+    Subtotal
+  </span>
+
+  <span className="font-bold">
+    ₹{subTotal()}
+  </span>
+</div>
               <button
                 type="submit"
                 className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:bg-blue-700 active:scale-[0.99]"
