@@ -10,6 +10,8 @@ export default function GetInventory() {
     const router = useRouter();
     const selectedForOrder = searchParams.get("selectForOrder") === "true";
     const [inventory, setInventory] = useState<Inventory[]>([])
+    const [selectedItem, setSelectedItem] = useState<Inventory | null>(null)
+    const [quantity, setQuantity] = useState(1)
     const [stats,setStats]=useState({
         total_products:0,
         total_stock:0,
@@ -35,27 +37,36 @@ export default function GetInventory() {
         },[])
 
         const handleAddToOrder = (item : Inventory)=>{
+            if(!selectedItem)
+                return
+            
+
             const existingItems = JSON.parse(
                 sessionStorage.getItem("orderItems") || "[]"
             );
             const existingItem = existingItems.find(
-                (orderItem: any) => orderItem.inventory_id === item.id
+                (item: any) => item.inventory_id === selectedItem.id
             );
-            if (existingItem) {
-                existingItem.quantity += 1;
+            if(existingItem){
+                const newQuantity = existingItem.quantity + quantity;
+                if(newQuantity > selectedItem.quantity) {
+                    alert("Quantity exceeds available stock");
+                    return;
+            }
+                existingItem.quantity = newQuantity;
                 existingItem.total_price = existingItem.quantity * existingItem.selling_price;
             } else{
                 existingItems.push({
-                    inventory_id: item.id,
-                    product_name: item.product_name,
-                    quantity: 1,
-                    unit_price: item.selling_price,
-                    total_price: item.selling_price,
-                    avilable_stock: item.quantity,
+                    inventory_id: selectedItem.id,
+                    product_name: selectedItem.product_name,
+                    quantity: quantity,
+                    unit_price: selectedItem.selling_price,
+                    total_price: selectedItem.selling_price * quantity,
+                    available_stock: selectedItem.quantity,
                 })
             }
                 sessionStorage.setItem("orderItems", JSON.stringify(existingItems));
-            
+            setSelectedItem(null);
 
             console.log("Selected Inventory Item")
             router.push("/orders/create-orders")
@@ -68,7 +79,7 @@ export default function GetInventory() {
         ) 
         }
         <div>
-            <InventoryTable inventory={inventory} stats={stats} onAddToOrder={handleAddToOrder} />
+            <InventoryTable inventory={inventory} stats={stats} onAddToOrder={handleAddToOrder} selectedItem={selectedItem} setSelectedItem={setSelectedItem} quantity={quantity} setQuantity={setQuantity} />
              </div>
     </div>
   )

@@ -1,7 +1,7 @@
 import React from "react";
 import { Package, Hash, IndianRupee, UserCircle2 } from "lucide-react";
 import { Customer } from "@/types/customer";
-import { OrderData,OrderItemData } from "@/types/order";
+import { OrderData,OrderItem,OrderItemData } from "@/types/order";
 import { useRouter} from "next/navigation";
 
 
@@ -11,8 +11,8 @@ interface OrderFormProps {
   formData: OrderData;
   setFormData: React.Dispatch<React.SetStateAction<OrderData>>;
   editing?: boolean;
-  items:OrderItemData[];
-  subTotal?:()=>number;
+  items:OrderItem[];
+  subtotal?:number;
 }
 
 export default function OrdersForm({
@@ -22,7 +22,7 @@ export default function OrdersForm({
   setFormData,
   editing,
   items,
-  subTotal
+  subtotal
 }: OrderFormProps) {
   const router = useRouter();
   return (
@@ -215,7 +215,7 @@ export default function OrdersForm({
   </span>
 
   <span className="font-bold">
-    ₹{subTotal()}
+    ₹{subtotal}
   </span>
 </div>
               <button

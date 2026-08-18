@@ -4,7 +4,7 @@ import { getCustomers } from '@/services/customerService'
 import React ,{useEffect,useState} from 'react'
 import { Customer } from '@/types/customer' 
 import {createOrder} from "@/services/orderService"
-import {OrderData , OrderItemData} from "@/types/order"
+import {OrderData , OrderItem, OrderItemData} from "@/types/order"
 import {toast ,ToastContainer} from "react-toastify"
 import { Inventory } from '@/types/inventory'
 export default function CreateOrders() {
@@ -13,8 +13,7 @@ export default function CreateOrders() {
     customer_id:0,
     items:[]
   })
-  const [inventory,setInventory] = useState<Inventory[]>([])
-  const [items, setItems] = useState<OrderItemData[]>([])
+  const [items, setItems] = useState<OrderItem[]>([])
    useEffect(() => {
       const fetchCustomers = async () => {
         try {
@@ -68,16 +67,15 @@ export default function CreateOrders() {
       console.error(error)
     }
   }
-  const subTotal=()=>{
-    return items.reduce((total,item)=>total+(item.quantity*item.unit_price),0)
-  }
+  const subTotal=items.reduce((total,item)=>total+(item.quantity*item.unit_price),0)
+  
   return (
     <div>
       <ToastContainer/>
       <h1>
         Create Orders Page
         </h1>
-<OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} items={items} subTotal={subTotal}/>
+<OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} items={items} subtotal={subTotal}/>
     <ToastContainer/>
     </div>
   )

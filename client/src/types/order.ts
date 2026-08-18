@@ -5,14 +5,11 @@ export interface OrderItem{
     quantity:number,
     unit_price:number,
     total_price:number,
-    avilable_stock:number,
+    available_stock:number,
 }
 export interface OrderItemData{
     inventory_id:number,
-    product_name:string,
     quantity:number,
-    unit_price:number,
-    total_price:number
 }
  export interface Order{
     id:number,
