@@ -13,6 +13,7 @@ interface OrderFormProps {
   editing?: boolean;
   items:OrderItem[];
   subtotal?:number;
+  removeItem:(InventoryId:number)=>void;
 }
 
 export default function OrdersForm({
@@ -22,7 +23,8 @@ export default function OrdersForm({
   setFormData,
   editing,
   items,
-  subtotal
+  subtotal,
+  removeItem,
 }: OrderFormProps) {
   const router = useRouter();
   return (
@@ -205,6 +207,13 @@ export default function OrdersForm({
         <p className="font-semibold">
           ₹{item.total_price}
         </p>
+         <button
+      type="button"
+      onClick={() => removeItem(item.inventory_id)}
+      className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+    >
+      Remove
+    </button>
       </div>
     ))
   )}

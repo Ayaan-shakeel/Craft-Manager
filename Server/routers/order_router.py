@@ -54,6 +54,7 @@ def get_all_orders(
         "count":total_count,
         "page":page,
         "limit":limit,
+        
         "orders":[
             {
                 "id":order.id,
@@ -67,7 +68,19 @@ def get_all_orders(
                 "sub_total":order.sub_total,
                 "total_amount":order.total_amount,
                 "status":order.status,
-                "created_At":order.created_at.strftime("%d-%B-%Y")
+                "created_At":order.created_at.strftime("%d-%B-%Y"),
+                  "items": [
+                                {
+                                    "id": item.id,
+                                    "inventory_id": item.inventory_id,
+                                    "product_name": item.product_name,
+                                    "quantity": item.quantity,
+                                    "unit_price": item.unit_price,
+                                    "total_price": item.total_price
+                                }
+                                for item in order.order_items
+                            ]
+                
             
                 
                

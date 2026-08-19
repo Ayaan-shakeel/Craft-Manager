@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { getOrders, updateOrderStatus, deleteOrder, exportOrders } from "@/services/orderService"
 import OrderTable from "@/components/orders/OrderTable"
-import { Order } from "@/types/order"
+import { Order, OrderItem } from "@/types/order"
 import OrdersFilter from '@/components/orders/OrdersFilter'
 import OrdersPagination from '@/components/orders/OrdersPagination'
 import OrderSkeleton from '@/components/orders/OrderSkeleton'
@@ -11,6 +11,7 @@ import {toast ,ToastContainer} from "react-toastify"
 import DeleteModal from "@/components/ui/DeleteModal"
 export default function GetOrders() {
   const [orders, setOrders] = useState<Order[]>([])
+  const [items, setItems] = useState<OrderItem[]>([])
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState("all")
   const [sort, setSort] = useState("newest")
@@ -36,6 +37,7 @@ const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
         const order = await getOrders(search, status, sort, page)
         if (order) {
           setOrders(order.orders)
+          console.log(order.orders.items)
           setTotalPages(Math.ceil(order.count / order.limit))
           setLoading(false)
           setStats(order.stats)

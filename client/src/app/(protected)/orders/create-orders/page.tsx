@@ -68,6 +68,10 @@ export default function CreateOrders() {
     }
   }
   const subTotal=items.reduce((total,item)=>total+(item.quantity*item.unit_price),0)
+  const removeItem=(InventoryId:number)=>{
+    setItems((prev)=>
+    prev.filter((item) => item.inventory_id !== InventoryId))
+  }
   
   return (
     <div>
@@ -75,7 +79,7 @@ export default function CreateOrders() {
       <h1>
         Create Orders Page
         </h1>
-<OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} items={items} subtotal={subTotal}/>
+<OrdersForm customers={customers} handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} items={items} subtotal={subTotal} removeItem={removeItem}/>
     <ToastContainer/>
     </div>
   )

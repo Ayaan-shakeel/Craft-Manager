@@ -35,7 +35,7 @@ export default function OrderRow({
 
       <td className="px-2 py-4 align-middle">
         <p className="truncate text-sm font-semibold text-slate-800">
-          {order.product_name}
+          {order.items.product_name}
         </p>
       </td>
 
@@ -46,7 +46,7 @@ export default function OrderRow({
       </td>
 
       <td className="px-2 py-4 align-middle text-sm text-slate-600">
-        {order.quantity}
+        {order.items.quantity}
       </td>
 
       <td className="px-2 py-4 align-middle text-sm text-slate-600 whitespace-nowrap">
