@@ -14,6 +14,7 @@ interface OrderFormProps {
   items:OrderItem[];
   subtotal?:number;
   removeItem:(InventoryId:number)=>void;
+  updateItemQuantity:(InventoryId:number,quantity:number)=> void;
 }
 
 export default function OrdersForm({
@@ -25,6 +26,7 @@ export default function OrdersForm({
   items,
   subtotal,
   removeItem,
+  updateItemQuantity,
 }: OrderFormProps) {
   const router = useRouter();
   return (
@@ -199,14 +201,13 @@ export default function OrdersForm({
             {item.product_name}
           </h3>
 
-          <p className="text-sm text-gray-500">
-            ₹{item.unit_price} × {item.quantity}
-          </p>
+      
         </div>
 
         <p className="font-semibold">
           ₹{item.total_price}
         </p>
+        <div className="flex items-center gap-2">
          <button
       type="button"
       onClick={() => removeItem(item.inventory_id)}
@@ -214,6 +215,47 @@ export default function OrdersForm({
     >
       Remove
     </button>
+    </div>
+      <div className="flex items-center gap-2">
+  <button
+    type="button"
+    disabled={item.quantity <= 1}
+    onClick={() =>
+      updateItemQuantity(
+        item.inventory_id,
+        Math.max(1, item.quantity - 1)
+      )
+    }
+    className="flex h-8 w-8 items-center justify-center rounded-lg border
+      disabled:cursor-not-allowed disabled:opacity-40"
+  >
+    −
+  </button>
+
+  <span className="min-w-8 text-center font-semibold">
+    {item.quantity}
+  </span>
+
+  <button
+    type="button"
+    disabled={item.quantity >= item.available_stock}
+    onClick={() =>
+      updateItemQuantity(
+        item.inventory_id,
+        item.quantity + 1
+      )
+    }
+    className="flex h-8 w-8 items-center justify-center rounded-lg border
+      disabled:cursor-not-allowed disabled:opacity-40"
+  >
+    +
+  </button>
+</div>
+<div className="flex items-center gap-2">
+<p className="mt-1 text-xs text-gray-500">
+  Stock available: {item.available_stock}
+</p>
+</div>
       </div>
     ))
   )}
