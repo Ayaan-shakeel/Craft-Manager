@@ -15,6 +15,7 @@ interface OrderFormProps {
   subtotal?:number;
   removeItem:(InventoryId:number)=>void;
   updateItemQuantity:(InventoryId:number,quantity:number)=> void;
+  clearAllItems:()=>void;
 }
 
 export default function OrdersForm({
@@ -27,6 +28,7 @@ export default function OrdersForm({
   subtotal,
   removeItem,
   updateItemQuantity,
+  clearAllItems,
 }: OrderFormProps) {
   const router = useRouter();
   return (
@@ -255,11 +257,35 @@ export default function OrdersForm({
 <p className="mt-1 text-xs text-gray-500">
   Stock available: {item.available_stock}
 </p>
+{item.quantity >= item.available_stock ? (
+  <p className="mt-1 text-xs font-medium text-orange-600">
+    Maximum stock reached
+  </p>
+) : item.available_stock - item.quantity <= 2 ? (
+  <p className="mt-1 text-xs font-medium text-red-500">
+    Only {item.available_stock - item.quantity} left
+  </p>
+) : (
+  <p className="mt-1 text-xs text-gray-500">
+    {item.available_stock - item.quantity} available
+  </p>
+)}
+
 </div>
       </div>
     ))
   )}
 </div>
+{items.length > 0 && (
+  <button
+    type="button"
+    onClick={clearAllItems}
+    className="text-sm font-medium text-red-600 hover:text-red-700"
+  >
+    Clear All
+  </button>
+)}
+
 <div className="flex justify-between border-t pt-4">
   <span className="font-semibold">
     Subtotal

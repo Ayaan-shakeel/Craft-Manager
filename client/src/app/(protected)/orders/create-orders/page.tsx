@@ -103,6 +103,17 @@ export default function CreateOrders() {
 }
 )
   }
+  const clearAllItems=()=>{
+    if(items.length === 0){
+      return;
+    }
+      const confirm=window.confirm("Are you sure you want to clear all items?")
+      if(confirm){
+        setItems([])
+        sessionStorage.removeItem("orderItems")
+      
+    }
+  }
   return (
     <div>
       <ToastContainer/>
@@ -116,7 +127,9 @@ formData={formData}
 setFormData={setFormData} 
 items={items} subtotal={subTotal}
 removeItem={removeItem}
-updateItemQuantity={updateItemQuantity}/>
+updateItemQuantity={updateItemQuantity}
+clearAllItems={clearAllItems}
+/>
     <ToastContainer/>
     </div>
   )
