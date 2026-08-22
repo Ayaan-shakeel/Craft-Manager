@@ -184,9 +184,16 @@ export default function OrdersForm({
                 </div>
               </div>
 <div className="space-y-3">
+  
+  <div className="flex items-center justify-between">
   <h2 className="text-lg font-semibold">
     Selected Products
   </h2>
+
+  <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">
+    {items.length}
+  </span>
+</div>
 
   {items.length === 0 ? (
     <p className="text-gray-500">
@@ -296,12 +303,13 @@ export default function OrdersForm({
   </span>
 </div>
               <button
-                type="submit"
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:bg-blue-700 active:scale-[0.99]"
-              >
-                <Package size={18} />
-                {editing ? "Update Order" : "Create Order"}
-              </button>
+  type="submit"
+  disabled={formData.customer_id === 0 || items.length === 0}
+  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:bg-blue-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+>
+  <Package size={18} />
+  {editing ? "Update Order" : "Create Order"}
+</button>
             </form>
           </div>
         </div>
