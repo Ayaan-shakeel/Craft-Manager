@@ -69,23 +69,49 @@ def create_order(db: Session, order, current_user):
             "total_price": item_total
         })
 
-    # 5. Create the main order
+        # 5.  Calculate order charges after subtotal 
+    discount = order.discount
+    tax_percentage = order.tax
+    shipping_charges = order.shipping_charges
+    other_charges = order.other_charges
+
+    # Validate Charges 
+    if discount > sub_total:
+         raise HTTPException(
+            status_code = 404,
+            detail = "Discount cannot be greater than subtotal "
+         )
+    if discount < 0 or tax_percentage < 0:
+         raise HTTPException(
+            status_code = 404,
+            detail = "Discount and tax cannot be negative "
+         )
+    if shipping_charges < 0 or other_charges < 0:
+         raise HTTPException(
+            status_code = 404,
+            detail = "Charges cannot be negative "
+         )
+        #  Calculate tax Amount
+    tax_amount = sub_total * tax / 100
+    #  Calculate total amount
+    total_amount = sub_total - discount + other_charges + shipping_charges + tax_amount
+    # 6. Create the main order
     new_order = Orders(
         customer_id=customer.id,
         user_id=current_user.id,
         sub_total=sub_total,
-        discount=0,
-        tax=0,
-        shipping_charges=0,
-        other_charges=0,
-        total_amount=sub_total,
+        discount=discount,
+        tax=tax_percentage,
+        shipping_charges=shipping_charges,
+        other_charges=other_charges,
+        total_amount=total_amount,
         status="pending"
     )
 
     db.add(new_order)
     db.flush()
 
-    # 6. Create OrderItems + deduct inventory
+    # 7. Create OrderItems + deduct inventory
     for item_data in order_items_data:
 
         inventory = item_data["inventory"]
@@ -103,7 +129,7 @@ def create_order(db: Session, order, current_user):
 
         inventory.quantity -= item_data["quantity"]
 
-    # 7. Commit everything
+    # 8. Commit everything
     db.commit()
 
     db.refresh(new_order)

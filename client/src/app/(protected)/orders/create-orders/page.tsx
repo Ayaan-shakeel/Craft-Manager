@@ -11,7 +11,11 @@ export default function CreateOrders() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [formData,setFormData]=useState<OrderData>({
     customer_id:0,
-    items:[]
+    items:[],
+    discount:0,
+    tax:0,
+    shipping_charges:0,
+    other_charges:0,
   })
   const [items, setItems] = useState<OrderItem[]>([])
    useEffect(() => {
@@ -44,7 +48,7 @@ export default function CreateOrders() {
 // },[items])
   const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
-    if(formData.customer_id){
+    if(formData.customer_id === 0){
       toast.success("Please select an customer first")
       return
     }
@@ -58,7 +62,12 @@ export default function CreateOrders() {
         items:items.map((item)=>({
           inventory_id: item.inventory_id,
           quantity: item.quantity,
+
         })),
+        discount:formData.discount,
+        tax:formData.tax,
+        shipping_charges:formData.shipping_charges,
+        other_charges:formData.other_charges,
       })
       
       if(order){
@@ -73,6 +82,8 @@ export default function CreateOrders() {
     }
   }
   const subTotal=items.reduce((total,item)=>total+(item.quantity*item.unit_price),0)
+  const taxAmount = (subTotal * formData.tax) / 100
+  const totalAmount = subTotal - formData.discount + formData.other_charges + formData.shipping_charges + taxAmount
   
   const removeItem=(InventoryId:number)=>{
     setItems((prev)=>{
@@ -129,6 +140,7 @@ items={items} subtotal={subTotal}
 removeItem={removeItem}
 updateItemQuantity={updateItemQuantity}
 clearAllItems={clearAllItems}
+totalAmount={totalAmount}
 />
     <ToastContainer/>
     </div>

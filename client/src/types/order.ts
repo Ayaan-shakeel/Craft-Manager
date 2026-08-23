@@ -29,4 +29,8 @@ export interface OrderItemData{
 export interface OrderData{
    customer_id:number,
    items:OrderItemData[],
+   discount:number,
+   tax:number,
+   shipping_charges:number,
+   other_charges:number,
 }

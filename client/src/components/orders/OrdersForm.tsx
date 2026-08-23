@@ -16,6 +16,7 @@ interface OrderFormProps {
   removeItem:(InventoryId:number)=>void;
   updateItemQuantity:(InventoryId:number,quantity:number)=> void;
   clearAllItems:()=>void;
+  totalAmount:number;
 }
 
 export default function OrdersForm({
@@ -29,6 +30,7 @@ export default function OrdersForm({
   removeItem,
   updateItemQuantity,
   clearAllItems,
+  totalAmount,
 }: OrderFormProps) {
   const router = useRouter();
   return (
@@ -301,6 +303,89 @@ export default function OrdersForm({
   <span className="font-bold">
     ₹{subtotal}
   </span>
+</div>
+
+<div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+  <h2 className="text-lg font-bold text-slate-800">
+    Order Summary
+  </h2>
+
+  <div className="flex justify-between text-sm">
+    <span className="text-slate-600">Subtotal</span>
+    <span className="font-semibold">₹{subtotal}</span>
+  </div>
+
+  <div>
+    <label className="mb-1 block text-sm font-medium text-slate-700">
+      Discount
+    </label>
+
+    <input
+      type="number"
+      min={0}
+      value={formData.discount}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          discount: Number(e.target.value),
+        })
+      }
+      className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 outline-none focus:border-blue-500"
+      placeholder="Discount amount"
+    />
+  </div>
+
+  <div>
+    <label className="mb-1 block text-sm font-medium text-slate-700">
+      Tax (%)
+    </label>
+
+    <input
+      type="number"
+      min={0}
+      value={formData.tax}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          tax: Number(e.target.value),
+        })
+      }
+      className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 outline-none focus:border-blue-500"
+      placeholder="Tax percentage"
+    />
+  </div>
+
+  <div>
+    <label className="mb-1 block text-sm font-medium text-slate-700">
+      Shipping Charges
+    </label>
+
+    <input
+      type="number"
+      min={0}
+      value={formData.shipping_charges}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          shipping_charges: Number(e.target.value),
+        })
+      }
+      className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 outline-none focus:border-blue-500"
+      placeholder="Shipping charges"
+    />
+  </div>
+
+  <div className="border-t pt-4">
+    <div className="flex justify-between">
+      <span className="text-lg font-bold text-slate-800">
+        Grand Total
+      </span>
+
+      <span className="text-xl font-bold text-blue-600">
+        ₹{totalAmount}
+      </span>
+    </div>
+  </div>
 </div>
               <button
   type="submit"

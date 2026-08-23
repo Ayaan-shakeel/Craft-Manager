@@ -10,6 +10,10 @@ class OrderItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     customer_id: int
     items: list[OrderItemCreate] = Field(min_length=1)
+    discount: float = Field(gt=0)
+    tax: float = Field(gt=0)
+    shipping_charges: float = Field(gt=0)
+    other_charges: float = Field(gt=0)
 
 
 class OrderUpdate(BaseModel):
