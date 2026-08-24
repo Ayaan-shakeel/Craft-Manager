@@ -29,15 +29,13 @@ export default function InventoryTable({inventory,stats,onAddToOrder,selectedIte
         {onAddToOrder && (
   <button
   type="button"
-  onClick={() => {
-    setSelectedItem(item);
-    setQuantity(1);
-  }}
-  disabled={item.quantity <= 0}
-  className="rounded-lg bg-blue-600 px-3 py-2 text-white disabled:bg-gray-400"
+  onClick={() => onAddToOrder?.(selectedItem)}
+  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white"
 >
+  Add
+  disabled={item.quantity <= 0}
   {item.quantity > 0 ? "Add to Order" : "Out of Stock"}
-</button>
+  </button>  
 )}
         </div>
       ))}
@@ -83,19 +81,27 @@ export default function InventoryTable({inventory,stats,onAddToOrder,selectedIte
           </button>
 
           <input
-            type="number"
-            min={1}
-            max={selectedItem.quantity}
-            value={quantity}
-            onChange={(e) => {
-              const value = Number(e.target.value);
+  type="number"
+  min={1}
+  max={selectedItem.quantity}
+  value={quantity}
+  onChange={(e) => {
+    const value = Number(e.target.value);
 
-              if (value >= 1 && value <= selectedItem.quantity) {
-                setQuantity(value);
-              }
-            }}
-            className="h-10 w-20 rounded-lg border text-center"
-          />
+    if (value < 1) {
+      setQuantity(1);
+      return;
+    }
+
+    if (value > selectedItem.quantity) {
+      setQuantity(selectedItem.quantity);
+      return;
+    }
+
+    setQuantity(value);
+  }}
+  className="h-10 w-20 rounded-lg border text-center"
+/>
 
           <button
             type="button"

@@ -36,41 +36,67 @@ export default function GetInventory() {
         fetchInventory()
         },[])
 
-        const handleAddToOrder = (item : Inventory)=>{
-            if(!selectedItem)
-                return
-            
+      const handleAddToOrder = (item: Inventory) => {
+  if (!selectedForOrder) return;
 
-            const existingItems = JSON.parse(
-                sessionStorage.getItem("orderItems") || "[]"
-            );
-            const existingItem = existingItems.find(
-                (item: any) => item.inventory_id === selectedItem.id
-            );
-            if(existingItem){
-                const newQuantity = existingItem.quantity + quantity;
-                if(newQuantity > selectedItem.quantity) {
-                    alert("Quantity exceeds available stock");
-                    return;
-            }
-                existingItem.quantity = newQuantity;
-                existingItem.total_price = existingItem.quantity * existingItem.selling_price;
-            } else{
-                existingItems.push({
-                    inventory_id: selectedItem.id,
-                    product_name: selectedItem.product_name,
-                    quantity: quantity,
-                    unit_price: selectedItem.selling_price,
-                    total_price: selectedItem.selling_price * quantity,
-                    available_stock: selectedItem.quantity,
-                })
-            }
-                sessionStorage.setItem("orderItems", JSON.stringify(existingItems));
-            setSelectedItem(null);
+  if (!item) {
+    alert("Please select a product");
+    return;
+  }
 
-            console.log("Selected Inventory Item")
-            router.push("/orders/create-orders")
-        }
+  if (quantity < 1) {
+    alert("Quantity must be at least 1");
+    return;
+  }
+
+  if (quantity > item.quantity) {
+    alert(`Only ${item.quantity} units are available`);
+    return;
+  }
+
+  const existingItems = JSON.parse(
+    sessionStorage.getItem("orderItems") || "[]"
+  );
+
+  const existingItem = existingItems.find(
+    (orderItem: any) => orderItem.inventory_id === item.id
+  );
+
+  if (existingItem) {
+    const newQuantity = existingItem.quantity + quantity;
+
+    if (newQuantity > item.quantity) {
+      alert(
+        `You can only add ${item.quantity} units of ${item.product_name}`
+      );
+      return;
+    }
+
+    existingItem.quantity = newQuantity;
+    existingItem.total_price =
+      newQuantity * existingItem.unit_price;
+    existingItem.available_stock = item.quantity;
+  } else {
+    existingItems.push({
+      inventory_id: item.id,
+      product_name: item.product_name,
+      quantity,
+      unit_price: item.selling_price,
+      total_price: item.selling_price * quantity,
+      available_stock: item.quantity,
+    });
+  }
+
+  sessionStorage.setItem(
+    "orderItems",
+    JSON.stringify(existingItems)
+  );
+
+  setSelectedItem(null);
+  setQuantity(1);
+
+  router.push("/orders/create-orders");
+};
   return (
     <div>
         <h1>Inventory</h1>

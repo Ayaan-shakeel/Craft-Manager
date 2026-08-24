@@ -305,89 +305,80 @@ export default function OrdersForm({
   </span>
 </div>
 
-<div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-  <h2 className="text-lg font-bold text-slate-800">
-    Order Summary
-  </h2>
+<div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+  <div className="mb-4 flex items-center justify-between">
+    <h2 className="text-lg font-bold text-slate-800">
+      Order Summary
+    </h2>
 
-  <div className="flex justify-between text-sm">
-    <span className="text-slate-600">Subtotal</span>
-    <span className="font-semibold">₹{subtotal}</span>
+    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+      {items.length} {items.length === 1 ? "Item" : "Items"}
+    </span>
   </div>
 
-  <div>
-    <label className="mb-1 block text-sm font-medium text-slate-700">
-      Discount
-    </label>
+  <div className="space-y-3 text-sm">
 
-    <input
-      type="number"
-      min={0}
-      value={formData.discount}
-      onChange={(e) =>
-        setFormData({
-          ...formData,
-          discount: Number(e.target.value),
-        })
-      }
-      className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 outline-none focus:border-blue-500"
-      placeholder="Discount amount"
-    />
-  </div>
-
-  <div>
-    <label className="mb-1 block text-sm font-medium text-slate-700">
-      Tax (%)
-    </label>
-
-    <input
-      type="number"
-      min={0}
-      value={formData.tax}
-      onChange={(e) =>
-        setFormData({
-          ...formData,
-          tax: Number(e.target.value),
-        })
-      }
-      className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 outline-none focus:border-blue-500"
-      placeholder="Tax percentage"
-    />
-  </div>
-
-  <div>
-    <label className="mb-1 block text-sm font-medium text-slate-700">
-      Shipping Charges
-    </label>
-
-    <input
-      type="number"
-      min={0}
-      value={formData.shipping_charges}
-      onChange={(e) =>
-        setFormData({
-          ...formData,
-          shipping_charges: Number(e.target.value),
-        })
-      }
-      className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 outline-none focus:border-blue-500"
-      placeholder="Shipping charges"
-    />
-  </div>
-
-  <div className="border-t pt-4">
-    <div className="flex justify-between">
-      <span className="text-lg font-bold text-slate-800">
-        Grand Total
-      </span>
-
-      <span className="text-xl font-bold text-blue-600">
-        ₹{totalAmount}
+    {/* Subtotal */}
+    <div className="flex justify-between text-slate-600">
+      <span>Subtotal</span>
+      <span className="font-medium text-slate-800">
+        ₹{subtotal?.toFixed(2)}
       </span>
     </div>
+
+    {/* Discount */}
+    <div className="flex justify-between text-slate-600">
+      <span>Discount</span>
+      <span className="font-medium text-red-600">
+        -₹{formData.discount.toFixed(2)}
+      </span>
+    </div>
+
+    {/* Tax */}
+    <div className="flex justify-between text-slate-600">
+      <span>
+        Tax ({formData.tax}%)
+      </span>
+
+      <span className="font-medium text-slate-800">
+        ₹{((subtotal ?? 0) * formData.tax / 100).toFixed(2)}
+      </span>
+    </div>
+
+    {/* Shipping */}
+    <div className="flex justify-between text-slate-600">
+      <span>Shipping Charges</span>
+
+      <span className="font-medium text-slate-800">
+        ₹{formData.shipping_charges.toFixed(2)}
+      </span>
+    </div>
+
+    {/* Other Charges */}
+    <div className="flex justify-between text-slate-600">
+      <span>Other Charges</span>
+
+      <span className="font-medium text-slate-800">
+        ₹{formData.other_charges.toFixed(2)}
+      </span>
+    </div>
+
+    {/* Divider */}
+    <div className="border-t border-slate-200 pt-4">
+      <div className="flex items-center justify-between">
+        <span className="text-base font-bold text-slate-800">
+          Total Amount
+        </span>
+
+        <span className="text-2xl font-bold text-blue-600">
+          ₹{totalAmount.toFixed(2)}
+        </span>
+      </div>
+    </div>
+
   </div>
-</div>
-              <button
+</div>           
+   <button
   type="submit"
   disabled={formData.customer_id === 0 || items.length === 0}
   className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:bg-blue-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
