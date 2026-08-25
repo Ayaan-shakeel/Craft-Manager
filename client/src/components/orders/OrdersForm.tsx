@@ -84,12 +84,13 @@ export default function OrdersForm({
               </div> */}
 <button
   type="button"
-  onClick={() => router.push("/inventory/get-inventory?select=true")}
+  onClick={() =>
+    router.push("/inventory/get-inventory?selectForOrder=true")
+  }
   className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
 >
   + Add Products
-</button>
-              {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+</button>              {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label
                     htmlFor="quantity"

@@ -26,18 +26,19 @@ export default function InventoryTable({inventory,stats,onAddToOrder,selectedIte
           <div>{item.sku}</div>
           <div>{item.stock_status}</div>
 
-        {onAddToOrder && (
+{onAddToOrder && (
   <button
-  type="button"
-  onClick={() => onAddToOrder?.(selectedItem)}
-  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white"
->
-  Add
-  disabled={item.quantity <= 0}
-  {item.quantity > 0 ? "Add to Order" : "Out of Stock"}
-  </button>  
-)}
-        </div>
+    type="button"
+    onClick={() => {
+      setSelectedItem(item);
+      setQuantity(1);
+    }}
+    className="rounded-lg bg-blue-600 px-4 py-2 text-white"
+    disabled={item.quantity <= 0}
+  >
+    {item.quantity > 0 ? "Add to Order" : "Out of Stock"}
+  </button>
+)}        </div>
       ))}
 
       <div>
@@ -129,12 +130,22 @@ export default function InventoryTable({inventory,stats,onAddToOrder,selectedIte
         </button>
 
         <button
-          type="button"
-          onClick={onAddToOrder}
-          className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white"
-        >
-          Add
-        </button>
+  type="button"
+  onClick={() => {
+    if (!selectedItem) {
+      console.log("No selected item");
+      return;
+    }
+
+    console.log("Adding:", selectedItem);
+    console.log("Quantity:", quantity);
+
+    onAddToOrder?.(selectedItem);
+  }}
+  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white"
+>
+  Add
+</button>
 
       </div>
 

@@ -8,7 +8,14 @@ import { useSearchParams, useRouter } from 'next/navigation'
 export default function GetInventory() {
     const searchParams =  useSearchParams();
     const router = useRouter();
-    const selectedForOrder = searchParams.get("selectForOrder") === "true";
+     const selectParam = searchParams.get("selectForOrder");
+     const selectedForOrder = selectParam === "true";
+
+  console.log("URL:", window.location.href);
+  console.log("selectForOrder:", selectParam);
+  console.log("selectedForOrder:", selectedForOrder);
+
+    // const selectedForOrder = searchParams.get("selectForOrder") === "true";
     const [inventory, setInventory] = useState<Inventory[]>([])
     const [selectedItem, setSelectedItem] = useState<Inventory | null>(null)
     const [quantity, setQuantity] = useState(1)
@@ -36,11 +43,18 @@ export default function GetInventory() {
         fetchInventory()
         },[])
 
-      const handleAddToOrder = (item: Inventory) => {
-  if (!selectedForOrder) return;
+const handleAddToOrder = (item: Inventory) => {
+  console.log("1. handleAddToOrder started");
+  console.log("2. Item:", item);
+  console.log("3. Quantity:", quantity);
+
+  if (!selectedForOrder) {
+    console.log("STOP: selectedForOrder is false");
+    return;
+  }
 
   if (!item) {
-    alert("Please select a product");
+    console.log("STOP: item is missing");
     return;
   }
 
@@ -54,16 +68,26 @@ export default function GetInventory() {
     return;
   }
 
+  console.log("4. Validation passed");
+
   const existingItems = JSON.parse(
     sessionStorage.getItem("orderItems") || "[]"
   );
 
+  console.log("5. Existing items:", existingItems);
+
   const existingItem = existingItems.find(
-    (orderItem: any) => orderItem.inventory_id === item.id
+    (orderItem: any) =>
+      orderItem.inventory_id === item.id
   );
 
+  console.log("6. Existing item:", existingItem);
+
   if (existingItem) {
-    const newQuantity = existingItem.quantity + quantity;
+    const newQuantity =
+      existingItem.quantity + quantity;
+
+    console.log("7. New quantity:", newQuantity);
 
     if (newQuantity > item.quantity) {
       alert(
@@ -73,27 +97,43 @@ export default function GetInventory() {
     }
 
     existingItem.quantity = newQuantity;
+
     existingItem.total_price =
       newQuantity * existingItem.unit_price;
-    existingItem.available_stock = item.quantity;
+
+    existingItem.available_stock =
+      item.quantity;
+
   } else {
+
+    console.log("7. Adding new item");
+
     existingItems.push({
       inventory_id: item.id,
       product_name: item.product_name,
-      quantity,
+      quantity: quantity,
       unit_price: item.selling_price,
       total_price: item.selling_price * quantity,
       available_stock: item.quantity,
     });
   }
 
+  console.log("8. Before session storage");
+
   sessionStorage.setItem(
     "orderItems",
     JSON.stringify(existingItems)
   );
 
+  console.log(
+    "9. Saved:",
+    JSON.parse(sessionStorage.getItem("orderItems") || "[]")
+  );
+
   setSelectedItem(null);
   setQuantity(1);
+
+  console.log("10. Going back to orders");
 
   router.push("/orders/create-orders");
 };
