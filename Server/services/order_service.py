@@ -95,7 +95,32 @@ def create_order(db: Session, order, current_user):
     tax_amount = sub_total * tax / 100
     #  Calculate total amount
     total_amount = sub_total - discount + other_charges + shipping_charges + tax_amount
-    # 6. Create the main order
+
+    if order.amount_paid > total_amount:
+         raise HTTPException(
+            status_code = 404,
+            detail = "Amount paid cannot be greater than total amount "
+         )
+    if order.amount_paid < 0:
+         raise HTTPException(
+            status_code = 404,
+            detail = "Amount paid cannot be negative "
+         )
+
+    if order.payment_status == "unpaid":
+        if order.amount_paid == 0:
+            raise HTTPException(
+                status_code = 404,
+                detail = "Amount paid must be greater than 0 "
+            )
+    if order.amount_paid == 0:
+         payment_status = "unpaid"
+    elif order.amount_paid >= total_amount:
+         payment_status = "paid"
+    else:
+         payment_status = "partial"
+
+        # 6. Create the main order
     new_order = Orders(
         customer_id=customer.id,
         user_id=current_user.id,
@@ -105,6 +130,8 @@ def create_order(db: Session, order, current_user):
         shipping_charges=shipping_charges,
         other_charges=other_charges,
         total_amount=total_amount,
+        payment_status=payment_status,
+        amount_paid=order.amount_paid,
         status="pending"
     )
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Numeric, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Numeric, String, ForeignKey, DateTime,Float
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
@@ -18,9 +18,11 @@ class Orders(Base):
     shipping_address=Column(String)
     other_charges=Column(Numeric(12,2),default=0)
     payment_method=Column(String)
-    payment_status=Column(String)
+    payment_status=Column(String, default="unpaid", nullable=False)
+    amount_paid=Column(Float, default=0, nullable=False)
     payment_id=Column(String)
     delivery_date=Column(DateTime)
+    
     status=Column(String,default="pending")
     created_at=Column(DateTime,default=datetime.utcnow)
     updated_at=Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)

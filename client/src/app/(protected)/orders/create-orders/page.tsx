@@ -16,6 +16,8 @@ export default function CreateOrders() {
     tax:0,
     shipping_charges:0,
     other_charges:0,
+    payment_status:"unpaid",
+    amount_paid:0,
   })
   const [items, setItems] = useState<OrderItem[]>([])
    useEffect(() => {
@@ -68,6 +70,8 @@ export default function CreateOrders() {
         tax:formData.tax,
         shipping_charges:formData.shipping_charges,
         other_charges:formData.other_charges,
+        payment_status:formData.payment_status,
+        amount_paid:formData.amount_paid,
       })
       
       if(order){
@@ -84,7 +88,8 @@ export default function CreateOrders() {
   const subTotal=items.reduce((total,item)=>total+(item.quantity*item.unit_price),0)
   const taxAmount = (subTotal * formData.tax) / 100
   const totalAmount = subTotal - formData.discount + formData.other_charges + formData.shipping_charges + taxAmount
-  
+  const remainingAmount = Math.max(0, totalAmount - formData.amount_paid)
+  const paymentStatus = formData.amount_paid <= 0 ? "unpaid" : formData.amount_paid >= totalAmount ? "partial" : "paid"
   const removeItem=(InventoryId:number)=>{
     setItems((prev)=>{
         const updateItems = prev.filter((item) => item.inventory_id !== InventoryId);
@@ -141,6 +146,8 @@ removeItem={removeItem}
 updateItemQuantity={updateItemQuantity}
 clearAllItems={clearAllItems}
 totalAmount={totalAmount}
+remainingAmount={remainingAmount}
+paymentStatus={paymentStatus}
 />
     <ToastContainer/>
     </div>

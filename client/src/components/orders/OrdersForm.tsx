@@ -17,6 +17,8 @@ interface OrderFormProps {
   updateItemQuantity:(InventoryId:number,quantity:number)=> void;
   clearAllItems:()=>void;
   totalAmount:number;
+  remainingAmount:number;
+  paymentStatus:"unpaid" | "partial" | "paid";
 }
 
 export default function OrdersForm({
@@ -31,6 +33,8 @@ export default function OrdersForm({
   updateItemQuantity,
   clearAllItems,
   totalAmount,
+  remainingAmount,
+  paymentStatus,
 }: OrderFormProps) {
   const router = useRouter();
   return (
@@ -378,7 +382,78 @@ export default function OrdersForm({
     </div>
 
   </div>
-</div>           
+</div>          
+<div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+  <h2 className="text-lg font-semibold text-slate-800">
+    Payment
+  </h2>
+
+  <div>
+    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+      Payment Status
+    </label>
+
+    <select
+      value={paymentStatus}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          payment_status: e.target.value as
+            | "unpaid"
+            | "partial"
+            | "paid",
+        })
+      }
+      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+    >
+      <option value="unpaid">Unpaid</option>
+      <option value="partial">Partially Paid</option>
+      <option value="paid">Paid</option>
+    </select>
+  </div>
+
+  <div>
+    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+      Amount Paid
+    </label>
+
+    <div className="relative">
+      <IndianRupee
+        size={18}
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+      />
+
+      <input
+        type="number"
+        min={0}
+        max={totalAmount}
+        value={formData.amount_paid}
+        onChange={(e) => {
+          const value = Number(e.target.value);
+
+          setFormData({
+            ...formData,
+            amount_paid: Math.min(
+              Math.max(0, value),
+              totalAmount
+            ),
+          });
+        }}
+        className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+      />
+    </div>
+  </div>
+
+  <div className="flex justify-between border-t pt-3">
+    <span className="font-semibold text-slate-700">
+      Remaining
+    </span>
+
+    <span className="font-bold text-slate-900">
+      ₹{remainingAmount}
+    </span>
+  </div>
+</div> 
    <button
   type="submit"
   disabled={formData.customer_id === 0 || items.length === 0}

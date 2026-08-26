@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 
 
 class OrderItemCreate(BaseModel):
@@ -14,6 +14,8 @@ class OrderCreate(BaseModel):
     tax: float = Field(gt=0)
     shipping_charges: float = Field(gt=0)
     other_charges: float = Field(gt=0)
+    payment_status: Literal["unpaid", "partial", "paid"]="unpaid"
+    amount_paid: float = Field(gt=0)
 
 
 class OrderUpdate(BaseModel):
