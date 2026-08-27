@@ -10,12 +10,12 @@ class OrderItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     customer_id: int
     items: list[OrderItemCreate] = Field(min_length=1)
-    discount: float = Field(gt=0)
-    tax: float = Field(gt=0)
+    discount: float = Field(ge=0)
+    tax: float = Field(ge=0)
     shipping_charges: float = Field(gt=0)
-    other_charges: float = Field(gt=0)
+    other_charges: float = Field(ge=0)
     payment_status: Literal["unpaid", "partial", "paid"]="unpaid"
-    amount_paid: float = Field(gt=0)
+    amount_paid: float = Field(ge=0)
 
 
 class OrderUpdate(BaseModel):

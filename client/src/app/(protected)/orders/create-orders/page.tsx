@@ -16,7 +16,7 @@ export default function CreateOrders() {
     tax:0,
     shipping_charges:0,
     other_charges:0,
-    payment_status:"unpaid",
+    // payment_status:"unpaid",
     amount_paid:0,
   })
   const [items, setItems] = useState<OrderItem[]>([])
@@ -70,7 +70,7 @@ export default function CreateOrders() {
         tax:formData.tax,
         shipping_charges:formData.shipping_charges,
         other_charges:formData.other_charges,
-        payment_status:formData.payment_status,
+        // payment_status:formData.payment_status,
         amount_paid:formData.amount_paid,
       })
       
@@ -80,10 +80,13 @@ export default function CreateOrders() {
         // router.push("/orders/get-orders")
         console.log(order)   
       }
-    }catch(error){
-      toast.error("Failed to create order")
-      console.error(error)
-    }
+    }catch (error: any) {
+  console.log("🔥 STATUS:", error.response?.status);
+  console.log("🔥 BACKEND ERROR:", error.response?.data);
+  console.log("🔥 SENT DATA:", error.config?.data);
+
+  toast.error("Failed to create order");
+}
   }
   const subTotal=items.reduce((total,item)=>total+(item.quantity*item.unit_price),0)
   const taxAmount = (subTotal * formData.tax) / 100
