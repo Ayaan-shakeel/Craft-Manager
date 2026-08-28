@@ -92,7 +92,7 @@ def create_order(db: Session, order, current_user):
             detail = "Charges cannot be negative "
          )
         #  Calculate tax Amount
-    tax_amount = sub_total * tax / 100
+    tax_amount = sub_total * order.tax / 100
     #  Calculate total amount
     total_amount = sub_total - discount + other_charges + shipping_charges + tax_amount
 

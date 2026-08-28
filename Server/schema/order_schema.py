@@ -12,7 +12,7 @@ class OrderCreate(BaseModel):
     items: list[OrderItemCreate] = Field(min_length=1)
     discount: float = Field(ge=0)
     tax: float = Field(ge=0)
-    shipping_charges: float = Field(gt=0)
+    shipping_charges: float = Field(ge=0)
     other_charges: float = Field(ge=0)
     payment_status: Literal["unpaid", "partial", "paid"]="unpaid"
     amount_paid: float = Field(ge=0)
