@@ -17,6 +17,8 @@ export default function GetOrders() {
   const [sort, setSort] = useState("newest")
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [search, setSearch] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState(" ")
   const [stats,setStats]=useState({
     total_orders:0,
     pending:0,
@@ -27,14 +29,21 @@ export default function GetOrders() {
   const [deleteModalOpen,setDeleteModalOpen]=useState(false)
 const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
    const [loading,setLoading]=useState(true)
-  orders.forEach((order) => {
-    console.log(order.id, order)
-  })
+  // orders.forEach((order) => {
+  //   console.log(order.id, order)
+  // })
+  useEffect(()=>{
+    const timer = setTimeout(()=>{
+      setDebouncedSearch(search)
+      setPage(1)
+    },400)
+    return ()=> clearTimeout(timer)
+  },[search])
   useEffect(() => {
     const fetchOrders = async () => {
       try {
 
-        const order = await getOrders(search, status, sort, page)
+        const order = await getOrders(debouncedSearch, status, sort, page)
         if (order) {
           setOrders(order.orders)
           console.log(order.orders.items)
@@ -50,7 +59,7 @@ const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
       }
     }
     fetchOrders()
-  }, [search, status, sort, page])
+  }, [debouncedSearch, status, sort, page])
 
   const updateStatus = async (id: string | number, status: string) => {
     console.log(id)
