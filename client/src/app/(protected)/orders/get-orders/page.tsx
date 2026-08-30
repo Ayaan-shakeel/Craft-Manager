@@ -12,13 +12,14 @@ import DeleteModal from "@/components/ui/DeleteModal"
 export default function GetOrders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [items, setItems] = useState<OrderItem[]>([])
-  const [search, setSearch] = useState("")
+  // const [search, setSearch] = useState("")
   const [status, setStatus] = useState("all")
   const [sort, setSort] = useState("newest")
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [search, setSearch] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState(" ")
+  const [paymentStatus, setPaymentStatus] = useState("all")
   const [stats,setStats]=useState({
     total_orders:0,
     pending:0,
@@ -43,7 +44,7 @@ const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
     const fetchOrders = async () => {
       try {
 
-        const order = await getOrders(debouncedSearch, status, sort, page)
+        const order = await getOrders(debouncedSearch, status, sort, page, paymentStatus)
         if (order) {
           setOrders(order.orders)
           console.log(order.orders.items)
@@ -59,7 +60,7 @@ const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
       }
     }
     fetchOrders()
-  }, [debouncedSearch, status, sort, page])
+  }, [debouncedSearch, status, sort, page, paymentStatus])
 
   const updateStatus = async (id: string | number, status: string) => {
     console.log(id)
@@ -144,6 +145,8 @@ const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
           setStatus={setStatus}
           sort={sort}
           setSort={setSort}
+          paymentStatus={paymentStatus}
+          setPaymentStatus={setPaymentStatus}
           setPage={setPage} />
           <button
   onClick={handleExport}

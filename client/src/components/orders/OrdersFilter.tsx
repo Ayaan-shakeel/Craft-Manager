@@ -7,9 +7,11 @@ interface OrdersFilterProps {
   setStatus: React.Dispatch<React.SetStateAction<string>>,
   sort: string,
   setSort: React.Dispatch<React.SetStateAction<string>>,
-  setPage: React.Dispatch<React.SetStateAction<number>>
+  setPage: React.Dispatch<React.SetStateAction<number>>,
+  paymentStatus: string,
+  setPaymentStatus: React.Dispatch<React.SetStateAction<string>>,
 }
-export default function OrdersFilter({ search, setSearch, status, setStatus, sort, setSort, setPage }: OrdersFilterProps) {
+export default function OrdersFilter({ search, setSearch, status, setStatus, sort, setSort, setPage, paymentStatus, setPaymentStatus }: OrdersFilterProps) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
       <div className="mb-6 text-center sm:text-left">
@@ -80,6 +82,30 @@ export default function OrdersFilter({ search, setSearch, status, setStatus, sor
             <option value="price_lowest">Lowest Total Price</option>
           </select>
         </div>
+
+        <div className="flex flex-col gap-2">
+  <label
+    htmlFor="paymentStatus"
+    className="text-sm font-semibold text-slate-700"
+  >
+    Payment Status
+  </label>
+
+  <select
+    id="paymentStatus"
+    value={paymentStatus}
+    onChange={(e) => {
+      setPaymentStatus(e.target.value)
+      setPage(1)
+    }}
+    className="h-11 w-full rounded-2xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+  >
+    <option value="all">All Payments</option>
+    <option value="unpaid">Unpaid</option>
+    <option value="partial">Partial</option>
+    <option value="paid">Paid</option>
+  </select>
+</div>
       </div>
     </div>
   )

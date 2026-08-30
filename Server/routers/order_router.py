@@ -38,6 +38,7 @@ def create_new_order(order:OrderCreate,current_user:User=Depends(get_current_use
                     }
     }
 
+
 @router.get("/orders",status_code=status.HTTP_200_OK)
 def get_all_orders(
       search:Optional[str]=None,
@@ -45,10 +46,11 @@ def get_all_orders(
       sort:Optional[str]=None,
       page:int=Query(1,ge=1),
       limit:int=Query(10,ge=1,le=100),
+      payment_status:Optional[str]=None,
       current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
                         ):
-    orders,total_count=(get_orders(db,current_user,search,status,sort,page,limit))
+    orders,total_count=(get_orders(db,current_user,search,status,sort,page,limit,payment_status))
     return{
         "message":"Orders retrieved Successfully",
         "count":total_count,

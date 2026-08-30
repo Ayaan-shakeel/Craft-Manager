@@ -5,6 +5,7 @@ export const getOrders=async(
     status:string,
     sort:string,
     page:number,
+    paymentStatus:string
 )=>{
     try{
         const response=await api.get("/api/orders",{
@@ -12,7 +13,9 @@ export const getOrders=async(
                 search,
                 status,
                 sort,
-                page
+                page,
+                limit:10,
+                payment_status:paymentStatus,
             }
         })
         return response.data

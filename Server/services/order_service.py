@@ -163,7 +163,7 @@ def create_order(db: Session, order, current_user):
 
     return new_order
 
-def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,limit=10):
+def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,limit=10,payment_status=None):
     orders=db.query(Orders).filter(
         Orders.user_id==current_user.id
     )
@@ -183,6 +183,11 @@ def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,
           orders=orders.order_by(Orders.total_amount.desc())
     elif sort=="price_lowest":
           orders=orders.order_by(Orders.total_amount.asc())
+
+    if status and status !="all":
+          orders=orders.all()
+    if payment_status and payment_status !="all":
+          orders=orders.filter(Orders.payment_status==payment_status)
 
     offset=(page-1)*limit
     orders=(orders
