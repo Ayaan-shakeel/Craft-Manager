@@ -50,7 +50,7 @@ def get_all_orders(
       current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
                         ):
-    orders,total_count=(get_orders(db,current_user,search,status,sort,page,limit,payment_status))
+    orders,total_count,stats=(get_orders(db,current_user,search,status,sort,page,limit,payment_status))
     return{
         "message":"Orders retrieved Successfully",
         "count":total_count,

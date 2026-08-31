@@ -137,7 +137,7 @@ const [selectedOrder,setSelectedOrder]=useState<number | null>(null)
             Update status, and review customer order details.
           </p>
         </div>
-        {/* <OrdersStats stats={stats}/> */}
+        <OrdersStats stats={stats}/>
         <OrdersFilter
           search={search}
           setSearch={setSearch}

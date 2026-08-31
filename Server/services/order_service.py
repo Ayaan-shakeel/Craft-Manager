@@ -1,7 +1,7 @@
 from model.order_model import Orders
 from database import sessionLocal 
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_ ,func
 from model.customer_model import Customer
 from fastapi import HTTPException
 from io import StringIO
@@ -194,9 +194,40 @@ def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,
            .offset(offset)
            .limit(limit)
            .all()
-           )
-          
-    return orders, total_count,
+           ) 
+    total_orders = db.query(Orders).filter(
+    Orders.user_id == current_user.id
+     ).count()
+
+    pending = db.query(Orders).filter(
+    Orders.user_id == current_user.id,
+    Orders.status == "pending"
+    ).count()
+
+    completed = db.query(Orders).filter(
+    Orders.user_id == current_user.id,
+    Orders.status == "completed"
+    ).count()
+
+    shipped = db.query(Orders).filter(
+    Orders.user_id == current_user.id,
+    Orders.status == "shipped"
+    ).count()
+
+    revenue = db.query(Orders).filter(
+    Orders.user_id == current_user.id,
+    Orders.payment_status == "paid"
+    ).with_entities(
+    func.sum(Orders.total_amount)
+    ).scalar() or 0
+
+    return orders, total_count, {
+         "total_orders":total_orders,
+         "pending":pending,
+         "shipped":shipped,
+         "completed":completed,
+         "revenue":revenue,
+    }
           
 def export_orders_csv(db:Session,current_user):
       orders=(db.query(Orders).filter(
