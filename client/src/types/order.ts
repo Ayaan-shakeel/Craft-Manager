@@ -37,3 +37,10 @@ export interface OrderData{
    amount_paid:number,
 }
 
+export interface OrderStats{
+    total_orders:number
+    pending:number
+    completed:number
+    shipped:number
+    revenue:number
+}

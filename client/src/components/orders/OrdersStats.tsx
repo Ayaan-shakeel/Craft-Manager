@@ -7,15 +7,10 @@ import {
     Truck,
     IndianRupee
 } from "lucide-react"
+import { OrderStats } from "@/types/order"
 
 interface OrdersStatsProps{
-    stats:{
-        total_orders:number
-        pending:number
-        completed:number
-        shipped:number
-        revenue:number
-    }
+    stats:OrderStats
 }
 
 export default function OrdersStats({stats}:OrdersStatsProps){

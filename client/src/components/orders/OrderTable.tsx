@@ -53,44 +53,21 @@ export default function OrderTable({
             <div className="hidden lg:block">
               <div className="px-3 py-4 sm:px-4 lg:px-6 lg:py-6">
                 <table className="w-full table-fixed border-separate border-spacing-y-3">
-                  <thead>
-                    <tr>
-                      <th className="w-[5%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        S.No
-                      </th>
-                      <th className="w-[14%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Product
-                      </th>
-                      <th className="w-[14%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Customer
-                      </th>
-                      <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Qty
-                      </th>
-                      <th className="w-[10%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Price
-                      </th>
-                      <th className="w-[11%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Total
-                      </th>
-                      <th className="w-[10%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Status
-                      </th>
-                      <th className="w-[14%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Update
-                      </th>
-                      <th className="w-[4%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        View
-                      </th>
-                      <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Edit
-                      </th>
-                      <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                        Del
-                      </th>
-                    </tr>
-                  </thead>
-
+               <thead>
+  <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+    <th className="px-3 py-3">Order</th>
+    <th className="px-3 py-3">Customer</th>
+    <th className="px-3 py-3">Products</th>
+    <th className="px-3 py-3 text-center">Items</th>
+    <th className="px-3 py-3">Subtotal</th>
+    <th className="px-3 py-3">Total</th>
+    <th className="px-3 py-3">Status</th>
+    <th className="px-3 py-3">Update</th>
+    <th className="px-3 py-3 text-center">View</th>
+    <th className="px-3 py-3 text-center">Edit</th>
+    <th className="px-3 py-3 text-center">Delete</th>
+  </tr>
+</thead>
                   <tbody>
                     {Orders.map((order, index) => (
                       <OrderRow

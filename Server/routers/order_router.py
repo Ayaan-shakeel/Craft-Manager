@@ -56,7 +56,7 @@ def get_all_orders(
         "count":total_count,
         "page":page,
         "limit":limit,
-        
+        "stats":stats,
         "orders":[
             {
                 "id":order.id,
