@@ -13,11 +13,15 @@ import {
   Package,
   ShoppingBag,
   UserRound,
+  Receipt,
+  Truck,
+  Percent,
 } from "lucide-react";
-import {toast ,ToastContainer} from "react-toastify"
+import { toast, ToastContainer } from "react-toastify";
 
 export default function ViewOrder() {
   const [order, setOrder] = useState<Order | null>(null);
+
   const params = useParams();
   const id = params.id as string;
 
@@ -25,12 +29,12 @@ export default function ViewOrder() {
     const getOrder = async () => {
       try {
         const response = await getOrderById(id);
+
         if (response) {
           setOrder(response);
-          console.log(response);
         }
       } catch (error) {
-        toast.error("Failed while getting Orders")
+        toast.error("Failed while getting order");
         console.error("Error fetching order", error);
       }
     };
@@ -42,8 +46,11 @@ export default function ViewOrder() {
     return (
       <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-6xl animate-pulse">
+
           <div className="mb-6 h-10 w-40 rounded-xl bg-slate-200" />
+
           <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
             <div className="border-b border-slate-200 p-6 sm:p-8">
               <div className="mb-4 h-6 w-32 rounded-lg bg-slate-200" />
               <div className="h-10 w-72 rounded-lg bg-slate-200" />
@@ -51,12 +58,16 @@ export default function ViewOrder() {
 
             <div className="grid gap-6 p-6 sm:grid-cols-2 sm:p-8 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="rounded-2xl bg-slate-100 p-5">
+                <div
+                  key={index}
+                  className="rounded-2xl bg-slate-100 p-5"
+                >
                   <div className="mb-3 h-4 w-24 rounded bg-slate-200" />
                   <div className="h-6 w-32 rounded bg-slate-200" />
                 </div>
               ))}
             </div>
+
           </div>
         </div>
       </section>
@@ -69,15 +80,19 @@ export default function ViewOrder() {
       : order.status === "processing"
       ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200"
       : order.status === "shipped"
-      ? "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+      ? "bg-purple-50 text-purple-700 ring-1 ring-purple-200"
       : order.status === "cancelled"
       ? "bg-red-50 text-red-700 ring-1 ring-red-200"
       : "bg-amber-50 text-amber-700 ring-1 ring-amber-200";
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-6 sm:px-6 lg:px-8">
-      <ToastContainer/>
+
+      <ToastContainer />
+
       <div className="mx-auto w-full max-w-6xl">
+
+        {/* Back */}
         <div className="mb-6">
           <Link
             href="/orders"
@@ -89,99 +104,309 @@ export default function ViewOrder() {
         </div>
 
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)]">
+
+          {/* Header */}
           <div className="border-b border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-6 py-8 text-white sm:px-8 lg:px-10">
+
             <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+
               <div>
-                <div className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
+
+                <div className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
                   <ShoppingBag size={24} />
                 </div>
 
                 <p className="text-sm font-medium text-blue-100">
-                  Order Details
+                  Order #{order.id}
                 </p>
+
                 <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                  {order.product_name}
+                  Order Details
                 </h1>
+
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-200 sm:text-base">
-                  Review the full order information including customer details,
-                  quantity, pricing, and current status.
+                  Review customer information, products, payment details,
+                  pricing, and order status.
                 </p>
+
               </div>
 
-              <div>
-                <span
-                  className={`inline-flex rounded-full px-4 py-2 text-sm font-semibold capitalize ${statusClasses}`}
-                >
-                  {order.status}
-                </span>
-              </div>
+              <span
+                className={`inline-flex w-fit rounded-full px-4 py-2 text-sm font-semibold capitalize ${statusClasses}`}
+              >
+                {order.status}
+              </span>
+
             </div>
           </div>
 
+          {/* Basic Information */}
           <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-3">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <div className="mb-3 flex items-center gap-2 text-slate-500">
-                <Package size={18} />
-                <p className="text-sm font-medium">Product Name</p>
-              </div>
-              <h2 className="text-lg font-semibold text-slate-800">
-                {order.product_name}
-              </h2>
-            </div>
 
+            {/* Customer */}
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+
               <div className="mb-3 flex items-center gap-2 text-slate-500">
                 <UserRound size={18} />
-                <p className="text-sm font-medium">Customer</p>
+                <p className="text-sm font-medium">
+                  Customer
+                </p>
               </div>
+
               <h2 className="text-lg font-semibold text-slate-800">
                 {order.customer_name || "Unknown Customer"}
               </h2>
+
             </div>
 
+            {/* Items */}
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+
+              <div className="mb-3 flex items-center gap-2 text-slate-500">
+                <Boxes size={18} />
+                <p className="text-sm font-medium">
+                  Total Items
+                </p>
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-900">
+                {order.item_count}
+              </h2>
+
+            </div>
+
+            {/* Status */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+
               <div className="mb-3 flex items-center gap-2 text-slate-500">
                 <BadgeCheck size={18} />
-                <p className="text-sm font-medium">Status</p>
+                <p className="text-sm font-medium">
+                  Status
+                </p>
               </div>
+
               <h2 className="text-lg font-semibold capitalize text-slate-800">
                 {order.status}
               </h2>
+
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-3 flex items-center gap-2 text-slate-500">
-                <Boxes size={18} />
-                <p className="text-sm font-medium">Quantity</p>
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900">
-                {order.quantity}
-              </h2>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-3 flex items-center gap-2 text-slate-500">
-                <CreditCard size={18} />
-                <p className="text-sm font-medium">Price</p>
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900">
-                ₹ {order.price}
-              </h2>
-            </div>
-
-            <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5 shadow-sm">
-              <div className="mb-3 flex items-center gap-2 text-blue-600">
-                <ShoppingBag size={18} />
-                <p className="text-sm font-medium">Total Price</p>
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900">
-                ₹ {order.total_price}
-              </h2>
-            </div>
           </div>
 
-          <div className="border-t border-slate-200 bg-slate-50 px-6 py-5 sm:px-8 lg:px-10">
+          {/* Products */}
+          <div className="border-t border-slate-200 px-6 py-6 sm:px-8">
+
+            <div className="mb-5 flex items-center gap-2">
+
+              <Package size={20} className="text-blue-600" />
+
+              <h2 className="text-xl font-bold text-slate-800">
+                Ordered Products
+              </h2>
+
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-slate-200">
+
+              <div className="hidden grid-cols-4 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:grid">
+
+                <span>Product</span>
+                <span>Quantity</span>
+                <span>Unit Price</span>
+                <span className="text-right">Total</span>
+
+              </div>
+
+              <div className="divide-y divide-slate-100">
+
+                {order.items && order.items.length > 0 ? (
+
+                  order.items.map((item) => (
+
+                    <div
+                      key={item.id}
+                      className="grid gap-3 px-5 py-4 sm:grid-cols-4 sm:items-center"
+                    >
+
+                      <div>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {item.product_name}
+                        </p>
+                      </div>
+
+                      <div className="text-sm text-slate-600">
+                        <span className="sm:hidden font-medium">
+                          Quantity:{" "}
+                        </span>
+                        {item.quantity}
+                      </div>
+
+                      <div className="text-sm text-slate-600">
+                        <span className="sm:hidden font-medium">
+                          Unit Price:{" "}
+                        </span>
+                        ₹ {item.unit_price.toLocaleString("en-IN")}
+                      </div>
+
+                      <div className="text-sm font-semibold text-slate-800 sm:text-right">
+                        <span className="sm:hidden font-medium">
+                          Total:{" "}
+                        </span>
+                        ₹ {item.total_price.toLocaleString("en-IN")}
+                      </div>
+
+                    </div>
+
+                  ))
+
+                ) : (
+
+                  <div className="px-5 py-6 text-center text-sm text-slate-400">
+                    No products found.
+                  </div>
+
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Pricing */}
+          <div className="border-t border-slate-200 px-6 py-6 sm:px-8">
+
+            <div className="mb-5 flex items-center gap-2">
+
+              <Receipt size={20} className="text-blue-600" />
+
+              <h2 className="text-xl font-bold text-slate-800">
+                Order Summary
+              </h2>
+
+            </div>
+
+            <div className="ml-auto max-w-md space-y-3">
+
+              <div className="flex justify-between text-sm text-slate-600">
+                <span>Subtotal</span>
+                <span>
+                  ₹ {order.sub_total.toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm text-slate-600">
+                <span>Discount</span>
+                <span>
+                  - ₹ {order.discount.toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm text-slate-600">
+                <span>Tax</span>
+                <span>
+                  ₹ {order.tax.toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm text-slate-600">
+                <span>Shipping</span>
+                <span>
+                  ₹ {(order.shipping_charges ?? 0).toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm text-slate-600">
+                <span>Other Charges</span>
+                <span>
+                  ₹ {(order.other_charges ?? 0).toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
+
+                <div className="flex items-center justify-between">
+
+                  <span className="text-lg font-bold text-slate-800">
+                    Total Amount
+                  </span>
+
+                  <span className="text-2xl font-bold text-blue-600">
+                    ₹ {order.total_amount.toLocaleString("en-IN")}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Payment */}
+          <div className="border-t border-slate-200 bg-slate-50 px-6 py-6 sm:px-8">
+
+            <div className="mb-5 flex items-center gap-2">
+
+              <CreditCard size={20} className="text-blue-600" />
+
+              <h2 className="text-xl font-bold text-slate-800">
+                Payment Information
+              </h2>
+
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Payment Status
+                </p>
+
+                <p className="mt-2 text-lg font-bold capitalize text-slate-800">
+                  {order.payment_status ?? "Unknown"}
+                </p>
+
+              </div>
+
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Amount Paid
+                </p>
+
+                <p className="mt-2 text-lg font-bold text-slate-800">
+                  ₹ {(order.amount_paid ?? 0).toLocaleString("en-IN")}
+                </p>
+
+              </div>
+
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Remaining
+                </p>
+
+                <p className="mt-2 text-lg font-bold text-slate-800">
+                  ₹{" "}
+                  {(
+                    order.total_amount -
+                    (order.amount_paid ?? 0)
+                  ).toLocaleString("en-IN")}
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Actions */}
+          <div className="border-t border-slate-200 bg-white px-6 py-5 sm:px-8 lg:px-10">
+
             <div className="flex flex-col gap-3 sm:flex-row">
+
               <Link
                 href={`/orders/edit/${order.id}`}
                 className="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
@@ -195,11 +420,17 @@ export default function ViewOrder() {
               >
                 Go to Orders List
               </Link>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
-      <ToastContainer/>
+
+      <ToastContainer />
+
     </section>
   );
 }
