@@ -15,7 +15,7 @@ import {
   UserRound,
   Receipt,
   Truck,
-  Percent,
+  Clock,
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -41,6 +41,33 @@ export default function ViewOrder() {
 
     getOrder();
   }, [id]);
+
+    const timelineStatuses = [
+    {
+      key: "pending",
+      label: "Order Created",
+      description: "Order has been successfully created.",
+      icon: Clock,
+    },
+    {
+      key: "processing",
+      label: "Processing",
+      description: "Order is being processed.",
+      icon: Package,
+    },
+    {
+      key: "shipped",
+      label: "Shipped",
+      description: "Order has been shipped to the customer.",
+      icon: Truck,
+    },
+    {
+      key: "completed",
+      label: "Completed",
+      description: "Order has been completed successfully.",
+      icon: BadgeCheck,
+    },
+  ];
 
   if (!order) {
     return (
@@ -73,6 +100,17 @@ export default function ViewOrder() {
       </section>
     );
   }
+
+  const statusOrder = [
+    "pending",
+    "processing",
+    "shipped",
+    "completed",
+  ];
+
+  const currentStatusIndex = statusOrder.indexOf(order.status);
+
+  
 
   const statusClasses =
     order.status === "completed"
@@ -270,6 +308,145 @@ export default function ViewOrder() {
               </div>
 
             </div>
+
+          </div>
+
+                    {/* Order Timeline */}
+          <div className="border-t border-slate-200 px-6 py-6 sm:px-8">
+
+            <div className="mb-6 flex items-center gap-2">
+
+              <Clock size={20} className="text-blue-600" />
+
+              <h2 className="text-xl font-bold text-slate-800">
+                Order Timeline
+              </h2>
+
+            </div>
+
+            <div className="relative">
+
+              {timelineStatuses.map((step, index) => {
+
+                const StepIcon = step.icon;
+
+                const isCompleted =
+                  currentStatusIndex >= index &&
+                  order.status !== "cancelled";
+
+                const isCurrent =
+                  currentStatusIndex === index;
+
+                const isLast =
+                  index === timelineStatuses.length - 1;
+
+                return (
+                  <div
+                    key={step.key}
+                    className="relative flex gap-4 pb-8 last:pb-0"
+                  >
+
+                    {/* Connecting Line */}
+                    {!isLast && (
+                      <div
+                        className={`absolute left-[19px] top-10 h-[calc(100%-16px)] w-0.5 ${
+                          currentStatusIndex > index
+                            ? "bg-blue-600"
+                            : "bg-slate-200"
+                        }`}
+                      />
+                    )}
+
+                    {/* Icon */}
+                    <div
+                      className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition ${
+                        isCompleted
+                          ? "border-blue-600 bg-blue-600 text-white"
+                          : "border-slate-300 bg-white text-slate-400"
+                      }`}
+                    >
+                      <StepIcon size={18} />
+                    </div>
+
+                    {/* Content */}
+                    <div className="pt-1">
+
+                      <div className="flex flex-wrap items-center gap-2">
+
+                        <h3
+                          className={`font-semibold ${
+                            isCompleted
+                              ? "text-slate-800"
+                              : "text-slate-400"
+                          }`}
+                        >
+                          {step.label}
+                        </h3>
+
+                        {isCurrent && order.status !== "cancelled" && (
+                          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-600 ring-1 ring-blue-200">
+                            Current
+                          </span>
+                        )}
+
+                      </div>
+
+                      <p
+                        className={`mt-1 text-sm ${
+                          isCompleted
+                            ? "text-slate-500"
+                            : "text-slate-400"
+                        }`}
+                      >
+                        {index === 0
+                          ? order.created_at
+                            ? `Created on ${new Date(
+                                order.created_at
+                              ).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}`
+                            : step.description
+                          : isCompleted
+                          ? step.description
+                          : "Waiting for update"}
+                      </p>
+
+                    </div>
+
+                  </div>
+                );
+              })}
+
+            </div>
+
+            {/* Cancelled State */}
+            {order.status === "cancelled" && (
+              <div className="mt-2 rounded-2xl border border-red-200 bg-red-50 p-4">
+
+                <div className="flex items-center gap-3">
+
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
+                    <Clock size={18} />
+                  </div>
+
+                  <div>
+                    <p className="font-semibold text-red-700">
+                      Order Cancelled
+                    </p>
+
+                    <p className="text-sm text-red-600">
+                      This order has been cancelled and is no longer active.
+                    </p>
+                  </div>
+
+                </div>
+
+              </div>
+            )}
 
           </div>
 
