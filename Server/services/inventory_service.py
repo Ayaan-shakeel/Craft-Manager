@@ -181,3 +181,16 @@ def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
     db.commit()
     db.refresh(inventory)
     return inventory
+
+def delete_inventory(db:Session,inventory_id:int,current_user):
+    inventory=db.query(Inventory).filter(
+        Inventory.id == inventory_id,
+        Inventory.user_id == current_user.id
+    ).first()
+    if inventory is None:
+        raise HTTPException(
+            status_code = 404,
+            detail = "Inventory not found"
+        )
+    db.delete(inventory)
+    db.commit()
