@@ -13,8 +13,9 @@ interface InventoryTableProps{
   setSelectedItem:React.Dispatch<React.SetStateAction<Inventory | null>>;
   quantity:number;
   setQuantity:React.Dispatch<React.SetStateAction<number>>;
+  handleDelete:(id:string | number)=>void;
 }
-export default function InventoryTable({inventory,stats,onAddToOrder,selectedItem,setSelectedItem,quantity,setQuantity} : InventoryTableProps) {
+export default function InventoryTable({inventory,stats,onAddToOrder,selectedItem,setSelectedItem,quantity,setQuantity,handleDelete} : InventoryTableProps) {
   return (
      <div>
       {inventory.map((item) => (
@@ -25,6 +26,11 @@ export default function InventoryTable({inventory,stats,onAddToOrder,selectedIte
           <div>{item.category}</div>
           <div>{item.sku}</div>
           <div>{item.stock_status}</div>
+          <div>
+            <button onClick={()=>handleDelete(item.id)} className="rounded-lg bg-red-600 px-4 py-2 text-white">
+              Delete
+            </button>
+          </div>
 
 {onAddToOrder && (
   <button

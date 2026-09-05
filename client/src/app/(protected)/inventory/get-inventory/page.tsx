@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { getInventory } from '@/services/inventoryService'
+import { getInventory, deleteInventory } from '@/services/inventoryService'
 import { Inventory } from '@/types/inventory'
 import InventoryTable from '@/components/inventory/InventoryTable'
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -137,6 +137,19 @@ const handleAddToOrder = (item: Inventory) => {
 
   router.push("/orders/create-orders");
 };
+
+const handleDelete = async (id: string | number) => {
+  try{
+    const response = await deleteInventory(id)
+    if(response){
+      alert("Inventory deleted successfully")
+      // toast.success("Inventory deleted successfully")
+    }
+  }catch(error){
+    console.error("Error while deleting Inventory", error)
+    // toast.error("Error while deleting Inventory")
+  }
+}
   return (
     <div>
         <h1>Inventory</h1>
@@ -145,7 +158,7 @@ const handleAddToOrder = (item: Inventory) => {
         ) 
         }
         <div>
-            <InventoryTable inventory={inventory} stats={stats} onAddToOrder={handleAddToOrder} selectedItem={selectedItem} setSelectedItem={setSelectedItem} quantity={quantity} setQuantity={setQuantity} />
+            <InventoryTable inventory={inventory} stats={stats} onAddToOrder={handleAddToOrder} selectedItem={selectedItem} setSelectedItem={setSelectedItem} quantity={quantity} setQuantity={setQuantity} handleDelete={handleDelete} />
              </div>
     </div>
   )

@@ -54,3 +54,14 @@ export const updateInventory=async(id:string | number,
     }
     
 }
+
+export const deleteInventory = async (id: string | number) => {
+    try{
+        const response = await api.delete(`/api/inventory/${id}`)
+        return response.data
+
+    }catch(error){
+        console.error("Error while detecting Inventory", error)
+        throw error
+    }
+}
