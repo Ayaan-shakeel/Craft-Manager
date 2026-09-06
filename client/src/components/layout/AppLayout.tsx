@@ -14,6 +14,7 @@ export default function AppLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
+<div>
     <div className="min-h-screen bg-slate-50">
 
       <Sidebar
@@ -34,5 +35,6 @@ export default function AppLayout({
       </div>
 
     </div>
+</div>
   );
 }
