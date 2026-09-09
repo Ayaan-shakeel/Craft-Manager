@@ -16,9 +16,10 @@ export default function Navbar({
       {/* Left */}
       <div className="flex items-center gap-4">
 
+        {/* Menu Button */}
         <button
           onClick={onMenuClick}
-          className="rounded-xl p-2 text-slate-600 transition hover:bg-slate-100 lg:hidden"
+          className="rounded-xl p-2.5 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
           aria-label="Open sidebar"
         >
           <Menu size={22} />

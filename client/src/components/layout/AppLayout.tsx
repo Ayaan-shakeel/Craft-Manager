@@ -22,7 +22,13 @@ export default function AppLayout({
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div className="lg:pl-72">
+      <div
+        className={`
+          min-h-screen
+          transition-all duration-300 ease-in-out
+          ${sidebarOpen ? "lg:pl-72" : "lg:pl-0"}
+        `}
+      >
 
         <Navbar
           onMenuClick={() => setSidebarOpen(true)}

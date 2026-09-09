@@ -16,6 +16,7 @@ import {
   Receipt,
   Truck,
   Clock,
+  Copy
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -41,6 +42,16 @@ export default function ViewOrder() {
 
     getOrder();
   }, [id]);
+
+  const handleCopyOrderId = async () => {
+  try {
+    await navigator.clipboard.writeText(String(order?.id));
+    toast.success("Order ID copied!");
+  } catch (error) {
+    console.error("Failed to copy order ID", error);
+    toast.error("Failed to copy Order ID");
+  }
+};
 
     const timelineStatuses = [
     {
@@ -154,6 +165,14 @@ export default function ViewOrder() {
                   <ShoppingBag size={24} />
                 </div>
 
+  <button
+    onClick={handleCopyOrderId}
+    className="rounded-lg bg-white/10 p-1.5 text-blue-100 transition hover:bg-white/20 hover:text-white"
+    title="Copy Order ID"
+    aria-label="Copy Order ID"
+  >
+    <Copy size={14} />
+  </button>
                 <p className="text-sm font-medium text-blue-100">
                   Order #{order.id}
                 </p>

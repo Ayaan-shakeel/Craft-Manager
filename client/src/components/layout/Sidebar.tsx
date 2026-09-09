@@ -63,27 +63,25 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-[1px]"
           onClick={onClose}
         />
       )}
 
+      {/* Sidebar */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-50 flex w-72 flex-col
           border-r border-slate-200 bg-white
-          transition-transform duration-300
-          lg:translate-x-0
-          ${
-            isOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
+          shadow-xl
+          transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
+
         {/* Logo */}
         <div className="flex h-20 items-center justify-between border-b border-slate-200 px-6">
 
@@ -107,10 +105,10 @@ export default function Sidebar({
             </div>
           </Link>
 
-          {/* Mobile Close */}
+          {/* Close Button */}
           <button
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+            className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
             aria-label="Close sidebar"
           >
             <X size={20} />
@@ -119,7 +117,7 @@ export default function Sidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-2 px-4 py-6">
+        <nav className="flex-1 space-y-2 overflow-y-auto px-4 py-6">
 
           <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
             Main Menu
