@@ -1,16 +1,17 @@
+'use client'
 import React from 'react'
 import {useEffect,useState} from 'react'
 import {getSingleInventory} from "@/services/inventoryService"
 import { useParams } from 'next/navigation'
 import { Inventory } from '@/types/inventory'
 export default function Inventory() {
-  const [inventory, setInventory] = useState< Inventory | null>(null);
+  const [inventory, setInventory] = useState<Inventory | null>(null);
   
     const params = useParams();
     const id = params.id as string;
   
   useEffect(()=>{
-    const getSinglealoneInventory = async(){
+    const getSinglealoneInventory = async() =>{
       try{
         const response = await getSingleInventory(id)
         if(response){
@@ -24,6 +25,8 @@ export default function Inventory() {
     getSinglealoneInventory()
   },[id])
   return (
-    <div>page</div>
+    <div>
+      {inventory?.product_name}
+    </div>
   )
 }
