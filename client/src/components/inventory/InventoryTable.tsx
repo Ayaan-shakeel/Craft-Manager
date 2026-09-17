@@ -1,6 +1,6 @@
 import React from "react";
 import { Inventory } from "@/types/inventory";
-import { PackageSearch, Trash2, Plus, Minus, ShoppingCart } from "lucide-react";
+import { PackageSearch, Trash2, Plus, Minus, ShoppingCart, Eye } from "lucide-react";
 
 interface InventoryTableProps {
   inventory: Inventory[];
@@ -16,6 +16,7 @@ interface InventoryTableProps {
   quantity: number;
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
   handleDelete: (id: string | number) => void;
+  onView?: (item: Inventory) => void; // new prop
 }
 
 export default function InventoryTable({
@@ -27,6 +28,7 @@ export default function InventoryTable({
   quantity,
   setQuantity,
   handleDelete,
+  onView,
 }: InventoryTableProps) {
   return (
     <section className="w-full">
@@ -115,6 +117,16 @@ export default function InventoryTable({
                   </div>
 
                   <div className="mt-4 flex gap-3">
+                    {onView && (
+                      <button
+                        onClick={() => onView(item)}
+                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+                      >
+                        <Eye size={16} />
+                        View
+                      </button>
+                    )}
+
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100"
@@ -143,35 +155,38 @@ export default function InventoryTable({
             </div>
 
             {/* Desktop table */}
-            <div className="hidden lg:block p-6">
+            <div className="hidden p-6 lg:block">
               <table className="w-full table-fixed border-separate border-spacing-y-3">
                 <thead>
                   <tr>
-                    <th className="w-[24%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[22%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Product
                     </th>
-                    <th className="w-[10%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[9%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Stock
                     </th>
-                    <th className="w-[12%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[11%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Cost
                     </th>
-                    <th className="w-[12%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[11%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Selling
                     </th>
-                    <th className="w-[16%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[14%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Category
                     </th>
-                    <th className="w-[14%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[13%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       SKU
                     </th>
-                    <th className="w-[10%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[9%] px-2 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Status
                     </th>
-                    <th className="w-[6%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                      View
+                    </th>
+                    <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Del
                     </th>
-                    <th className="w-[6%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Add
                     </th>
                   </tr>
@@ -208,6 +223,22 @@ export default function InventoryTable({
                           {item.stock_status}
                         </span>
                       </td>
+
+                      {/* View */}
+                      <td className="px-2 py-4 text-center">
+                        {onView ? (
+                          <button
+                            onClick={() => onView(item)}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+                          >
+                            <Eye size={16} />
+                          </button>
+                        ) : (
+                          <span className="text-xs text-slate-400">—</span>
+                        )}
+                      </td>
+
+                      {/* Delete */}
                       <td className="px-2 py-4 text-center">
                         <button
                           onClick={() => handleDelete(item.id)}
@@ -216,6 +247,8 @@ export default function InventoryTable({
                           <Trash2 size={16} />
                         </button>
                       </td>
+
+                      {/* Add to order */}
                       <td className="rounded-r-2xl px-2 py-4 text-center">
                         {onAddToOrder && (
                           <button
