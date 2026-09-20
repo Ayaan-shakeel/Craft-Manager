@@ -2,7 +2,7 @@ from model.inventory_model import Inventory
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from model.order_model import Orders
-from sqlalchemy import func,sum
+from sqlalchemy import func
 
 def create_inventory(db:Session,inventory,current_user):
     new_inventory=Inventory(
