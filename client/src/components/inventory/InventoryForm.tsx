@@ -194,6 +194,8 @@ export default function InventoryForm({
           </form>
         </div>
       </div>
+<div>
+</div>
     </section>
   );
 }
