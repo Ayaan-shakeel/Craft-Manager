@@ -1,6 +1,7 @@
 import React from "react";
 import { Inventory } from "@/types/inventory";
 import { PackageSearch, Trash2, Plus, Minus, ShoppingCart, Eye } from "lucide-react";
+import Link from "next/link";
 
 interface InventoryTableProps {
   inventory: Inventory[];
@@ -226,16 +227,12 @@ export default function InventoryTable({
 
                       {/* View */}
                       <td className="px-2 py-4 text-center">
-                        {onView ? (
-                          <button
-                            onClick={() => onView(item)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-                          >
-                            <Eye size={16} />
-                          </button>
-                        ) : (
-                          <span className="text-xs text-slate-400">—</span>
-                        )}
+                         <Link
+                                 href={`/inventory/view/${inventory.id}`}
+                                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+                               >
+                                 <Eye size={16} />
+                               </Link>
                       </td>
 
                       {/* Delete */}
