@@ -1,6 +1,6 @@
 import React from "react";
 import { Inventory } from "@/types/inventory";
-import { PackageSearch, Trash2, Plus, Minus, ShoppingCart, Eye } from "lucide-react";
+import { PackageSearch, Trash2, Plus, Minus, ShoppingCart, Eye, Pencil } from "lucide-react";
 import Link from "next/link";
 
 interface InventoryTableProps {
@@ -127,6 +127,16 @@ export default function InventoryTable({
                         View
                       </button>
                     )}
+                    {onView && (
+   
+                     <button
+                        onClick={() => onView(item)}
+                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+                      >
+                        <Pencil size={16} />
+                        Edit
+                      </button>
+                    )}
 
                     <button
                       onClick={() => handleDelete(item.id)}
@@ -185,6 +195,9 @@ export default function InventoryTable({
                       View
                     </th>
                     <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                      Edit
+                    </th>
+                    <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       Del
                     </th>
                     <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
@@ -228,10 +241,18 @@ export default function InventoryTable({
                       {/* View */}
                       <td className="px-2 py-4 text-center">
                          <Link
-                                 href={`/inventory/view/${inventory.id}`}
+                                 href={`/inventory/view/${item.id}`}
                                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
                                >
                                  <Eye size={16} />
+                               </Link>
+                      </td>
+                      <td className="px-2 py-4 text-center">
+                         <Link
+                                 href={`/inventory/edit/${item.id}`}
+                                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+                               >
+                                 <Pencil size={16} />
                                </Link>
                       </td>
 
