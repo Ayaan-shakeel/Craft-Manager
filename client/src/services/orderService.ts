@@ -34,14 +34,7 @@ export const getOrders=async(
     }
 }
 
- export const updateOrder=async(id:string | number,data:{
-    product_name:string,
-    quantity:number,
-    price:number,
-    status:string,
-    // customer_id:number
-
- })=>{
+ export const updateOrder=async(id:string | number,data:OrderData)=>{
     try{
         const response=await api.put(`/api/orders/${id}`,data);
            return response.data

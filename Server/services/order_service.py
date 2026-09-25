@@ -313,17 +313,32 @@ def CancelOrder(db:Session,order_id:int,current_user):
       db.commit()
       return order
 
-def UpdateOrder(db:Session,order_id:int,data,current_user):
-      order=db.query(Orders).filter(
-            Orders.id==order_id,
-            Orders.user_id==current_user.id
-      ).first()
-      if order is None:
-            raise HTTPException(status_code=404,detail="Order not found")
-      order.product_name=data.product_name
-      order.quantity=data.quantity
-      order.price=data.price
-      order.status=data.status
-      db.commit()
-      db.refresh(order)
-      return order
+def update_order(db, order_id, data, current_user):
+
+    order = db.query(Orders).filter(
+        Orders.id == order_id,
+        Orders.user_id == current_user.id
+    ).first()
+
+    if not order:
+        raise HTTPException(
+            status_code=404,
+            detail="Order not found"
+        )
+
+    # Update order-level information
+    order.customer_id = data.customer_id
+    order.discount = data.discount
+    order.tax = data.tax
+    order.shipping_charges = data.shipping_charges
+    order.other_charges = data.other_charges
+    order.payment_status = data.payment_status
+    order.amount_paid = data.amount_paid
+
+    # Update order items
+    # ...
+    
+    db.commit()
+    db.refresh(order)
+
+    return order

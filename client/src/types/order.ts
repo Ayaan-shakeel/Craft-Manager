@@ -21,6 +21,8 @@ export interface OrderItemData{
     tax:number,
     shipping_charges:number,
     other_charges:number,
+    payment_status:"unpaid" | "partial" | "paid",
+    amount_paid:number,
     total_amount:number,
     status:string,
     created_at:string,
