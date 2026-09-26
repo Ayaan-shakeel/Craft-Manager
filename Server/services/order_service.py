@@ -313,20 +313,40 @@ def CancelOrder(db:Session,order_id:int,current_user):
       db.commit()
       return order
 
-def update_order(db, order_id, data, current_user):
+
+
+def UpdateOrder(db: Session, order_id: int, data, current_user):
 
     order = db.query(Orders).filter(
         Orders.id == order_id,
         Orders.user_id == current_user.id
     ).first()
 
-    if not order:
+    if order is None:
         raise HTTPException(
             status_code=404,
             detail="Order not found"
         )
 
-    # Update order-level information
+    # -------------------------
+    # Validate customer
+    # -------------------------
+
+    customer = db.query(Customer).filter(
+        Customer.id == data.customer_id,
+        Customer.user_id == current_user.id
+    ).first()
+
+    if customer is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Customer not found"
+        )
+
+    # -------------------------
+    # Update order information
+    # -------------------------
+
     order.customer_id = data.customer_id
     order.discount = data.discount
     order.tax = data.tax
@@ -334,10 +354,110 @@ def update_order(db, order_id, data, current_user):
     order.other_charges = data.other_charges
     order.payment_status = data.payment_status
     order.amount_paid = data.amount_paid
+    order.status = data.status or order.status
 
-    # Update order items
-    # ...
-    
+    # -------------------------
+    # Remove old order items
+    # -------------------------
+
+    order.order_items.clear()
+
+    # -------------------------
+    # Create updated items
+    # -------------------------
+
+    subtotal = 0
+
+    for item_data in data.items:
+
+        inventory = db.query(Inventory).filter(
+            Inventory.id == item_data.inventory_id,
+            Inventory.user_id == current_user.id
+        ).first()
+
+        if inventory is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Inventory item {item_data.inventory_id} not found"
+            )
+
+        if item_data.quantity > inventory.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Only {inventory.quantity} units of "
+                       f"{inventory.product_name} are available"
+            )
+
+        unit_price = inventory.selling_price
+
+        item_total = unit_price * item_data.quantity
+
+        subtotal += item_total
+
+        order_item = OrderItem(
+            inventory_id=inventory.id,
+            product_name=inventory.product_name,
+            quantity=item_data.quantity,
+            unit_price=unit_price,
+            total_price=item_total
+        )
+
+        order.order_items.append(order_item)
+
+    # -------------------------
+    # Calculate totals
+    # -------------------------
+
+    tax_amount = subtotal * (data.tax / 100)
+
+    total_amount = (
+        subtotal
+        - data.discount
+        + tax_amount
+        + data.shipping_charges
+        + data.other_charges
+    )
+
+    if total_amount < 0:
+        total_amount = 0
+
+    if data.amount_paid > total_amount:
+        raise HTTPException(
+            status_code=400,
+            detail="Amount paid cannot exceed total amount"
+        )
+
+    # -------------------------
+    # Save calculated values
+    # -------------------------
+
+    order.sub_total = subtotal
+    order.total_amount = total_amount
+
+    # Legacy fields
+    # Keep these temporarily so old parts of the application
+    # don't break while we finish V1.
+
+    order.product_name = (
+        order.order_items[0].product_name
+        if order.order_items
+        else None
+    )
+
+    order.quantity = (
+        order.order_items[0].quantity
+        if order.order_items
+        else 0
+    )
+
+    order.price = (
+        order.order_items[0].unit_price
+        if order.order_items
+        else 0
+    )
+
+    order.total_price = total_amount
+
     db.commit()
     db.refresh(order)
 

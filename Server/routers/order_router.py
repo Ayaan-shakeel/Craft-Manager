@@ -180,20 +180,57 @@ def delete_order(order_id:int,current_user:User=Depends(get_current_user),
             "order":order
       }
 
-@router.put("/orders/{order_id}",status_code=status.HTTP_201_CREATED)
-def update_order(order_id:int,data:OrderUpdate,current_user:User=Depends(get_current_user),
-                 db:Session=Depends(get_db)
-                 ):
-      order=UpdateOrder(db,order_id,data,current_user)
-      return{
-       "message":"Order updated Successfully",
-       "order":{
-             "id":order.id,
-             "product_name":order.product_name,
-             "quantity":order.quantity,
-             "price":order.price,
-             "customer_id":order.customer_id
+@router.put("/orders/{order_id}", status_code=status.HTTP_200_OK)
+def update_order(
+    order_id: int,
+    data: OrderUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
 
-       }
+    order = UpdateOrder(
+        db,
+        order_id,
+        data,
+        current_user
+    )
 
-      }
+    return {
+        "message": "Order updated successfully",
+        "order": {
+            "id": order.id,
+            "customer_id": order.customer_id,
+
+            "items": [
+                {
+                    "id": item.id,
+                    "inventory_id": item.inventory_id,
+                    "product_name": item.product_name,
+                    "quantity": item.quantity,
+                    "unit_price": item.unit_price,
+                    "total_price": item.total_price,
+                }
+                for item in order.order_items
+            ],
+
+            "sub_total": float(order.sub_total or 0),
+            "discount": float(order.discount or 0),
+            "tax": float(order.tax or 0),
+            "shipping_charges": float(
+                order.shipping_charges or 0
+            ),
+            "other_charges": float(
+                order.other_charges or 0
+            ),
+            "total_amount": float(
+                order.total_amount or 0
+            ),
+
+            "payment_status": order.payment_status,
+            "amount_paid": float(
+                order.amount_paid or 0
+            ),
+
+            "status": order.status,
+        }
+    }
