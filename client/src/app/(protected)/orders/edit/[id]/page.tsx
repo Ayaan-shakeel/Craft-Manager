@@ -5,24 +5,23 @@ import {
   getOrderById,
   updateOrder,
 } from "@/services/orderService";
+import { getCustomers } from "@/services/customerService";
 import { useParams, useRouter } from "next/navigation";
 import { Customer } from "@/types/customer";
-import { getCustomers } from "@/services/customerService";
-import OrdersForm from "@/components/orders/OrdersForm";
 import {
   OrderData,
   OrderItem,
 } from "@/types/order";
+import OrdersForm from "@/components/orders/OrdersForm";
 import { toast, ToastContainer } from "react-toastify";
 
-export default function Edit() {
+export default function EditOrder() {
   const params = useParams();
   const router = useRouter();
 
   const id = params.id as string;
 
   const [customers, setCustomers] = useState<Customer[]>([]);
-
   const [items, setItems] = useState<OrderItem[]>([]);
 
   const [formData, setFormData] = useState<OrderData>({
@@ -37,40 +36,11 @@ export default function Edit() {
   });
 
   /*
-   * Calculate subtotal
-   */
-  const subtotal = items.reduce(
-    (total, item) => total + item.total_price,
-    0
-  );
+  ============================
+  FETCH CUSTOMERS
+  ============================
+  */
 
-  /*
-   * Calculate tax
-   */
-  const taxAmount =
-    (subtotal * formData.tax) / 100;
-
-  /*
-   * Calculate final total
-   */
-  const totalAmount =
-    subtotal -
-    formData.discount +
-    taxAmount +
-    formData.shipping_charges +
-    formData.other_charges;
-
-  /*
-   * Calculate remaining payment
-   */
-  const remainingAmount = Math.max(
-    0,
-    totalAmount - formData.amount_paid
-  );
-
-  /*
-   * Fetch customers
-   */
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
@@ -80,11 +50,12 @@ export default function Edit() {
           setCustomers(response);
         }
       } catch (error) {
-        toast.error("Failed to get customers");
         console.error(
           "Error fetching customers:",
           error
         );
+
+        toast.error("Failed to fetch customers");
       }
     };
 
@@ -92,8 +63,11 @@ export default function Edit() {
   }, []);
 
   /*
-   * Fetch existing order
-   */
+  ============================
+  FETCH ORDER
+  ============================
+  */
+
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -107,135 +81,185 @@ export default function Edit() {
         console.log("Existing order:", response);
 
         /*
-         * Load order items
-         */
+        Convert backend order items
+        into the format OrdersForm expects
+        */
+
         const existingItems: OrderItem[] =
-          response.items ?? [];
+          (response.items || []).map(
+            (item: any) => ({
+              id: item.id,
+              inventory_id: item.inventory_id,
+              product_name: item.product_name,
+              quantity: item.quantity,
+              unit_price: item.unit_price,
+              total_price: item.total_price,
+
+              /*
+              Backend update response doesn't
+              currently return available_stock.
+
+              We temporarily use the current
+              quantity so the existing item
+              doesn't immediately break.
+              */
+              available_stock:
+                item.available_stock ??
+                item.quantity,
+            })
+          );
 
         setItems(existingItems);
 
-        /*
-         * Load order information
-         */
         setFormData({
           customer_id:
-            response.customer_id ??
-            response.customer?.id ??
-            0,
+            response.customer_id ?? 0,
 
-          items: existingItems.map(
-            (item: OrderItem) => ({
-              inventory_id: item.inventory_id,
-              quantity: item.quantity,
-            })
-          ),
+          items: existingItems.map((item) => ({
+            inventory_id: item.inventory_id,
+            quantity: item.quantity,
+          })),
 
-          discount: response.discount ?? 0,
+          discount:
+            Number(response.discount ?? 0),
 
-          tax: response.tax ?? 0,
+          tax:
+            Number(response.tax ?? 0),
 
           shipping_charges:
-            response.shipping_charges ?? 0,
+            Number(response.shipping_charges ?? 0),
 
           other_charges:
-            response.other_charges ?? 0,
+            Number(response.other_charges ?? 0),
 
           payment_status:
             response.payment_status ?? "unpaid",
 
           amount_paid:
-            response.amount_paid ?? 0,
+            Number(response.amount_paid ?? 0),
         });
       } catch (error) {
-        toast.error("Failed to get order");
-
         console.error(
           "Error fetching order:",
           error
         );
+
+        toast.error("Failed to fetch order");
       }
     };
 
-    fetchOrder();
+    if (id) {
+      fetchOrder();
+    }
   }, [id]);
 
   /*
-   * Remove product
-   */
-  const removeItem = (inventoryId: number) => {
-    const updatedItems = items.filter(
-      (item) =>
-        item.inventory_id !== inventoryId
+  ============================
+  CALCULATIONS
+  ============================
+  */
+
+  const subTotal = items.reduce(
+    (total, item) =>
+      total +
+      item.quantity * item.unit_price,
+    0
+  );
+
+  const taxAmount =
+    (subTotal * formData.tax) / 100;
+
+  const totalAmount =
+    subTotal -
+    formData.discount +
+    formData.other_charges +
+    formData.shipping_charges +
+    taxAmount;
+
+  const remainingAmount = Math.max(
+    0,
+    totalAmount - formData.amount_paid
+  );
+
+  const paymentStatus =
+    formData.amount_paid <= 0
+      ? "unpaid"
+      : formData.amount_paid >= totalAmount
+      ? "paid"
+      : "partial";
+
+  /*
+  ============================
+  REMOVE ITEM
+  ============================
+  */
+
+  const removeItem = (
+    inventoryId: number
+  ) => {
+    setItems((prev) =>
+      prev.filter(
+        (item) =>
+          item.inventory_id !== inventoryId
+      )
     );
-
-    setItems(updatedItems);
-
-    setFormData((previous) => ({
-      ...previous,
-      items: updatedItems.map((item) => ({
-        inventory_id: item.inventory_id,
-        quantity: item.quantity,
-      })),
-    }));
   };
 
   /*
-   * Update product quantity
-   */
+  ============================
+  UPDATE ITEM QUANTITY
+  ============================
+  */
+
   const updateItemQuantity = (
     inventoryId: number,
     quantity: number
   ) => {
-    const updatedItems = items.map((item) => {
-      if (item.inventory_id === inventoryId) {
-        return {
-          ...item,
-          quantity,
-          total_price:
-            quantity * item.unit_price,
-        };
-      }
-
-      return item;
-    });
-
-    setItems(updatedItems);
-
-    setFormData((previous) => ({
-      ...previous,
-      items: updatedItems.map((item) => ({
-        inventory_id: item.inventory_id,
-        quantity: item.quantity,
-      })),
-    }));
+    setItems((prev) =>
+      prev.map((item) =>
+        item.inventory_id === inventoryId
+          ? {
+              ...item,
+              quantity,
+              total_price:
+                quantity *
+                item.unit_price,
+            }
+          : item
+      )
+    );
   };
 
   /*
-   * Clear products
-   */
+  ============================
+  CLEAR ITEMS
+  ============================
+  */
+
   const clearAllItems = () => {
-    setItems([]);
+    if (items.length === 0) {
+      return;
+    }
 
-    setFormData((previous) => ({
-      ...previous,
-      items: [],
-    }));
+    const confirmed = window.confirm(
+      "Are you sure you want to clear all items?"
+    );
+
+    if (confirmed) {
+      setItems([]);
+    }
   };
 
   /*
-   * Submit update
-   */
+  ============================
+  SUBMIT UPDATE
+  ============================
+  */
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-
-    if (items.length === 0) {
-      toast.error(
-        "Please add at least one product"
-      );
-      return;
-    }
 
     if (formData.customer_id === 0) {
       toast.error(
@@ -244,28 +268,56 @@ export default function Edit() {
       return;
     }
 
+    if (items.length === 0) {
+      toast.error(
+        "Please add at least one product"
+      );
+      return;
+    }
+
     try {
-      const updatedOrder =
-        await updateOrder(id, {
-          ...formData,
+      const data: OrderData = {
+        customer_id:
+          formData.customer_id,
 
-          items: items.map((item) => ({
-            inventory_id:
-              item.inventory_id,
+        items: items.map((item) => ({
+          inventory_id:
+            item.inventory_id,
 
-            quantity:
-              item.quantity,
-          })),
-        });
+          quantity:
+            item.quantity,
+        })),
 
-      if (updatedOrder) {
+        discount:
+          formData.discount,
+
+        tax:
+          formData.tax,
+
+        shipping_charges:
+          formData.shipping_charges,
+
+        other_charges:
+          formData.other_charges,
+
+        payment_status:
+          paymentStatus,
+
+        amount_paid:
+          formData.amount_paid,
+      };
+
+      const response =
+        await updateOrder(id, data);
+
+      if (response) {
         toast.success(
           "Order updated successfully"
         );
 
-        setTimeout(() => {
-          router.push("/orders/get-orders");
-        }, 800);
+        router.push(
+          "/orders/get-orders"
+        );
       }
     } catch (error) {
       console.error(
@@ -285,12 +337,12 @@ export default function Edit() {
 
       <OrdersForm
         customers={customers}
+        handleSubmit={handleSubmit}
         formData={formData}
         setFormData={setFormData}
-        handleSubmit={handleSubmit}
         editing={true}
         items={items}
-        subtotal={subtotal}
+        subtotal={subTotal}
         removeItem={removeItem}
         updateItemQuantity={
           updateItemQuantity
@@ -298,12 +350,14 @@ export default function Edit() {
         clearAllItems={
           clearAllItems
         }
-        totalAmount={totalAmount}
+        totalAmount={
+          totalAmount
+        }
         remainingAmount={
           remainingAmount
         }
         paymentStatus={
-          formData.payment_status
+          paymentStatus
         }
       />
     </div>
