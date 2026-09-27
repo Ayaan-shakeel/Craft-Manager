@@ -1,7 +1,7 @@
 from model.order_model import Orders
 from database import sessionLocal 
 from sqlalchemy.orm import Session
-from sqlalchemy import or_ ,func
+from sqlalchemy import or_ ,func,sum
 from model.customer_model import Customer
 from fastapi import HTTPException
 from io import StringIO
