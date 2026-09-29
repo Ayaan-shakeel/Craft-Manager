@@ -152,7 +152,6 @@ const handleDelete = async (id: string | number) => {
 }
   return (
     <div>
-        <h1>Inventory</h1>
         {selectedForOrder && (
             <p>Select products to add your order</p>
         ) 
