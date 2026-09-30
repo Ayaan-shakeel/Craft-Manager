@@ -1,15 +1,33 @@
 "use client";
 
 import React from "react";
+import {useEffect} from "react"
 import { Menu, Bell, UserRound } from "lucide-react";
+import {user} from "@/services/authService"
 
 interface NavbarProps {
   onMenuClick: () => void;
 }
 
+
 export default function Navbar({
   onMenuClick,
 }: NavbarProps) {
+  useEffect(()=>{
+  const fetchUser = async()=>{
+    try{
+      const response = await(user)
+      if(response){
+        console.log(response.username)
+      }
+    }catch(error){
+      console.log(error)
+    }
+    
+  }
+  fetchUser()
+},[])
+
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6">
 

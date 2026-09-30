@@ -15,3 +15,9 @@ export const RegisterUser=async(data:{
     return response.data
 }
 
+export const user = async()=>{
+    const response = await api.get('users/me');
+    return response.data;
+}
+
+
