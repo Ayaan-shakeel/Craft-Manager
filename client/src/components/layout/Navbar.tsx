@@ -16,9 +16,12 @@ export default function Navbar({
   useEffect(()=>{
   const fetchUser = async()=>{
     try{
-      const response = await(user)
+      const response = await user()
       if(response){
-        console.log(response.username)
+        console.log(response.user.username)
+        // console.log(response.user)
+        // console.log(response)
+        
       }
     }catch(error){
       console.log(error)
