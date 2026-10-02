@@ -187,8 +187,7 @@ export default function DashboardPage() {
    <RecentOrders data={dashboard.recent_orders}/>
 </div>
   </div>
-<div>
-</div>
+
 
    <ToastContainer/>
    </div>
