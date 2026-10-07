@@ -351,8 +351,7 @@ export default function HomePage() {
               Dashboard
             </Link>
           </div>
-<div>
-</div>
+
         </div>
       </footer>
     </div>
