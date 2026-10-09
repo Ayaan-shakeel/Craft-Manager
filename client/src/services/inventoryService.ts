@@ -61,7 +61,7 @@ export const deleteInventory = async (id: string | number) => {
         return response.data
 
     }catch(error){
-        console.error("Error while detecting Inventory", error)
+        console.error("Error while detecting Inventory ", error)
         throw error
     }
 }
