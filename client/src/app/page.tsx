@@ -115,7 +115,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
+          <div className="grid grid-cols-1 items-center gap-10 text-center ">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700">
                 <Boxes size={14} />
@@ -131,7 +131,7 @@ export default function HomePage() {
                 grow your business without the chaos.
               </p>
 
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-4 items-center justify-center sm:flex-row">
                 <Link
                   href="/dashboard"
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 transition hover:bg-blue-700"
@@ -148,7 +148,7 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              <div className="mt-8 flex items-center gap-4 text-xs text-slate-500">
+              <div className="mt-8 flex items-center justify-center gap-4 text-xs text-slate-500">
                 <div className="flex items-center gap-1">
                   <Shield size={14} className="text-emerald-600" />
                   Secure & private
@@ -160,49 +160,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="absolute -inset-4 -z-10 bg-gradient-to-tr from-blue-100 via-white to-slate-100 blur-2xl lg:-inset-8" />
-              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl">
-                <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                    <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 p-4 sm:p-6">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs text-slate-400">Products</p>
-                    <p className="mt-1 text-2xl font-bold text-slate-900">128</p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs text-slate-400">Orders</p>
-                    <p className="mt-1 text-2xl font-bold text-slate-900">89</p>
-                  </div>
-                  <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 shadow-sm">
-                    <p className="text-xs text-blue-500">Revenue</p>
-                    <p className="mt-1 text-2xl font-bold text-slate-900">₹ 1.45L</p>
-                  </div>
-                  <div className="col-span-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs text-slate-400">Recent activity</p>
-                    <div className="mt-2 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-slate-600">New order #101</p>
-                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-                          Completed
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-slate-600">Low stock: USB-C Cable</p>
-                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
-                          Alert
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+       
           </div>
         </div>
       </section>
