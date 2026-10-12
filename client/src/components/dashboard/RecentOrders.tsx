@@ -18,7 +18,7 @@ export default function RecentOrders({ data }: RecentOrdersProps) {
 
         <div className="w-full">
             <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
-                <div className="border-b border-slate-200 px-4 py-5 sm:px-6">
+                <div className="border-b border-slate-200 px-4 py-5 sm:px-6 ">
                     <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
                             <PackageSearch size={20} />
