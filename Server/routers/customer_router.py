@@ -1,3 +1,5 @@
+from itertools import count
+
 from fastapi import APIRouter,Depends,status
 from schema.customer_schema import CustomerCreate,CustomerUpdate
 from services.customer_service import create_customer,get_customer,update_customer,delete_customer
@@ -27,24 +29,41 @@ def create_new_customer(customer:CustomerCreate,current_user:User=Depends(get_cu
         }
     }    
 @router.get("/customers",status_code=status.HTTP_200_OK)
-def get_all_customers(current_user:User=Depends(get_current_user),
-                        db:Session=Depends(get_db)
+def get_all_customers(
+        
+        search: str = "",
+        page: int = 1,
+        limit: int = 10,
+        sort_by: str = "id",
+        sort_order: str = "desc",)
+        current_user:User=Depends(get_current_user),
+        db:Session=Depends(get_db search: str = "",
                         ):
-        customers=(get_customer(db,current_user))
+        customers=(get_customer(
+        db=db,
+        current_user=current_user,
+        search=search,
+        page=page,
+        limit=limit,
+        sort_by=sort_by,
+        sort_order=sort_order,))
         return{
-        "message":"Customers retrieved Successfully",
-        "count":len(customers),
-        "customers":[
+        "message": "Customers retrieved successfully",
+        "count": len(customers),
+        "page": customers["page"],
+        "limit": customers["limit"],
+        "total_pages": customers["total_pages"],
+        "customers": [
             {
-                "id":customer.id,
-            "customer_name":customer.customer_name,
-            "customer_email":customer.customer_email,
-            "phone":customer.phone,
-            "address":customer.address,
-            "notes":customer.notes,
+                "id": customer.id,
+                "customer_name": customer.customer_name,
+                "customer_email": customer.customer_email,
+                "phone": customer.phone,
+                "address": customer.address,
+                "notes": customer.notes,
             }
-            for customer in customers
-        ]
+            for customer in customers["customers"]
+        ],
         }
 @router.put("/customers/{customer_id}",status_code=status.HTTP_200_OK)
 def updated_customer(customer_id:int,updated_customer:CustomerUpdate,current_user:User=Depends(get_current_user),
