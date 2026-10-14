@@ -1,8 +1,27 @@
 import api from "@/lib/api";
+import {Customer} from "@/types/customer";
+export interface CustomerQuery {
+  search?: string;
+  page?: number;
+  limit?: number;
+  sort_by?: "id" | "customer_name" | "customer_email";
+  sort_order?: "asc" | "desc";
+}
 
-export const getCustomers=async()=>{
+export interface CustomersResponse {
+  message: string;
+  count: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+  customers: Customer[];
+}
+export const getCustomers=async(
+    params:CustomerQuery = {}
+
+):Promise<CustomersResponse>=>{
     try{
-        const response=await api.get("/api/customers")
+        const response=await api.get("/api/customers", {params})
         return response.data.customers
     }catch(error){
         console.error("Error fetching customers:",error)

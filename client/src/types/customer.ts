@@ -14,3 +14,20 @@ export interface CustomerFormData{
       address:string,
       notes:string
   }
+
+  export interface CustomerQuery {
+  search?: string;
+  page?: number;
+  limit?: number;
+  sort_by?: "id" | "customer_name" | "customer_email";
+  sort_order?: "asc" | "desc";
+}
+
+export interface CustomersResponse {
+  message: string;
+  count: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+  customers: Customer[];
+}
