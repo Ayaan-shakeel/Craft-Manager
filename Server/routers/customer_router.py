@@ -29,16 +29,16 @@ def create_new_customer(customer:CustomerCreate,current_user:User=Depends(get_cu
         }
     }    
 @router.get("/customers",status_code=status.HTTP_200_OK)
-def get_all_customers(
-        
+def get_all_customers(   
         search: str = "",
         page: int = 1,
         limit: int = 10,
         sort_by: str = "id",
-        sort_order: str = "desc",)
+        sort_order: str = "desc",
         current_user:User=Depends(get_current_user),
-        db:Session=Depends(get_db search: str = "",
-                        ):
+        db:Session=Depends(get_db)
+        ):
+
         customers=(get_customer(
         db=db,
         current_user=current_user,
