@@ -19,36 +19,134 @@ def create_inventory(db:Session,inventory,current_user):
     db.refresh(new_inventory)
     return new_inventory
 
-def get_inventory(db: Session, current_user):
-    inventory = db.query(Inventory).filter(
+def get_inventory(
+    db: Session,
+    current_user,
+    search: str = "",
+    page: int = 1,
+    limit: int = 10,
+    sort_by: str = "id",
+    sort_order: str = "desc",
+):
+    # 1. Validate pagination
+    if page < 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Page must be at least 1",
+        )
+
+    if limit < 1 or limit > 100:
+        raise HTTPException(
+            status_code=400,
+            detail="Limit must be between 1 and 100",
+        )
+
+    # 2. Validate sorting
+    sort_columns = {
+        "id": Inventory.id,
+        "product_name": Inventory.product_name,
+        "quantity": Inventory.quantity,
+        "cost_price": Inventory.cost_price,
+        "selling_price": Inventory.selling_price,
+    }
+
+    if sort_by not in sort_columns:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid sort_by field",
+        )
+
+    if sort_order.lower() not in ["asc", "desc"]:
+        raise HTTPException(
+            status_code=400,
+            detail="sort_order must be 'asc' or 'desc'",
+        )
+
+    # 3. Get only the logged-in user's inventory
+    base_query = db.query(Inventory).filter(
+        Inventory.user_id == current_user.id
+    )
+
+    # 4. Apply search
+    if search and search.strip():
+        search_term = f"%{search.strip()}%"
+
+        base_query = base_query.filter(
+            or_(
+                Inventory.product_name.ilike(search_term),
+                Inventory.sku.ilike(search_term),
+                Inventory.category.ilike(search_term),
+            )
+        )
+
+    # 5. Calculate statistics for ALL the user's inventory
+    # These statistics are independent of the search and pagination.
+    all_inventory = db.query(Inventory).filter(
         Inventory.user_id == current_user.id
     ).all()
 
-    total_products = len(inventory)
-    total_stock = sum(item.quantity for item in inventory)
-    total_cost = sum(item.quantity * item.cost_price for item in inventory)
-    total_value = sum(item.quantity * item.selling_price for item in inventory)
+    total_products = len(all_inventory)
 
-    critical_stock = 0
-    low_stock = 0
-    out_of_stock = 0
+    total_stock = sum(
+        item.quantity for item in all_inventory
+    )
 
+    total_cost = sum(
+        item.quantity * item.cost_price
+        for item in all_inventory
+    )
+
+    total_value = sum(
+        item.quantity * item.selling_price
+        for item in all_inventory
+    )
+
+    critical_stock = sum(
+        1 for item in all_inventory
+        if 0 < item.quantity <= 10
+    )
+
+    low_stock = sum(
+        1 for item in all_inventory
+        if 10 < item.quantity <= 30
+    )
+
+    out_of_stock = sum(
+        1 for item in all_inventory
+        if item.quantity == 0
+    )
+
+    # 6. Count products matching the search BEFORE pagination
+    total = base_query.count()
+
+    # 7. Apply sorting
+    sort_column = sort_columns[sort_by]
+
+    if sort_order.lower() == "asc":
+        base_query = base_query.order_by(sort_column.asc())
+    else:
+        base_query = base_query.order_by(sort_column.desc())
+
+    # 8. Apply pagination
+    offset = (page - 1) * limit
+
+    inventory = (
+        base_query
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    # 9. Format the current page
     inventory_data = []
 
     for item in inventory:
-
         if item.quantity == 0:
             stock_status = "Out of Stock"
-            out_of_stock += 1
-
         elif item.quantity <= 10:
             stock_status = "Critical"
-            critical_stock += 1
-
         elif item.quantity <= 30:
             stock_status = "Low Stock"
-            low_stock += 1
-
         else:
             stock_status = "In Stock"
 
@@ -60,11 +158,16 @@ def get_inventory(db: Session, current_user):
             "selling_price": item.selling_price,
             "category": item.category,
             "sku": item.sku,
-            "stock_status": stock_status
+            "stock_status": stock_status,
         })
 
+    # 10. Return the result
     return {
         "inventory": inventory_data,
+        "count": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total + limit - 1) // limit,
         "stats": {
             "total_products": total_products,
             "total_stock": total_stock,
@@ -72,10 +175,9 @@ def get_inventory(db: Session, current_user):
             "total_value": total_value,
             "critical_stock": critical_stock,
             "low_stock": low_stock,
-            "out_of_stock": out_of_stock
-        }
+            "out_of_stock": out_of_stock,
+        },
     }
-
 def get_single_inventory(db:Session,inventory_id:int,current_user):
     inventory=db.query(Inventory).filter(
         Inventory.id==inventory_id,

@@ -22,7 +22,7 @@ export const getCustomers=async(
 ):Promise<CustomersResponse>=>{
     try{
         const response=await api.get("/api/customers", {params})
-        return response.data.customers
+        return response.data
     }catch(error){
         console.error("Error fetching customers:",error)
         throw error

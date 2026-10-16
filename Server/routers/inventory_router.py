@@ -26,17 +26,35 @@ def create_new_inventory(inventory:InventoryCreate,current_user:User=Depends(get
                             "sku":new_inventory.sku
                         }
                       }
-@router.get("/inventory",status_code=status.HTTP_200_OK)
-def get_all_inventory(current_user:User=Depends(get_current_user),
-                    db:Session=Depends(get_db)):
-                    data=get_inventory(db,current_user)
-                    return{
-                        "message":"Inventory F-etched Successfully",
-                        "count":len(data["inventory"]),
-                        "stats":data["stats"],
-                        "inventory":data["inventory"]
+@router.get("/inventory", status_code=status.HTTP_200_OK)
+def get_all_inventory(
+    search: str = "",
+    page: int = 1,
+    limit: int = 10,
+    sort_by: str = "id",
+    sort_order: str = "desc",
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    data = get_inventory(
+        db=db,
+        current_user=current_user,
+        search=search,
+        page=page,
+        limit=limit,
+        sort_by=sort_by,
+        sort_order=sort_order,
+    )
 
-                    }
+    return {
+        "message": "Inventory fetched successfully",
+        "count": data["count"],
+        "page": data["page"],
+        "limit": data["limit"],
+        "total_pages": data["total_pages"],
+        "stats": data["stats"],
+        "inventory": data["inventory"],
+    }
 @router.get("/inventory/{inventory_id}",status_code=status.HTTP_200_OK) 
 def get_single_inventory_by_id(inventory_id:int,current_user:User=Depends(get_current_user),
                                db:Session=Depends(get_db)):
