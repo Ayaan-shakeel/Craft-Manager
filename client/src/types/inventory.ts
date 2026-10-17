@@ -27,3 +27,34 @@ export interface InventoryUpdateData{
     category:string,
     sku:string,
 }
+
+export interface InventoryQuery {
+    search?: string;
+    page?: number;
+    limit?: number;
+    sort_by?:
+        | "id"
+        | "product_name"
+        | "quantity"
+        | "cost_price"
+        | "selling_price";
+    sort_order?: "asc" | "desc";
+}
+
+export interface InventoryResponse {
+    message: string;
+    count: number;
+    page: number;
+    limit: number;
+    total_pages: number;
+    stats: {
+        total_products: number;
+        total_stock: number;
+        total_cost: number;
+        total_value: number;
+        critical_stock: number;
+        low_stock: number;
+        out_of_stock: number;
+    };
+    inventory: Inventory[];
+}

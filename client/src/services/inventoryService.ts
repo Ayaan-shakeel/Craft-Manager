@@ -1,13 +1,19 @@
 import api from "@/lib/api";
-export const getInventory=async()=>{
-    try{
-        const response=await api.get("/api/inventory")
-        return response.data
-    }catch(error){
-        console.error("Inventory Fetching Failed",error)
-        throw error
+import {InventoryResponse, InventoryQuery,InventoryStats} from "@/types/inventory";
+export const getInventory = async (
+    params: InventoryQuery = {}
+): Promise<InventoryResponse> => {
+    try {
+        const response = await api.get("/api/inventory", {
+            params,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Inventory fetching failed:", error);
+        throw error;
     }
-}
+};
 export const createInventory=async(data:{
     product_name:string
     quantity:number
