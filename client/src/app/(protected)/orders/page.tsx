@@ -1,49 +1,156 @@
-'use client'
-import React from 'react'
-import { useRouter } from 'next/navigation'
-import OrdersStats from '@/components/orders/OrdersStats'
+"use client";
+
+import React from "react";
+import { useRouter } from "next/navigation";
+import {
+    ShoppingBag,
+    ClipboardList,
+    ArrowRight,
+    Plus,
+    Package,
+    TrendingUp,
+} from "lucide-react";
 
 export default function OrdersPage() {
-  const router=useRouter()
-  return (
-    <div>
-      <h1 className="text-3xl font-bold text-center mt-10 mb-10 ">
-      Orders Page
-      </h1>
+    const router = useRouter();
 
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="mx-auto mb-6 max-w-2xl text-center sm:mb-8 lg:mb-10">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl lg:text-4xl">
-                  Manage your orders
-                </h1>
-                <p className="mt-2 text-sm leading-6 text-slate-500 sm:mt-3 sm:text-base lg:text-lg">
-                  Update status, and review customer order details.
-                </p>
-              </div>
-              {/* <OrdersStats stats={stats}/> */}
-              </div>
-      <div className="mb-6 rounded-3xl border border-slate-200/80 bg-white/80 px-5 py-6 shadow-sm backdrop-blur-sm sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-       
-   <button onClick={()=>router.push("/orders/create-orders")}>Add orders</button>
-      </h1>
-      <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-       Create your new Orders Here.
-      </p>
+    return (
+        <main className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl">
 
-    </div>
+                {/* Header */}
+                <div className="mb-8">
+                    <div className="mb-3 flex items-center gap-2 text-sm font-medium text-orange-600">
+                        <Package size={18} />
+                        <span>Craft Manager / Orders</span>
+                    </div>
 
-    <div className="mb-6 rounded-3xl border border-slate-200/80 bg-white/80 px-5 py-6 shadow-sm backdrop-blur-sm sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-        
-   <button onClick={()=>router.push("/orders/get-orders")}>View orders</button>
-      </h1>
-      <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-        View | Edit your Orders Here.
-      </p>
-    </div>
+                    <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+                        <div>
+                            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                                Orders Management
+                            </h1>
 
-    </div>
+                            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+                                Create, track, and manage your customer orders
+                                from one place.
+                            </p>
+                        </div>
 
-  )
+                        <div className="hidden h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-600 sm:flex">
+                            <ShoppingBag size={28} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Welcome Banner */}
+                <div className="relative mb-8 overflow-hidden rounded-3xl bg-slate-900 p-6 text-white shadow-lg sm:p-8">
+                    <div className="relative z-10 max-w-2xl">
+                        <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-orange-400">
+                            Order Workspace
+                        </p>
+
+                        <h2 className="text-2xl font-bold sm:text-3xl">
+                            What would you like to do today?
+                        </h2>
+
+                        <p className="mt-3 text-sm leading-6 text-slate-300 sm:text-base">
+                            Create new orders, review existing ones, and keep
+                            your craft business organized.
+                        </p>
+                    </div>
+
+                    {/* Decorative circles */}
+                    <div className="absolute -right-10 -top-20 h-64 w-64 rounded-full bg-orange-500/10" />
+                    <div className="absolute -bottom-28 right-24 h-64 w-64 rounded-full bg-blue-500/10" />
+                </div>
+
+                {/* Action Cards */}
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+                    {/* Create Orders Card */}
+                    <section className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl sm:p-8">
+                        <div className="mb-6 flex items-start justify-between">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-600 transition group-hover:bg-orange-500 group-hover:text-white">
+                                <Plus size={28} />
+                            </div>
+
+                            <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-600">
+                                Create
+                            </span>
+                        </div>
+
+                        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                            Create New Order
+                        </h2>
+
+                        <p className="mt-3 min-h-12 text-sm leading-6 text-slate-500">
+                            Add a new order, select a customer, enter product
+                            details, and organize your sales.
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={() => router.push("/orders/create-orders")}
+                            className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 focus:outline-none focus:ring-4 focus:ring-orange-200 sm:w-auto"
+                        >
+                            Create Order
+                            <ArrowRight size={18} />
+                        </button>
+                    </section>
+
+                    {/* View Orders Card */}
+                    <section className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-8">
+                        <div className="mb-6 flex items-start justify-between">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white">
+                                <ClipboardList size={28} />
+                            </div>
+
+                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
+                                Manage
+                            </span>
+                        </div>
+
+                        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                            View All Orders
+                        </h2>
+
+                        <p className="mt-3 min-h-12 text-sm leading-6 text-slate-500">
+                            Browse existing orders, review customer details,
+                            and update order statuses.
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={() => router.push("/orders/get-orders")}
+                            className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200 sm:w-auto"
+                        >
+                            View Orders
+                            <ArrowRight size={18} />
+                        </button>
+                    </section>
+
+                </div>
+
+                {/* Bottom Tip */}
+                <div className="mt-8 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5">
+                    <div className="mt-0.5 text-emerald-600">
+                        <TrendingUp size={22} />
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold text-slate-800">
+                            Keep your business organized
+                        </h3>
+
+                        <p className="mt-1 text-sm leading-6 text-slate-500">
+                            Keep customer and order information up to date
+                            so you can track your work more easily.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    );
 }
