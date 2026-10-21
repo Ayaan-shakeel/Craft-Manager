@@ -229,35 +229,107 @@ def get_orders(db:Session,current_user,search=None,status=None,sort=None,page=1,
          "revenue":revenue,
     }
           
-def export_orders_csv(db:Session,current_user):
-      orders=(db.query(Orders).filter(
-            Orders.user_id==current_user.id
-      ).all()
-      )
-      csv_file=StringIO()
-      writer=csv.writer(csv_file)
-      writer.writerow([
-            "Product",
-            "Customer",
-            "Status",
-            "Quantity",
-            "Price",
-            "Total Price",
-            "Created At"
-      ])
-      for order in orders:
-            writer.writerow([
-                  order.product_name,
-                  order.customer.customer_name if order.customer else "Unknown Customer",
-                  order.status,
-                  order.quantity,
-                  order.price,
-                  order.total_price,
-                  order.created_at.strftime("%d-%B-%Y"),
-            ])
-      csv_file.seek(0)
-      return csv_file
+def export_orders_csv(db: Session, current_user):
+    orders = (
+        db.query(Orders)
+        .options(
+            joinedload(Orders.customer),
+            joinedload(Orders.order_items),
+        )
+        .filter(Orders.user_id == current_user.id)
+        .order_by(Orders.created_at.desc())
+        .all()
+    )
 
+    csv_file = StringIO()
+    writer = csv.writer(csv_file)
+
+    writer.writerow([
+        "Order ID",
+        "Customer ID",
+        "Customer Name",
+        "Order Status",
+        "Payment Status",
+        "Payment Method",
+        "Product",
+        "Quantity",
+        "Price",
+        "Line Total",
+        "Subtotal",
+        "Discount",
+        "Tax",
+        "Shipping Charges",
+        "Other Charges",
+        "Grand Total",
+        "Amount Paid",
+        "Balance Due",
+        "Shipping Address",
+        "Delivery Date",
+        "Created At",
+        "Updated At",
+    ])
+
+    for order in orders:
+        customer_name = (
+            order.customer.customer_name
+            if order.customer
+            else "Unknown Customer"
+        )
+
+        # Fallback for orders without order items.
+        if order.order_items:
+            items = order.order_items
+        else:
+            items = [None]
+
+        for item in items:
+            if item is None:
+                product_name = order.product_name or ""
+                quantity = order.quantity or 0
+                price = order.price or 0
+                line_total = order.total_price or 0
+            else:
+                # Adjust these field names to match your OrderItem model.
+                product_name = (
+                    getattr(item, "product_name", None) or ""
+                )
+                quantity = getattr(item, "quantity", 0) or 0
+                price = getattr(item, "price", 0) or 0
+                line_total = getattr(item, "total_price", 0) or 0
+
+            grand_total = order.total_amount or 0
+            amount_paid = order.amount_paid or 0
+
+            writer.writerow([
+                order.id,
+                order.customer_id,
+                customer_name,
+                order.status or "pending",
+                order.payment_status or "unpaid",
+                order.payment_method or "",
+                product_name,
+                quantity,
+                price,
+                line_total,
+                order.sub_total or 0,
+                order.discount or 0,
+                order.tax or 0,
+                order.shipping_charges or 0,
+                order.other_charges or 0,
+                grand_total,
+                amount_paid,
+                max(float(grand_total) - float(amount_paid), 0),
+                order.shipping_address or "",
+                order.delivery_date.strftime("%Y-%m-%d %H:%M")
+                if order.delivery_date else "",
+                order.created_at.strftime("%Y-%m-%d %H:%M")
+                if order.created_at else "",
+                order.updated_at.strftime("%Y-%m-%d %H:%M")
+                if order.updated_at else "",
+            ])
+
+    csv_file.seek(0)
+    return csv_file
 def get_single_order(db:Session,order_id:int,current_user):
               order=db.query(Orders).filter(
                    Orders.id==order_id,

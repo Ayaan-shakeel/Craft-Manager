@@ -96,10 +96,10 @@ def export_orders(current_user:User=Depends(get_current_user),
                         ):
             csv_file=export_orders_csv(db,current_user)
             return StreamingResponse(
-                csv_file,
+                iter([csv_file.getvalue()]),
                 media_type="text/csv",
                 headers={
-                    "Content-Disposition":"attachement; filename=orders.csv"
+                    "Content-Disposition":"attachment; filename=orders.csv"
                 }
             )
 
