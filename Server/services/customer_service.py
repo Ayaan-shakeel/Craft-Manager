@@ -4,7 +4,10 @@ from sqlalchemy import or_
 from model.customer_model import Customer
 from database import sessionLocal
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
+import csv
+from io import StringIO
+
 
 
 def create_customer(db:Session,data,current_user):
@@ -104,6 +107,43 @@ def get_customer(
         "limit": limit,
         "total_pages": (total + limit - 1) // limit,
     }
+
+ 
+
+def export_customers_csv(db: Session, current_user):
+    customers = (
+        db.query(Customers)
+        .filter(Customers.user_id == current_user.id)
+        .order_by(Customers.id.desc())
+        .all()
+    )
+
+    csv_file = StringIO()
+    writer = csv.writer(csv_file)
+
+    writer.writerow([
+        "Customer ID",
+        "Customer Name",
+        "Phone",
+        "Email",
+        "Address",
+        "Created At",
+    ])
+
+    for customer in customers:
+        writer.writerow([
+            customer.id,
+            customer.customer_name,
+            getattr(customer, "phone", "") or "",
+            getattr(customer, "email", "") or "",
+            getattr(customer, "address", "") or "",
+            customer.created_at.strftime("%d-%B-%Y %H:%M")
+            if getattr(customer, "created_at", None) else "",
+        ])
+
+    csv_file.seek(0)
+
+    return csv_file
 def update_customer(db:Session,customer_id:int,data,current_user):
     customer=db.query(Customer).filter(
         Customer.id==customer_id,

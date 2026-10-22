@@ -2,11 +2,12 @@ from itertools import count
 
 from fastapi import APIRouter,Depends,status
 from schema.customer_schema import CustomerCreate,CustomerUpdate
-from services.customer_service import create_customer,get_customer,update_customer,delete_customer
+from services.customer_service import create_customer,get_customer,update_customer,delete_customer,export_customers_csv
 from model.user_model import User
 from auth import get_current_user
 from sqlalchemy.orm import Session
 from database import get_db
+from fastapi.responses import StreamingResponse
 router = APIRouter(
     prefix="/api",
     tags=["Customers"]
@@ -65,6 +66,18 @@ def get_all_customers(
             for customer in customers["customers"]
         ],
         }
+@router.get("/customers/export",status_code=status.HTTP_200_OK)
+def export_customers(current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+            csv_file=export_customers_csv(db,current_user)
+            return StreamingResponse(
+                iter([csv_file.getvalue()]),
+                media_type="text/csv",
+                headers={
+                    "Content-Disposition":"attachment; filename=customers.csv"
+                }
+            )
 @router.put("/customers/{customer_id}",status_code=status.HTTP_200_OK)
 def updated_customer(customer_id:int,updated_customer:CustomerUpdate,current_user:User=Depends(get_current_user),
                         db:Session=Depends(get_db)
