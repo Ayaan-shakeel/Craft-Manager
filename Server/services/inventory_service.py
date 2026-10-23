@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from model.order_model import Orders
 from sqlalchemy import func,or_
+import csv
+from io import StringIO,joinedload
+
 
 def create_inventory(db:Session,inventory,current_user):
     new_inventory=Inventory(
@@ -178,6 +181,52 @@ def get_inventory(
             "out_of_stock": out_of_stock,
         },
     }
+
+  
+
+def export_inventory_csv(db: Session, current_user):
+    inventory_items = (
+        db.query(Inventory)
+        .filter(Inventory.user_id == current_user.id)
+        .order_by(Inventory.id.desc())
+        .all()
+    )
+
+    csv_file = StringIO()
+    writer = csv.writer(csv_file)
+
+    writer.writerow([
+        "Product ID",
+        "Product Name",
+        "SKU",
+        "Category",
+        "Quantity",
+        "Cost Price",
+        "Selling Price",
+        "Stock Cost Value",
+        "Potential Sales Value",
+    ])
+
+    for item in inventory_items:
+        quantity = item.quantity or 0
+        cost_price = item.cost_price or 0
+        selling_price = item.selling_price or 0
+
+        writer.writerow([
+            item.id,
+            item.product_name,
+            getattr(item, "sku", "") or "",
+            getattr(item, "category", "") or "",
+            quantity,
+            cost_price,
+            selling_price,
+            quantity * cost_price,
+            quantity * selling_price,
+        ])
+
+    csv_file.seek(0)
+
+    return csv_file
 def get_single_inventory(db:Session,inventory_id:int,current_user):
     inventory=db.query(Inventory).filter(
         Inventory.id==inventory_id,

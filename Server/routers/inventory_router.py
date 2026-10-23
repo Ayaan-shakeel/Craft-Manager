@@ -1,10 +1,11 @@
 from fastapi import APIRouter,Depends,HTTPException,status
 from sqlalchemy.orm import Session
-from services.inventory_service import create_inventory,get_inventory,get_single_inventory,update_inventory,delete_inventory
+from services.inventory_service import create_inventory,get_inventory,get_single_inventory,update_inventory,delete_inventory,export_inventory_csv
 from schema.inventory_schema import InventoryCreate
 from model.user_model import User
 from auth import get_current_user
 from database import get_db
+from fastapi.responses import StreamingResponse
 router=APIRouter(
     prefix="/api",
     tags=["Inventory"]
@@ -55,6 +56,18 @@ def get_all_inventory(
         "stats": data["stats"],
         "inventory": data["inventory"],
     }
+@router.get("/inventory/export",status_code=status.HTTP_200_OK)
+def export_inventory(current_user:User=Depends(get_current_user),
+                        db:Session=Depends(get_db)
+                        ):
+            csv_file=export_inventory_csv(db,current_user)
+            return StreamingResponse(
+                iter([csv_file.getvalue()]),
+                media_type="text/csv",
+                headers={
+                    "Content-Disposition":"attachment; filename=inventory.csv"
+                }
+            )
 @router.get("/inventory/{inventory_id}",status_code=status.HTTP_200_OK) 
 def get_single_inventory_by_id(inventory_id:int,current_user:User=Depends(get_current_user),
                                db:Session=Depends(get_db)):
