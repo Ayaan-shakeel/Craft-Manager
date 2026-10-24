@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { getInventory, deleteInventory } from "@/services/inventoryService";
+import { getInventory, deleteInventory, exportInventory } from "@/services/inventoryService"; 
 import { Inventory } from "@/types/inventory";
 import InventoryTable from "@/components/inventory/InventoryTable";
 import InventorySearchPagination from "@/components/inventory/InventorySearchPagination";
 import { useSearchParams, useRouter } from "next/navigation";
+import {toast, ToastContainer} from "react-toastify";
 
 export default function GetInventory() {
     const searchParams = useSearchParams();
@@ -170,8 +171,28 @@ export default function GetInventory() {
         }
     };
 
+    const handleExport = async () => {
+        try {
+          const blob = await exportInventory();
+          if (!blob) return;
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "inventory.csv";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url)
+        } catch(error){
+          toast.error("Exporting Inventory Failed")
+          console.error("Error while exporting inventory",error)
+    
+        }
+      }
+
     return (
-        <div className="space-y-5">
+      <div className="space-y-5">
+        <ToastContainer/>
             {selectedForOrder && (
                 <p className="text-sm font-medium text-gray-700">
                     Select products to add to your order.
@@ -189,7 +210,12 @@ export default function GetInventory() {
                 loading={loading}
                 onPageChange={setPage}
             />
-
+    <button
+  onClick={handleExport}
+  className="rounded-xl bg-blue-600 px-5 py-2 mt-5 sm:w-full  text-white font-semibold hover:bg-blue-700 transition"
+>
+  Export CSV
+</button>
             {/* Inventory table */}
             {loading && inventory.length === 0 ? (
                 <p className="py-8 text-center text-gray-500">
@@ -212,5 +238,6 @@ export default function GetInventory() {
                 />
             )}
         </div>
+      
     );
 }

@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import {InventoryResponse, InventoryQuery,InventoryStats} from "@/types/inventory";
+import {InventoryResponse, InventoryQuery} from "@/types/inventory";
 export const getInventory = async (
     params: InventoryQuery = {}
 ): Promise<InventoryResponse> => {
@@ -71,3 +71,14 @@ export const deleteInventory = async (id: string | number) => {
         throw error
     }
 }
+
+export const exportInventory=async()=>{
+    try{
+        const response=await api.get('/api/inventory/export',{
+            responseType:"blob",
+        });
+        return response.data;
+    }catch(error){
+        console.error("Error while exporting Inventory ",error)
+    }
+ }

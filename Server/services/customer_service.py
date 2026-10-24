@@ -112,9 +112,9 @@ def get_customer(
 
 def export_customers_csv(db: Session, current_user):
     customers = (
-        db.query(Customers)
-        .filter(Customers.user_id == current_user.id)
-        .order_by(Customers.id.desc())
+        db.query(Customer)
+        .filter(Customer.user_id == current_user.id)
+        .order_by(Customer.id.desc())
         .all()
     )
 
@@ -127,6 +127,7 @@ def export_customers_csv(db: Session, current_user):
         "Phone",
         "Email",
         "Address",
+        "Notes",
         "Created At",
     ])
 
@@ -135,8 +136,9 @@ def export_customers_csv(db: Session, current_user):
             customer.id,
             customer.customer_name,
             getattr(customer, "phone", "") or "",
-            getattr(customer, "email", "") or "",
+            getattr(customer, "customer_email", "") or "",
             getattr(customer, "address", "") or "",
+            getattr(customer, "notes", "") or "",
             customer.created_at.strftime("%d-%B-%Y %H:%M")
             if getattr(customer, "created_at", None) else "",
         ])

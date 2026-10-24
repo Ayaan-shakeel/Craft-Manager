@@ -9,7 +9,7 @@ import {
   createCustomer,
 } from "@/services/customerService";
 
-import type { CustomerQuery } from "@/services/customerService";
+import  { CustomerQuery, exportCustomers } from "@/services/customerService";
 
 import CustomerForm from "@/components/customers/CustomerForm";
 import CustomerTable from "@/components/customers/CustomerTable";
@@ -205,6 +205,24 @@ export default function CustomersPage() {
     setFormData(emptyFormData);
   };
 
+  const handleExport = async () => {
+      try {
+        const blob = await exportCustomers();
+        if (!blob) return;
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "customers.csv";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url)
+      } catch(error){
+        toast.error("Exporting Customers Failed")
+        console.error("Error while exporting customers",error)
+  
+      }
+    }
   return (
     <div className="space-y-6">
       <ToastContainer />
@@ -258,6 +276,13 @@ export default function CustomersPage() {
         </select>
       </div>
 
+      <button
+  onClick={handleExport}
+  className="rounded-xl bg-blue-600 px-5 py-2 mt-5 sm:w-full  text-white font-semibold hover:bg-blue-700 transition"
+>
+  Export CSV
+</button>
+
       {/* Results count */}
       <div className="text-sm text-gray-500">
         {loading
@@ -284,7 +309,7 @@ export default function CustomersPage() {
           </p>
         </div>
       )}
-
+    
       {/* Reusable pagination */}
       <CustomerPagination
         page={page}

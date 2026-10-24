@@ -72,3 +72,14 @@ export const getCustomers=async(
         
     }
  }
+
+ export const exportCustomers=async()=>{
+     try{
+         const response=await api.get('/api/customers/export',{
+             responseType:"blob",
+         });
+         return response.data;
+     }catch(error){
+         console.error("Error while exporting Customers ",error)
+     }
+  }
