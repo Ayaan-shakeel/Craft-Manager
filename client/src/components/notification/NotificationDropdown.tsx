@@ -178,7 +178,7 @@ export default function NotificationDropdown({
       {/* Notification list */}
       <div className="max-h-[26rem] overflow-y-auto">
         {loading ? (
-          <div className="flex items-center justify-center gap-2 px-4 py-10 text-sm text-slate-500">
+          <div className="flex items-center justify-center gap-2 px-5 py-10 text-sm text-slate-500">
             <LoaderCircle size={18} className="animate-spin" />
             Loading notifications...
           </div>
