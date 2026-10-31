@@ -1,6 +1,6 @@
 from typing import Optional
 from sqlalchemy.orm import Session
-from models.notification_model import Notification
+from model.notification_model import Notification
 def create_notification(
     db: Session,
     current_user,
