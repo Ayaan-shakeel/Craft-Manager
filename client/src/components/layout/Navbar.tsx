@@ -80,7 +80,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         {/* Notification bell and dropdown */}
         <div className="relative">
           <button
