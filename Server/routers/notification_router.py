@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["Notifications"]
 )
 
-@router.get("/notifications",status_code=status.HTTP_200_OK,response_model=list[NotificationResponse])
+@router.get("/notifications",status_code=status.HTTP_200_OK)
 def get_all_notifications(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)

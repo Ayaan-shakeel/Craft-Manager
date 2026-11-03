@@ -17,10 +17,6 @@ interface NotificationListResponse {
   notifications: Notification[];
 }
 
-interface UnreadCountResponse {
-  unread_count: number;
-}
-
 interface NotificationReadResponse {
   message: string;
   notification: Notification;
@@ -31,97 +27,42 @@ interface NotificationDeleteResponse {
   notification_id: number;
 }
 
-function getAuthHeaders(): HeadersInit {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("access_token")
-      : null;
+// Get all notifications
+export const getNotifications = async (): Promise<NotificationListResponse> => {
+  const response = await api.get("/api/notifications");
+  return response.data;
+};
 
-  if (!token) {
-    throw new Error("Authentication token not found. Please log in again.");
-  }
+// Get unread count
+export const getUnreadCount = async (): Promise<number> => {
+  const response = await api.get("/api/notifications/unread-count");
+  return response.data.unread_count;
+};
 
-  return {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-}
-
-export async function getNotifications(): Promise<NotificationListResponse> {
-  const response = await fetch(`${api}/api/notifications`, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch notifications.");
-  }
-
-  return response.json();
-}
-
-export async function getUnreadCount(): Promise<number> {
-  const response = await fetch(`${api}/api/notifications/unread-count`, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch unread notification count.");
-  }
-
-  const data: UnreadCountResponse = await response.json();
-  return data.unread_count;
-}
-
-export async function markNotificationRead(
+// Mark one notification as read
+export const markNotificationRead = async (
   notificationId: number
-): Promise<NotificationReadResponse> {
-  const response = await fetch(
-    `${api}/api/notifications/${notificationId}/read`,
-    {
-      method: "PATCH",
-      headers: getAuthHeaders(),
-    }
+): Promise<NotificationReadResponse> => {
+  const response = await api.patch(
+    `/api/notifications/${notificationId}/read`
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to mark notification as read.");
-  }
+  return response.data;
+};
 
-  return response.json();
-}
+// Mark all notifications as read
+export const markAllNotificationsRead = async () => {
+  const response = await api.patch("/api/notifications/read-all");
+  return response.data;
+};
 
-export async function markAllNotificationsRead(): Promise<{
-  message: string;
-  updated_count: number;
-}> {
-  const response = await fetch(`${api}/api/notifications/read-all`, {
-    method: "PATCH",
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to mark all notifications as read.");
-  }
-
-  return response.json();
-}
-
-export async function deleteNotification(
+// Delete notification
+export const deleteNotification = async (
   notificationId: number
-): Promise<NotificationDeleteResponse> {
-  const response = await fetch(
-    `${api}/api/notifications/${notificationId}`,
-    {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    }
+): Promise<NotificationDeleteResponse> => {
+  const response = await api.delete(
+    `/api/notifications/${notificationId}`
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to delete notification.");
-  }
-
-  return response.json();
-}
+  return response.data;
+};

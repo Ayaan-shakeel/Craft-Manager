@@ -5,7 +5,8 @@ import { Menu, Bell, UserRound } from "lucide-react";
 
 import { user } from "@/services/authService";
 import { getUnreadCount } from "@/services/notificationService";
-import NotificationDropdown from "@/components/notifications/NotificationDropdown";
+import NotificationDropdown from "@/components/notification/NotificationDropdown";
+
 
 interface NavbarProps {
   onMenuClick: () => void;
