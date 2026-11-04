@@ -8,6 +8,7 @@ from io import StringIO
 import csv
 from model.inventory_model import Inventory
 from model.orders_items_model import OrderItem
+from services.notification_service import create_notification
 
 
 def create_order(db: Session, order, current_user):
@@ -160,6 +161,18 @@ def create_order(db: Session, order, current_user):
     db.commit()
 
     db.refresh(new_order)
+
+    # 9. Create notification
+    create_notification(
+      db=db,
+      current_user=current_user,
+      title="New Order Created",
+      message=f"Order #{new_order.id} has been created successfully.",
+      notification_type="order",
+      link=f"/dashboard/orders",
+)
+
+
 
     return new_order
 
@@ -345,9 +358,18 @@ def update_order_status(db:Session,order_id:int,status:str,current_user):
      ).first()
      if order is None:
            return None
+     old_status=order.status
      order.status=status
      db.commit()
      db.refresh(order)
+     create_notification(
+               db=db,
+               current_user=current_user,
+               title=" Order has been Updated",
+               message=f"Order #{order.id} status changed from {old_status} to {status}.",
+               notification_type="order",
+               link=f"/dashboard/orders",
+         )
      return order
             
 
@@ -532,5 +554,13 @@ def UpdateOrder(db: Session, order_id: int, data, current_user):
 
     db.commit()
     db.refresh(order)
+    create_notification(
+          db=db,
+          current_user=current_user,
+          title=" Order has been Updated",
+          message=f"Order #{order.id} has been updated successfully.",
+          notification_type="order",
+          link=f"/dashboard/orders",
+    )
 
     return order

@@ -23,11 +23,11 @@ export default function CreateOrders() {
    useEffect(() => {
       const fetchCustomers = async () => {
         try {
-          const customer = await getCustomers();
-          if (customer) {
+          const response = await getCustomers();
+          if (response) {
             console.log("hello")
-            setCustomers(customer)
-            console.log("Customers data:", customer)
+            setCustomers(response.customers)
+            console.log("Customers data:", response)
   
           }
         } catch (error) {

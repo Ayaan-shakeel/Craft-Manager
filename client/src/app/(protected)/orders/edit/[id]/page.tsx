@@ -47,7 +47,7 @@ export default function EditOrder() {
         const response = await getCustomers();
 
         if (response) {
-          setCustomers(response);
+          setCustomers(response.customers);
         }
       } catch (error) {
         console.error(
