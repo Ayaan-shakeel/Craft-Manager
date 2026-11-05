@@ -5,7 +5,7 @@ from model.order_model import Orders
 from sqlalchemy import func,or_
 import csv
 from io import StringIO
-
+from services.notification_service import create_notification
 
 def create_inventory(db:Session,inventory,current_user):
     new_inventory=Inventory(
@@ -15,11 +15,25 @@ def create_inventory(db:Session,inventory,current_user):
         selling_price=inventory.selling_price,
         category=inventory.category,
         sku=inventory.sku,
+        reorder_level=inventory.reorder_level,
         user_id=current_user.id
     )
     db.add(new_inventory)
     db.commit()
     db.refresh(new_inventory)
+    if new_inventory.quantity <= new_inventory.reorder_level:
+        create_notification(
+        db=db,
+        current_user=current_user,
+        title="Low Stock Alert",
+        message=(
+            f"{new_inventory.product_name} has only "
+            f"{new_inventory.quantity} units remaining. "
+            f"Reorder level is {new_inventory.reorder_level}."
+        ),
+        notification_type="inventory",
+        link="/dashboard/inventory",
+    )
     return new_inventory
 
 def get_inventory(
