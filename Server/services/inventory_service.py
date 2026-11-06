@@ -21,19 +21,20 @@ def create_inventory(db:Session,inventory,current_user):
     db.add(new_inventory)
     db.commit()
     db.refresh(new_inventory)
+
     if new_inventory.quantity <= new_inventory.reorder_level:
         create_notification(
-        db=db,
-        current_user=current_user,
-        title="Low Stock Alert",
-        message=(
-            f"{new_inventory.product_name} has only "
-            f"{new_inventory.quantity} units remaining. "
-            f"Reorder level is {new_inventory.reorder_level}."
-        ),
-        notification_type="inventory",
-        link="/dashboard/inventory",
-    )
+            db=db,
+            current_user=current_user,
+            title="Low Stock Alert",
+            message=(
+                f"{new_inventory.product_name} has only "
+                f"{new_inventory.quantity} units remaining. "
+                f"Reorder level is {new_inventory.reorder_level}."
+            ),
+            notification_type="inventory",
+            link="/dashboard/inventory",
+        )
     return new_inventory
 
 def get_inventory(
@@ -336,6 +337,9 @@ def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
             status_code=404,
             detail="Inventory not found"
         )
+    old_quantity=inventory.quantity
+    inventory.reorder_level = inventory_data.reorder_level
+    
     inventory.product_name=inventory_data.product_name
     inventory.quantity=inventory_data.quantity
     inventory.cost_price=inventory_data.cost_price
@@ -345,6 +349,24 @@ def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
     # inventory.stock_status=inventory_data.stock_status  
     db.commit()
     db.refresh(inventory)
+
+    if (
+        old_quantity > inventory.reorder_level
+        and inventory.quantity <= inventory.reorder_level
+    ):
+        create_notification(
+            db=db,
+            current_user=current_user,
+            title="Low Stock Alert",
+            message=(
+                f"{inventory.product_name} has only "
+                f"{inventory.quantity} units remaining. "
+                f"Reorder level is {inventory.reorder_level}."
+            ),
+            notification_type="inventory",
+            link="/dashboard/inventory",
+        )
+
     return inventory
 
 def delete_inventory(db:Session,inventory_id:int,current_user):

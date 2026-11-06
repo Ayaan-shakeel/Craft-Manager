@@ -140,39 +140,73 @@ def create_order(db: Session, order, current_user):
     db.flush()
 
     # 7. Create OrderItems + deduct inventory
+    low_stock_alerts = []
+
     for item_data in order_items_data:
 
-        inventory = item_data["inventory"]
+       inventory = item_data["inventory"]
 
-        new_item = OrderItem(
-            order_id=new_order.id,
-            inventory_id=inventory.id,
-            product_name=inventory.product_name,
-            quantity=item_data["quantity"],
-            unit_price=item_data["unit_price"],
-            total_price=item_data["total_price"]
-        )
+    new_item = OrderItem(
+        order_id=new_order.id,
+        inventory_id=inventory.id,
+        product_name=inventory.product_name,
+        quantity=item_data["quantity"],
+        unit_price=item_data["unit_price"],
+        total_price=item_data["total_price"]
+    )
 
-        db.add(new_item)
+    db.add(new_item)
 
-        inventory.quantity -= item_data["quantity"]
+    # Store stock before deduction
+    old_quantity = inventory.quantity
 
-    # 8. Commit everything
+    # Deduct ordered quantity
+    inventory.quantity -= item_data["quantity"]
+
+    # Check whether stock crossed the reorder level
+    if (
+        old_quantity > inventory.reorder_level
+        and inventory.quantity <= inventory.reorder_level
+    ):
+        low_stock_alerts.append({
+            "product_name": inventory.product_name,
+            "quantity": inventory.quantity,
+            "reorder_level": inventory.reorder_level
+        })
+
+
+# 8. Commit everything
     db.commit()
 
     db.refresh(new_order)
 
-    # 9. Create notification
+
+# 9. Create order notification
     create_notification(
-      db=db,
-      current_user=current_user,
-      title="New Order Created",
-      message=f"Order #{new_order.id} has been created successfully.",
-      notification_type="order",
-      link=f"/dashboard/orders",
-)
+       db=db,
+       current_user=current_user,
+       title="New Order Created",
+       message=f"Order #{new_order.id} has been created successfully.",
+       notification_type="order",
+       link="/dashboard/orders",
+   )
 
 
+# 10. Create low-stock notifications
+    for alert in low_stock_alerts:
+
+        create_notification(
+           db=db,
+           current_user=current_user,
+           title="Low Stock Alert",
+           message=(
+              f"{alert['product_name']} has only "
+              f"{alert['quantity']} units remaining. "
+              f"Reorder level is {alert['reorder_level']}."
+          ),
+          notification_type="inventory",
+          link="/dashboard/inventory",
+       )
 
     return new_order
 
