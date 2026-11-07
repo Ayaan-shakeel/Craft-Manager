@@ -22,6 +22,14 @@ def create_inventory(db:Session,inventory,current_user):
     db.commit()
     db.refresh(new_inventory)
 
+    create_notification(
+           db=db,
+           current_user=current_user,
+           title="New Inventory Item Created",
+           message=f"Inventory item #{new_inventory.id} has been created successfully.",
+           notification_type="inventory",
+           link="/dashboard/orders",
+       )
     if new_inventory.quantity <= new_inventory.reorder_level:
         create_notification(
             db=db,
@@ -339,7 +347,7 @@ def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
         )
     old_quantity=inventory.quantity
     inventory.reorder_level = inventory_data.reorder_level
-    
+
     inventory.product_name=inventory_data.product_name
     inventory.quantity=inventory_data.quantity
     inventory.cost_price=inventory_data.cost_price
@@ -349,7 +357,14 @@ def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
     # inventory.stock_status=inventory_data.stock_status  
     db.commit()
     db.refresh(inventory)
-
+    create_notification(
+       db=db,
+       current_user=current_user,
+       title=" Inventory Item Updated",
+       message=f"Inventory item #{inventory.id} has been updated successfully.",
+       notification_type="inventory",
+       link="/dashboard/inventory",
+   )
     if (
         old_quantity > inventory.reorder_level
         and inventory.quantity <= inventory.reorder_level

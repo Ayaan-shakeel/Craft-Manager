@@ -7,4 +7,5 @@ class InventoryCreate(BaseModel):
     selling_price:int=Field(gt=0)
     category:str=Field(min_length=2,max_length=100)
     sku:str=Field(min_length=2,max_length=100)
+    reorder_level:int = 10
 
