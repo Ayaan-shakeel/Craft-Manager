@@ -9,7 +9,7 @@ import csv
 from model.inventory_model import Inventory
 from model.orders_items_model import OrderItem
 from services.notification_service import create_notification
-
+from services.stock_movement_service import record_stock_movement
 
 def create_order(db: Session, order, current_user):
 
@@ -160,9 +160,19 @@ def create_order(db: Session, order, current_user):
     # Store stock before deduction
     old_quantity = inventory.quantity
 
-    # Deduct ordered quantity
+# Deduct ordered quantity
     inventory.quantity -= item_data["quantity"]
 
+# Record stock movement
+    record_stock_movement(
+    db=db,
+    current_user=current_user,
+    inventory=inventory,
+    movement_type="order",
+    previous_quantity=old_quantity,
+    quantity_changed=-item_data["quantity"],
+    reason=f"Order #{new_order.id}"
+    )
     # Check whether stock crossed the reorder level
     if (
         old_quantity > inventory.reorder_level
@@ -430,14 +440,26 @@ def CancelOrder(db:Session,order_id:int,current_user):
             detail="Order already cancelled"
         )
       for item in order.order_items:
-        inventory=db.query(Inventory).filter(
-            Inventory.id==item.inventory_id,
-            Inventory.user_id==current_user.id
-            ).first()
-        if inventory:
-            inventory.quantity+=item.quantity
+
+        inventory = db.query(Inventory).filter(
+           Inventory.id == item.inventory_id,
+           Inventory.user_id == current_user.id
+        ).first()
+
+      if inventory:
+        old_quantity = inventory.quantity
+        inventory.quantity += item.quantity
+        
+        record_stock_movement(
+            db=db,
+            current_user=current_user,
+            inventory=inventory,
+            movement_type="order_cancelled",
+            previous_quantity=old_quantity,
+            quantity_changed=item.quantity,
+            reason=f"Cancellation of Order #{order.id}"
+        )
       order.status="cancelled"
-      # db.delete(order)
       db.commit()
       return order
 
