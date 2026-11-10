@@ -6,6 +6,7 @@ from sqlalchemy import func,or_
 import csv
 from io import StringIO
 from services.notification_service import create_notification
+from services.stock_movement_service import record_stock_movement
 
 def create_inventory(db:Session,inventory,current_user):
     new_inventory=Inventory(
@@ -335,36 +336,55 @@ def get_single_inventory(db:Session,inventory_id:int,current_user):
         ]
     }
 
-def update_inventory(db:Session,inventory_id:int,inventory_data,current_user):
-    inventory=db.query(Inventory).filter(
-        Inventory.id==inventory_id,
-        Inventory.user_id==current_user.id
+def update_inventory(db: Session, inventory_id: int, inventory_data, current_user):
+
+    inventory = db.query(Inventory).filter(
+        Inventory.id == inventory_id,
+        Inventory.user_id == current_user.id
     ).first()
+
     if inventory is None:
         raise HTTPException(
             status_code=404,
             detail="Inventory not found"
         )
-    old_quantity=inventory.quantity
+
+    old_quantity = inventory.quantity
+
+    inventory.product_name = inventory_data.product_name
+    inventory.quantity = inventory_data.quantity
+    inventory.cost_price = inventory_data.cost_price
+    inventory.selling_price = inventory_data.selling_price
+    inventory.sku = inventory_data.sku
+    inventory.category = inventory_data.category
     inventory.reorder_level = inventory_data.reorder_level
 
-    inventory.product_name=inventory_data.product_name
-    inventory.quantity=inventory_data.quantity
-    inventory.cost_price=inventory_data.cost_price
-    inventory.selling_price=inventory_data.selling_price
-    inventory.sku=inventory_data.sku
-    inventory.category=inventory_data.category    
-    # inventory.stock_status=inventory_data.stock_status  
+    if old_quantity != inventory.quantity:
+
+        quantity_changed = inventory.quantity - old_quantity
+
+        record_stock_movement(
+            db=db,
+            current_user=current_user,
+            inventory=inventory,
+            movement_type="manual_adjustment",
+            previous_quantity=old_quantity,
+            quantity_changed=quantity_changed,
+            reason="Manual stock adjustment"
+        )
+
     db.commit()
     db.refresh(inventory)
+    
     create_notification(
-       db=db,
-       current_user=current_user,
-       title=" Inventory Item Updated",
-       message=f"Inventory item #{inventory.id} has been updated successfully.",
-       notification_type="inventory",
-       link="/dashboard/inventory",
-   )
+        db=db,
+        current_user=current_user,
+        title="Inventory Item Updated",
+        message=f"Inventory item #{inventory.id} has been updated successfully.",
+        notification_type="inventory",
+        link="/dashboard/inventory",
+    )
+
     if (
         old_quantity > inventory.reorder_level
         and inventory.quantity <= inventory.reorder_level
