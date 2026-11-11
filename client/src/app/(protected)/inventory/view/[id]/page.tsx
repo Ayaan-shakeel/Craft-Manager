@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getSingleInventory } from "@/services/inventoryService";
-import { Inventory, InventoryAnalytics } from "@/types/inventory";
+import { getSingleInventory, getStockMovements } from "@/services/inventoryService";
+import { Inventory, InventoryAnalytics, StockMovement } from "@/types/inventory";
 import {
   ArrowLeft,
   Boxes,
@@ -14,6 +14,10 @@ import {
   ShoppingCart,
   Tag,
   TrendingUp,
+  History,
+  ArrowDownRight,
+  ArrowUpRight,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -22,6 +26,8 @@ export default function ViewSingleInventory() {
   const [analytics, setAnalytics] = useState<InventoryAnalytics | null>(null);
   const params = useParams();
   const id = params.id as string;
+  const [movements, setMovements] = useState<StockMovement[]>([]);
+  const [movementLoading, setMovementLoading] = useState(true);
 
   useEffect(() => {
     const fetchSingleInventory = async () => {
@@ -40,6 +46,26 @@ export default function ViewSingleInventory() {
     };
     fetchSingleInventory();
   }, [id]);
+
+  useEffect(() => {
+  const fetchStockMovements = async () => {
+    try {
+      setMovementLoading(true);
+
+      const data = await getStockMovements(id);
+
+      setMovements(data);
+    } catch (error) {
+      console.error("Error fetching stock movements:", error);
+    } finally {
+      setMovementLoading(false);
+    }
+  };
+
+  if (id) {
+    fetchStockMovements();
+  }
+}, [id]);
 
   if (!inventory || !analytics) {
     return (
@@ -64,6 +90,8 @@ export default function ViewSingleInventory() {
       </section>
     );
   }
+
+
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-6 sm:px-6 lg:px-8">
@@ -245,6 +273,102 @@ export default function ViewSingleInventory() {
                   {analytics.units_sold}
                 </p>
               </div>
+              {/* Stock Movement History */}
+<div className="mt-8 border-t border-slate-200 pt-8">
+  <div className="mb-6 flex items-center gap-3">
+    <div className="rounded-xl bg-blue-100 p-3 text-blue-600">
+      <History size={22} />
+    </div>
+
+    <div>
+      <h2 className="text-xl font-bold text-slate-800">
+        Stock Movement History
+      </h2>
+      <p className="text-sm text-slate-500">
+        Track every stock addition, deduction, and adjustment.
+      </p>
+    </div>
+  </div>
+
+  {movementLoading ? (
+    <p className="py-6 text-center text-slate-500">
+      Loading stock history...
+    </p>
+  ) : movements.length === 0 ? (
+    <div className="rounded-2xl bg-slate-50 p-8 text-center">
+      <History className="mx-auto mb-3 text-slate-400" size={32} />
+      <p className="font-semibold text-slate-700">
+        No stock movements yet
+      </p>
+      <p className="mt-1 text-sm text-slate-500">
+        Stock activity will appear here.
+      </p>
+    </div>
+  ) : (
+    <div className="space-y-4">
+      {movements.map((movement) => {
+        const isAddition = movement.quantity_changed > 0;
+
+        return (
+          <div
+            key={movement.id}
+            className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-start gap-3">
+              <div
+                className={`rounded-xl p-3 ${
+                  isAddition
+                    ? "bg-green-100 text-green-600"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {isAddition ? (
+                  <ArrowUpRight size={20} />
+                ) : (
+                  <ArrowDownRight size={20} />
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-slate-800">
+                  {movement.movement_type
+                    .replaceAll("_", " ")
+                    .replace(/\b\w/g, (char) => char.toUpperCase())}
+                </h3>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  {movement.reason}
+                </p>
+
+                <p className="mt-1 text-xs text-slate-400">
+                  {new Date(movement.created_at).toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-6 sm:justify-end">
+              <div className="text-sm text-slate-500">
+                <p>Previous: {movement.previous_quantity}</p>
+                <p>New: {movement.new_quantity}</p>
+              </div>
+
+              <span
+                className={`min-w-20 rounded-xl px-3 py-2 text-center text-sm font-bold ${
+                  isAddition
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {isAddition ? "+" : ""}
+                {movement.quantity_changed}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )}
+</div>
             </div>
           </div>
         </div>

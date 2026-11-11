@@ -58,3 +58,15 @@ export interface InventoryResponse {
     };
     inventory: Inventory[];
 }
+
+export interface StockMovement {
+    id: number;
+    inventory_id: number;
+    product_name: string;
+    movement_type: string;
+    previous_quantity: number;
+    quantity_changed: number;
+    new_quantity: number;
+    reason: string;
+    created_at: string;
+}

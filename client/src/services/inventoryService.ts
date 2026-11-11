@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import {InventoryResponse, InventoryQuery} from "@/types/inventory";
+import { InventoryResponse, InventoryQuery, StockMovement } from "@/types/inventory";
 export const getInventory = async (
     params: InventoryQuery = {}
 ): Promise<InventoryResponse> => {
@@ -82,3 +82,19 @@ export const exportInventory=async()=>{
         console.error("Error while exporting Inventory ",error)
     }
  }
+
+ export const getStockMovements = async (
+    inventoryId: string | number
+): Promise<StockMovement[]> => {
+    try {
+        const response = await api.get(
+            `/api/inventory/${inventoryId}/stock-movements`
+        );
+
+        return response.data;
+
+    } catch (error) {
+        console.error("Error while fetching stock movements:", error);
+        throw error;
+    }
+};
