@@ -6,12 +6,17 @@ from model.user_model import User
 from auth import get_current_user
 from database import get_db
 from fastapi.responses import StreamingResponse
+from services.stock_movement_service import get_stock_movements
+from schema.stock_movement_schema import StockMovementResponse
 router=APIRouter(
     prefix="/api",
     tags=["Inventory"]
 )
 
-@router.post("/inventory",status_code=status.HTTP_201_CREATED)
+@router.post(
+                "/inventory",
+                status_code=status.HTTP_201_CREATED
+                )
 def create_new_inventory(inventory:InventoryCreate,current_user:User=Depends(get_current_user),
                       db:Session=Depends(get_db)):
                       new_inventory=create_inventory(db,inventory,current_user)
@@ -100,4 +105,22 @@ def deleted_inventory(inventory_id:int, current_user:User=Depends(get_current_us
                       return{
                          "message":"Inventory Successfully Deleted"
                       }
+
+@router.get(
+    "/inventory/{inventory_id}/stock-movements",
+    response_model=list[StockMovementResponse],
+    status_code=status.HTTP_200_OK
+)
+def get_inventory_stock_history(
+    inventory_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    movements = get_stock_movements(
+        db=db,
+        inventory_id=inventory_id,
+        current_user=current_user
+    )
+
+    return movements
         

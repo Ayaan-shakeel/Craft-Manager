@@ -20,6 +20,19 @@ def create_inventory(db:Session,inventory,current_user):
         user_id=current_user.id
     )
     db.add(new_inventory)
+    db.flush()
+
+    if new_inventory.quantity > 0:
+        record_stock_movement(
+            db=db,
+            current_user=current_user,
+            inventory=new_inventory,
+            movement_type="stock_added",
+            previous_quantity=0,
+            quantity_changed=new_inventory.quantity,
+            reason="Initial stock"
+        )
+
     db.commit()
     db.refresh(new_inventory)
 
