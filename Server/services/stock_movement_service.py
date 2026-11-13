@@ -31,6 +31,7 @@ def record_stock_movement(
 
     return movement
 
+
 def get_stock_movements(db: Session, inventory_id: int, current_user):
 
     inventory = db.query(Inventory).filter(
