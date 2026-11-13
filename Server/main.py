@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from database import engine,Base
-
+from model.supplier_model import Supplier
+from model.stock_movement_model import StockMovement
 
 from routers.customer_router import router as customer_router
 from routers.dashboard_router import router as dashboard_router
