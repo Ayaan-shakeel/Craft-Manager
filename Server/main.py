@@ -9,6 +9,7 @@ from routers.order_router import router as order_router
 from routers.user_router import router as user_router
 from routers.inventory_router import router as inventory_router
 from routers.notification_router import router as notification_router
+from routers.supplier_router import router as supplier_router
 
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(
@@ -31,6 +32,7 @@ app.include_router(dashboard_router)
 app.include_router(order_router)
 app.include_router(inventory_router)
 app.include_router(notification_router)
+app.include_router(supplier_router)
 @app.get('/')
 def home():
     return{"status":1,"message":"Hello World"}
