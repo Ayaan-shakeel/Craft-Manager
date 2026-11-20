@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
   X,
+  Truck,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -38,6 +39,11 @@ const navigation = [
     name: "Orders",
     href: "/orders",
     icon: ShoppingCart,
+  },
+  {
+    name: "Suppliers",
+    href: "/supplier",
+    icon: Truck,
   },
 ];
 

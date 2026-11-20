@@ -171,16 +171,16 @@ export default function SuppliersPage() {
 
                 <div className="flex items-center gap-3">
 
-                    <div className="rounded-xl bg-blue-100 p-3 text-blue-600">
+                    <div className="rounded-xl ml-3 bg-blue-100 p-3 text-blue-600">
                         <Truck size={25} />
                     </div>
 
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">
+                        <h1 className="text-2xl mt-5 ml-2 font-bold text-slate-800">
                             Suppliers
                         </h1>
 
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-2 text-sm text-slate-500">
                             Manage your suppliers and contact information.
                         </p>
                     </div>
@@ -189,7 +189,7 @@ export default function SuppliersPage() {
 
                 <button
                     onClick={handleAdd}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
+                    className="flex items-center mt-5 mr-3 justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
                 >
                     <Plus size={20} />
                     Add Supplier

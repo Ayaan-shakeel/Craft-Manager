@@ -27,7 +27,7 @@ export default function SupplierStats({
     ];
 
     return (
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mb-6 ml-4 mr-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
 
             {stats.map((stat) => {
                 const Icon = stat.icon;

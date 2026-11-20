@@ -32,7 +32,7 @@ export default function SupplierTable({
 }: SupplierTableProps) {
 
     return (
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="rounded-2xl border mr-2 ml-2 border-slate-200 bg-white shadow-sm">
 
             {/* Header */}
             <div className="border-b border-slate-200 p-5">
