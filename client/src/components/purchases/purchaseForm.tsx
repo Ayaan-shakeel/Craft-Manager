@@ -11,7 +11,7 @@ import PurchaseItemsForm from "./PurchaseItemsForm";
 
 interface SupplierOption {
     id: number;
-    name: string;
+    supplier_name: string;
 }
 
 interface InventoryOption {
@@ -100,22 +100,21 @@ export default function PurchaseForm({
 
                         <select
                             value={supplierId}
-                            onChange={(e) =>
-                                setSupplierId(Number(e.target.value))
-                            }
+                            onChange={(e) => setSupplierId(Number(e.target.value))}
                             required
-                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-blue-500"
+                            className="w-full cursor-pointer appearance-none rounded-xl border border-slate-300 bg-white px-4 py-3 font-medium text-slate-800 shadow-sm outline-none transition hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         >
                             <option value={0} disabled>
-                                Select supplier
+                                Select a supplier
                             </option>
 
                             {suppliers.map((supplier) => (
                                 <option
                                     key={supplier.id}
                                     value={supplier.id}
+                                    className="bg-white py-2 text-slate-800"
                                 >
-                                    {supplier.name}
+                                    {supplier.supplier_name}
                                 </option>
                             ))}
                         </select>
