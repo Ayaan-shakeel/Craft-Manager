@@ -45,6 +45,11 @@ const navigation = [
     href: "/supplier",
     icon: Truck,
   },
+  {
+    name: "Purchases",
+    href: "/purchases",
+    icon: ShoppingCart,
+  },
 ];
 
 export default function Sidebar({
