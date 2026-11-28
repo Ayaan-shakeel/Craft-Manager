@@ -10,9 +10,8 @@ from model.inventory_model import Inventory
 from model.supplier_model import Supplier
 
 from schema.purchase_schema import PurchaseCreate
-
 from services.stock_movement_service import record_stock_movement
-
+from sqlalchemy import func, extract
 
 def create_purchase(db: Session, purchase_data: PurchaseCreate, current_user):
 
@@ -172,3 +171,168 @@ def get_purchase_items(db: Session, purchase_id: int, current_user):
     ).all()
 
     return items
+
+def purchase_analytics(db: Session, current_user):
+
+    # 1. Total purchases
+    total_purchases = db.query(Purchase).filter(
+        Purchase.user_id == current_user.id
+    ).count()
+
+    # 2. Total spending
+    total_spending = (
+        db.query(func.sum(Purchase.total_amount))
+        .filter(
+            Purchase.user_id == current_user.id,
+            Purchase.status != "cancelled"
+        )
+        .scalar() or 0
+    )
+
+    # 3. Average purchase value
+    average_purchase_value = (
+        total_spending / total_purchases
+        if total_purchases > 0 else 0
+    )
+
+    # 4. Monthly spending
+    monthly_spending = (
+        db.query(
+            extract("month", Purchase.created_at).label("month"),
+            func.sum(Purchase.total_amount).label("spending")
+        )
+        .filter(
+            Purchase.user_id == current_user.id,
+            Purchase.status != "cancelled"
+        )
+        .group_by(extract("month", Purchase.created_at))
+        .order_by(extract("month", Purchase.created_at))
+        .all()
+    )
+
+    months = [
+        "",
+        "Jan", "Feb", "Mar", "Apr",
+        "May", "Jun", "Jul", "Aug",
+        "Sep", "Oct", "Nov", "Dec"
+    ]
+
+    monthly_spending = [
+        {
+            "month": months[int(row.month)],
+            "spending": float(row.spending or 0)
+        }
+        for row in monthly_spending
+    ]
+
+    # 5. Top suppliers
+    top_suppliers = (
+        db.query(
+            Supplier.id.label("supplier_id"),
+            Supplier.supplier_name.label("supplier_name"),
+            func.sum(Purchase.total_amount).label("total_spending"),
+            func.count(Purchase.id).label("purchase_count")
+        )
+        .join(
+            Purchase,
+            Purchase.supplier_id == Supplier.id
+        )
+        .filter(
+            Purchase.user_id == current_user.id,
+            Purchase.status != "cancelled"
+        )
+        .group_by(
+            Supplier.id,
+            Supplier.supplier_name
+        )
+        .order_by(
+            func.sum(Purchase.total_amount).desc()
+        )
+        .limit(5)
+        .all()
+    )
+
+    top_suppliers = [
+        {
+            "supplier_id": row.supplier_id,
+            "supplier_name": row.supplier_name,
+            "total_spending": float(row.total_spending or 0),
+            "purchase_count": row.purchase_count
+        }
+        for row in top_suppliers
+    ]
+
+    # 6. Top purchased products
+    top_products = (
+        db.query(
+            Inventory.id.label("inventory_id"),
+            Inventory.product_name.label("product_name"),
+            func.sum(PurchaseItem.quantity).label("total_quantity"),
+            func.sum(PurchaseItem.subtotal).label("total_spending")
+        )
+        .join(
+            PurchaseItem,
+            PurchaseItem.inventory_id == Inventory.id
+        )
+        .join(
+            Purchase,
+            Purchase.id == PurchaseItem.purchase_id
+        )
+        .filter(
+            Purchase.user_id == current_user.id,
+            Purchase.status != "cancelled",
+            Inventory.user_id == current_user.id
+        )
+        .group_by(
+            Inventory.id,
+            Inventory.product_name
+        )
+        .order_by(
+            func.sum(PurchaseItem.quantity).desc()
+        )
+        .limit(5)
+        .all()
+    )
+
+    top_products = [
+        {
+            "inventory_id": row.inventory_id,
+            "product_name": row.product_name,
+            "total_quantity": int(row.total_quantity or 0),
+            "total_spending": float(row.total_spending or 0)
+        }
+        for row in top_products
+    ]
+
+    # 7. Recent purchases
+    recent_purchases = (
+        db.query(Purchase)
+        .filter(
+            Purchase.user_id == current_user.id
+        )
+        .order_by(Purchase.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    recent_purchases_data = [
+        {
+            "id": purchase.id,
+            "purchase_number": purchase.purchase_number,
+            "supplier_id": purchase.supplier_id,
+            "total_amount": float(purchase.total_amount or 0),
+            "status": purchase.status,
+            "created_at": purchase.created_at
+        }
+        for purchase in recent_purchases
+    ]
+
+    return {
+        "total_purchases": total_purchases,
+        "total_spending": float(total_spending),
+        "average_purchase_value": float(average_purchase_value),
+        "monthly_spending": monthly_spending,
+        "top_suppliers": top_suppliers,
+        "top_products": top_products,
+        "recent_purchases": recent_purchases_data
+    }

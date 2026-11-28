@@ -13,7 +13,13 @@ from services.purchase_service import (
     get_single_purchase,
     get_purchase_items
 )
-
+from services.purchase_service import (
+    create_purchase,
+    get_purchases,
+    get_single_purchase,
+    get_purchase_items,
+    purchase_analytics
+)
 router = APIRouter(prefix="/api", tags=["Purchases"])
 
 
@@ -87,4 +93,17 @@ def get_purchase_item_list(
         "message": "Purchase items retrieved successfully",
         "count": len(items),
         "items": items
+    }
+
+@router.get("/purchases/analytics", status_code=status.HTTP_200_OK)
+def get_purchase_analytics(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    analytics = purchase_analytics(db, current_user)
+
+    return {
+        "message": "Purchase analytics retrieved successfully",
+        "analytics": analytics
     }
